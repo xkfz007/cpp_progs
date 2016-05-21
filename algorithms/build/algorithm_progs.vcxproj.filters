@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\find_kth_str.cc" />
+    <ClCompile Include="..\find_max_area.cc" />
+    <ClCompile Include="..\find_max_sub_array.cc" />
+    <ClCompile Include="..\find_sub_sum.c" />
+    <ClCompile Include="..\list_reverse_out.c" />
+    <ClCompile Include="..\magic_square.c" />
+    <ClCompile Include="..\scheduler.c" />
+    <ClCompile Include="..\sort.c" />
+    <ClCompile Include="..\str_shift.c" />
+    <ClCompile Include="..\trie_tree.c" />
+    <ClCompile Include="..\calc_expression.cc" />
+    <ClCompile Include="..\rotate_matrix.cc" />
+    <ClCompile Include="..\zeros_in_factorial.cc" />
+    <ClCompile Include="..\sort_insertion.c" />
+    <ClCompile Include="..\sort_merge.c" />
+    <ClCompile Include="..\sort_selection.c" />
+    <ClCompile Include="..\sovle_equation.c" />
+    <ClCompile Include="..\find_most_water.cpp" />
+  </ItemGroup>
+</Project>
