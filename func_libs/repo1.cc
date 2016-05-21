@@ -150,7 +150,7 @@ int getline(char s[],int lim,FILE*fp){
     return i;//the length of line
 }
 
-//1. 整数/浮点等转化为字符串
+//convert float or integer to string in c++
 #include <ostream> // for the << operator
 #include <sstream> // for ostringstream
 #include <string>  // for string
@@ -162,7 +162,9 @@ std::string to_string(T const& obj)
   out << obj;
   return out.str();
 }
-//2. 从字符串得到整数/浮点数
+
+
+//convert string to float or integer in c++
 #include <istream> // for the >> operator
 #include <sstream> // for ostringstream
 #include <string>  // for string
