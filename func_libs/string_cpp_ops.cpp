@@ -1,6 +1,6 @@
 
 #ifdef _STR_INT
-/*ÕûÊý/¸¡µãµÈ×ª»¯Îª×Ö·û´®
+/*æ•´æ•°/æµ®ç‚¹ç­‰è½¬åŒ–ä¸ºå­—ç¬¦ä¸²
  */
 #include <ostream> // for the << operator
 #include <sstream> // for ostringstream
@@ -14,7 +14,7 @@ std::string to_string(T const& obj)
   return out.str();
 }
 /*
- * ´Ó×Ö·û´®µÃµ½ÕûÊý/¸¡µãÊý
+ * ä»Žå­—ç¬¦ä¸²å¾—åˆ°æ•´æ•°/æµ®ç‚¹æ•°
  * */
 #include <istream> // for the >> operator
 #include <sstream> // for ostringstream
@@ -31,7 +31,7 @@ T from_string(std::string const& str)
 }
 
 /*
- * È¥³ý×Ö·û´®Ê×Î²µÄ¿Õ¸ñ
+ * åŽ»é™¤å­—ç¬¦ä¸²é¦–å°¾çš„ç©ºæ ¼
  * */
 std::string& trim(std::string &s)
 {

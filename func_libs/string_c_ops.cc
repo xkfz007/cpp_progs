@@ -1,6 +1,12 @@
 /*
-this program contains the basic string functions implementation
-*/
+ * string_ops.cc
+ *
+ *  Created on: 2016-5月-21 下午2:46:03
+ *      Author: Felix
+ */
+/*
+ *  this program contains the basic string functions implementation
+ */
 #ifdef _STR_FUNC
 #include <stdio.h>
 #include <string.h>
@@ -21,7 +27,7 @@ this program contains the basic string functions implementation
 #define toascii_(c) ((c)&0x7f)
 
 
-//判断字符串的长度 
+//判断字符串的长度
 size_t strlen_(const char *str)
 {
     size_t i=0;
@@ -29,7 +35,7 @@ size_t strlen_(const char *str)
         i++;
     return i;
 }
-//将一个串的内容追加到另一个串上 
+//将一个串的内容追加到另一个串上
 char *strcat_(char*tgt,const char*src)
 {
     char*p=tgt;
@@ -51,7 +57,7 @@ char *strncat_(char*tgt,const char*src,int n)
         *tgt='\0';
     return p;
 }
-//将一个字符串的字符复制到另一个字符串中 
+//将一个字符串的字符复制到另一个字符串中
 char *strcpy_(char*dest,const char*src)
 {
     while(*dest++=*src++)
@@ -76,7 +82,7 @@ int streql(const char*str1,const char*str2){
     }
     return (*str1=='\0')&&(*str2=='\0');
 }
-//比较字符串时忽略大小写 
+//比较字符串时忽略大小写
 int strieql(const char*str1,const char*str2){
     while((toupper_(*str1)==toupper_(*str2))&&(*str1))
     {
@@ -85,7 +91,7 @@ int strieql(const char*str1,const char*str2){
     }
     return (*str1=='\0')&&(*str2=='\0');
 }
-//将字符串转换成大写或小写 
+//将字符串转换成大写或小写
 char* strlwr_(char*str)
 {
     char*p=str;
@@ -106,14 +112,14 @@ char* strupr_(char*str)
     }
     return p;
 }
-//获取字符串中第一次出现的某个字符 
+//获取字符串中第一次出现的某个字符
 char* strchr_(char*str,char c)
 {
     while((*str!=c)&&(*str))
         str++;
     return str;
 }
-//返回索引到串的首次出现 
+//返回索引到串的首次出现
 int strchr_i(const char*str,char c)
 {
     int i=0;
@@ -121,7 +127,7 @@ int strchr_i(const char*str,char c)
         i++;
     return (str[i]?i:-1);
 }
-//搜索字符在字符串中的末次出现 
+//搜索字符在字符串中的末次出现
 char* strrchr_(char*str,char c)
 {
     char*p=NULL;
@@ -133,7 +139,7 @@ char* strrchr_(char*str,char c)
     }
     return p;
 }
-//返回指向字符中末次出现的索引 
+//返回指向字符中末次出现的索引
 int strrchr_i(const char*str,char c)
 {
     int p=-1;
@@ -146,7 +152,7 @@ int strrchr_i(const char*str,char c)
     }
     return p;
 }
-//计算字符串的内容反转 
+//计算字符串的内容反转
 char* strrev_(char*str)
 {
     char*org=str;
@@ -181,7 +187,7 @@ int strcmp_(const char*str1,const char*str2){
         return (*str1>*str2?-1:1);
 
 }
-//比较两个字符中的前N个字符 
+//比较两个字符中的前N个字符
 int strncmp_(const char*str1,const char*str2,int n){
     int i=0;
     while((i<n)&&(str1[i]==str2[i])&&(str1[i]))
@@ -199,7 +205,7 @@ int strncmp_(const char*str1,const char*str2,int n){
     else
         return (str1[i]>str2[i]?-1:1);
 }
-//从给定字符序列中查找字符的首次出现 
+//从给定字符序列中查找字符的首次出现
 size_t strspn_(const char*s1,const char*s2)
 {
     int i=0;
@@ -222,7 +228,7 @@ size_t strspn_(const char*s1,const char*s2)
     return i;
 
 }
-//在字符串中查找子字符串 
+//在字符串中查找子字符串
 char* strstr_(const char*s1,const char *s2)
 {
     while(*s1!='\0')
@@ -241,7 +247,7 @@ char* strstr_(const char*s1,const char *s2)
     return NULL;
 
 }
-//计算子字符串出现的次数 
+//计算子字符串出现的次数
 int strstr_cnt(const char*s1,const char *s2)
 {
     int count=0;
@@ -261,7 +267,7 @@ int strstr_cnt(const char*s1,const char *s2)
     return count;
 
 }
-//给子字符串获取索引 
+//给子字符串获取索引
 int  strstr_i(const char*s1,const char *s2)
 {
     char*org=s1;
@@ -281,7 +287,7 @@ int  strstr_i(const char*s1,const char *s2)
     return -1;
 
 }
-//获取子字符串的最右端出现 
+//获取子字符串的最右端出现
 char* strrstr_(const char*s1,const char *s2)
 {
     char* t=NULL;
@@ -375,3 +381,50 @@ printf("%s\n",p);
 
 }
 #endif
+
+/*
+** Shrink runs of white space in the given string to a single space.
+*/
+#ifdef _DEBLANK
+#define NUL '\0'
+static int is_white( int ch )
+{
+	return ch == ' ' || ch == '\t' || ch == '\v' || ch == '\f' || ch == '\n'
+		|| ch == '\r';
+}
+static void deblank( char *string )
+{
+	char *dest;
+	char *src;
+	int ch;
+	/*
+	** Set source and destination pointers to beginning of the string, then
+	** move to 2nd character in string.
+	*/
+	src = string;
+	dest = string++;
+	/*
+	** Examine each character from the source string.
+	*/
+	while( (ch = *src++) != NUL ){
+		if( is_white( ch ) ){
+			/*
+			** We found white space. If we��re at the beginning of
+			** the string OR the previous char in the dest is not
+			** white space, store a blank.
+			*/
+			if( src == string || !is_white( dest[-1] ) )
+				*dest++ = ' ';
+		}
+		else {
+			/*
+			** Not white space: just store it.
+			*/
+			*dest++ = ch;
+		}
+	}
+	*dest = NUL;
+}
+#endif
+
+

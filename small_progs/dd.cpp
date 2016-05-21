@@ -1,4 +1,7 @@
-#if 1
+/*
+ * a simple implenmentation of UNIX dd
+ */
+#ifdef _DD
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>

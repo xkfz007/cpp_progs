@@ -75,14 +75,14 @@ HSOURCES = $(srcdir)/strmatch.h
 OBJECTS = glob.o strmatch.o smatch.o xmbsrtowcs.o
 
 # The texinfo files which document this library.
-DOCSOURCE = doc/glob.texi
-DOCOBJECT = doc/glob.dvi
-DOCSUPPORT = doc/Makefile
-DOCUMENTATION = $(DOCSOURCE) $(DOCOBJECT) $(DOCSUPPORT)
+# DOCSOURCE = doc/glob.texi
+# DOCOBJECT = doc/glob.dvi
+# DOCSUPPORT = doc/Makefile
+# DOCUMENTATION = $(DOCSOURCE) $(DOCOBJECT) $(DOCSUPPORT)
 
-SUPPORT = Makefile ChangeLog $(DOCSUPPORT)
+SUPPORT = Makefile ChangeLog #$(DOCSUPPORT)
 
-SOURCES  = $(CSOURCES) $(HSOURCES) $(DOCSOURCE)
+SOURCES  = $(CSOURCES) $(HSOURCES) #$(DOCSOURCE)
 
 THINGS_TO_TAR = $(SOURCES) $(SUPPORT)
 
@@ -100,9 +100,9 @@ what-tar:
 	  echo $(selfdir)$$file; \
 	done
 
-documentation: force
-	-(cd doc; $(MAKE) $(MFLAGS))
-force:
+#documentation: force
+#	-(cd doc; $(MAKE) $(MFLAGS))
+#force:
 
 # The rule for 'includes' is written funny so that the if statement
 # always returns TRUE unless there really was an error installing the
@@ -111,14 +111,14 @@ install:
 
 clean:
 	rm -f $(OBJECTS) $(LIBRARY_NAME)
-	-(cd doc && $(MAKE) $(MFLAGS) $@ )
+#	-(cd doc && $(MAKE) $(MFLAGS) $@ )
 
 realclean distclean maintainer-clean: clean
-	-( cd doc && $(MAKE) $(MFLAGS) $@ )
+#	-( cd doc && $(MAKE) $(MFLAGS) $@ )
 	$(RM) -f Makefile
 
 mostlyclean: clean
-	-( cd doc && $(MAKE) $(MFLAGS) $@ )
+#	-( cd doc && $(MAKE) $(MFLAGS) $@ )
 
 ######################################################################
 #								     #

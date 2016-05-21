@@ -1,6 +1,6 @@
 #ifdef _CALC_WEEK
 /*
- * 根据日期计算星期
+ * 鏍规嵁鏃ユ湡璁＄畻鏄熸湡
 */
 #include <iostream>
 #include <string>

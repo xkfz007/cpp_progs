@@ -1,3 +1,31 @@
+
+/*
+struct timeval {
+time_t       tv_sec;    // seconds
+suseconds_t   tv_usec; // microseconds
+};
+*/
+int64_t x264_mdate( void )
+{
+#if SYS_WINDOWS//windows
+    struct timeb tb;
+    ftime( &tb );
+    return ((int64_t)tb.time * 1000 + (int64_t)tb.millitm) * 1000;
+#else //linux
+    struct timeval tv_date;
+    gettimeofday( &tv_date, NULL );
+    return (int64_t)tv_date.tv_sec * 1000000 + (int64_t)tv_date.tv_usec;
+#endif
+}
+
+/*get the current time
+i_start = x264_mdate();
+i_end = x264_mdate();
+duration=(i_end-i_start)*1.0/1000 //microseconds
+duration=(i_end-i_start)*1.0/1000000 //seconds
+*/
+
+
 /*
  * how to calculate the time interval
  */
@@ -17,7 +45,7 @@ int time_interval()
 {
     struct TIMEB ts1,ts2;
     time_t t_sec,ti;
-    ftime(&ts1);//¿ªÊ¼¼ÆÊ±
+    ftime(&ts1);//å¼€å§‹è®¡æ—¶
     //do some work
     {
         int i;
@@ -34,9 +62,9 @@ int time_interval()
         }
     }
 
-    ftime(&ts2);//Í£Ö¹¼ÆÊ±
-    t_sec=ts2.time-ts1.time;//¼ÆËãÃë¼ä¸ô
-    t_ms=ts2.millitm-ts1.millitm;//¼ÆËãºÁÃë¼ä¸ô
+    ftime(&ts2);//åœæ­¢è®¡æ—¶
+    t_sec=ts2.time-ts1.time;//è®¡ç®—ç§’é—´éš”
+    t_ms=ts2.millitm-ts1.millitm;//è®¡ç®—æ¯«ç§’é—´éš”
     ti=t_sec*1000+t_ms;
 
     return ti;
@@ -87,7 +115,7 @@ int main()
 
 #endif
 /*
- *    Description:  µ÷ÓÃlinuxÏµÍ³µ÷ÓÃ½øĞĞºÁÃë¼¶¼ÆÊ±
+ *    Description:  è°ƒç”¨linuxç³»ç»Ÿè°ƒç”¨è¿›è¡Œæ¯«ç§’çº§è®¡æ—¶
  */
 #ifdef _LINUX_TIMING
 #include <stdio.h>

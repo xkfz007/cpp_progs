@@ -39,7 +39,7 @@ int client() {
    len = sizeof(address);
    result = connect(sockfd, (struct sockaddr *) &address, len);	
    if (result == -1) {
-      perror("¡¨Ω” ß∞‹");
+      perror("Connection error");
       return 1;
    }
    
