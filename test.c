@@ -110,3 +110,47 @@ int main()
 }
 
 #endif
+#if 0
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+const char *tgt[]={
+    "bacon", "Bacon", "mIlk", "Milk", "spinach", "MILK", "milk", "eggs"
+};
+int tgt_size=8;
+
+static int cmp(const void *p1, const void *p2){
+    return strcmp(* (char * const *) p1, * (char * const *) p2);
+}
+
+int main(int argc, char *argv[]) {
+    printf("Before sort:\n\t");
+    for(int n=0; n<tgt_size; n++)
+        printf("%s ", tgt[n]);
+    printf("\n");
+
+    qsort(tgt, tgt_size, sizeof(char *), cmp);
+
+    printf("After sort:\n\t");
+    for(int n=0; n<tgt_size; n++)
+        printf("%s ", tgt[n]);
+    printf("\n");
+
+    return 0;
+}
+#endif
+
+#if 1
+#include <stdio.h>
+#include <time.h>
+int main(){
+	time_t t;
+	time(&t);
+	printf("Today's date and time: %s\n", ctime(&t));
+	printf("Today's date and time: %s\n", asctime(localtime(&t)));
+	return 0;
+
+}
+#endif

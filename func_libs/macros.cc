@@ -21,6 +21,8 @@
 //循环移位
 #define ROTL(val,n) (((val)<<n)|((val)>>(sizeof(val)*8-n)))
 #define ROTR(val,n) (((val)>>n)|((val)<<(sizeof(val)*8-n)))
+//#define ROTATE_LEFT(x, s, n) ((x) << (n)) | ((x) >> ((s) - (n)))
+//#define ROTATE_RIGHT(x, s, n) ((x) >> (n)) | ((x) << ((s) - (n)))
 //异或（XOR）逻辑运算
 #define XOR(a,b) (((a)||(b))&&!((a)&&(b)))
 
@@ -50,13 +52,6 @@ printf("assert:%s in file:%s, at line:%d\n",cond,filename,lineno);
 #define toupper(ch) ((ch)+'A'-'a')
 #define tolower(ch) ((ch)+'a'-'A')
 
-//三个数中求最大
-#define max(a,b,c) ((a)>(b)?((a)>(c)?(a):(c)):((b)>(c)?(b):(c)))
-#define MAX(a,b,c) ((a)>((b)>(c)?(b):(c))?(a):((b)>(c)?(b):(c)))
-//宏实现SWAP交换
-#define SWAP(x,y) ((x)==(y)?NULL:((x)^=(y),(y)^=(x),(x)^=(y)))
-#define SWAP_(x,y) (temp=x,x=y,y=temp)//在使用前定义一个和x，y同类型的tmp临时变量
-
 
 /*
  * this program is used to demenstrate the position of each MEMBER of the struct.
@@ -76,6 +71,13 @@ typedef struct
     int *pa;
     char *pc;
 }Sta;
+//内存对齐是编译器为了便于CPU快速访问而采用的一项技术，对于不同的编译器有不同的处理方法。
+//Win32平台下的微软VC编译器在默认情况下采用如下的对齐规则: 任何基本数据类型T的对齐模数就是T的大小，即sizeof(T)。
+//比如对于double类型(8字节)，就要求该类型数据的地址总是8的倍数，而char类型数据(1字节)则可以从任何一个地址开始。
+//Linux下的GCC奉行的是另外一套规则:任何2字节大小(包括单字节吗?)的数据类型(比如short)的对齐模数是2，而其它所有
+//超过2字节的数据类型(比如long,double)都以4为对齐模数。
+//主要是对于double类型，VC采用的是8对齐，而gcc采用的是4对齐
+
 int main()
 {
     printf("a_=%d\n",OFFSET(Sta,a));

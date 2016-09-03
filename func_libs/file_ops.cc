@@ -5,6 +5,60 @@
  *      Author: Felix
  */
 
+//c获取文件的大小的两种方法和行读取
+//1. fseek移动指针获取
+#if 0
+#include <stdio.h>
+#include <stdlib.h>
+long filesize( FILE *fp )
+{
+    long int save_pos;
+    long size_of_file;
+
+    save_pos = ftell( fp );
+    fseek( fp, 0L, SEEK_END );
+    size_of_file = ftell( fp );
+    fseek( fp, save_pos, SEEK_SET );
+
+    return( size_of_file );
+}
+
+int main( void )
+{
+    FILE *fp;
+    fp = fopen( "aa.txt", "r" );
+    if( fp != NULL ) {
+        printf( "File size=%ld\n", filesize( fp ) );
+        fclose( fp );
+
+        return EXIT_SUCCESS;
+    }
+     return EXIT_FAILURE;
+}
+#endif
+
+//2 stat获取
+#if 0
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+
+int main( void )
+{
+    struct stat buf;
+
+    if( stat( "file", &buf ) != -1 ) {
+      printf( "File size = %d\n", buf.st_size );
+    }
+    return EXIT_SUCCESS;
+  }
+#endif
+
+//但是是有区别的，如通过fseek()、ftell()两个函数，我们就可以随意访问文件的任何位置了，想了想好像操作文件就这么easy，实在也没有更多可说的了。
+//对 了，fseek()和ftell()存在一个潜在的问题就是他们限制文件的大小只能在long类型的表示范围以内，
+//也就是说通过这种方式，只能打开 2,000,000,000字节的文件，不过在绝大多数情况下似乎也已经够用了。如果需要打开更大的文件，你需要用到fgetpos()、 fsetpos()函数了.
+
+
 #if 0
 /*
 *this program demonstrate how to modify some position of a file

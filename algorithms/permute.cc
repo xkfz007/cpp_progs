@@ -100,3 +100,61 @@ int  main()
 
 }
 #endif
+#if 0
+/*
+ * 1. 排列算法
+ * 这个主要采用递归的方法来解决。
+ */
+void swap(int& a,int& b)
+{
+    if(a==b)
+        return ;
+    int t=a;
+    a=b;
+    b=t;
+}
+void perm(int arr[],int k,int m)
+{
+    if(k==m){
+        copy(arr,arr+m+1,ostream_iterator<int>(cout," "));
+        cout<<endl;
+    }
+    else{
+        for(int i=k;i<=m;++i)
+        {
+            swap(arr[i],arr[k]);
+            perm(arr,k+1,m);
+            swap(arr[i],arr[k]);
+        }
+    }
+}
+/*
+ * 2.组合算法
+ * 组合问题就是从n中选m个数，也是采用递归的方式
+ * a. 首先从n个数中选取编号最大的数，然后在剩下的n-1个数里面选取m-1个数，直到从n-(m-1)个数中选取1个数为止。
+ * b. 从n个数中选取编号次小的一个数，继续执行1步，直到当前可选编号最大的数为m。
+ * 下面是递归方法的实现：
+/// 求从数组a[1..n]中任选m个元素的所有组合。
+ /// a[1..n]表示候选集，n为候选集大小，n>=m>0。
+ /// b[1..M]用来存储当前组合中的元素(这里存储的是元素下标)，
+ /// 常量M表示满足条件的一个组合中元素的个数，M=m，这两个参数仅用来输出结果。
+ */
+
+void combine( int a[], int n, int m,  int b[], const int M )
+{
+  for(int i=n; i>=m; i--)   // 注意这里的循环范围
+  {
+    b[m-1] = i - 1;
+     if (m > 1)
+       combine(a,i-1,m-1,b,M);
+     else                     // m == 1, 输出一个组合
+     {
+       for(int j=M-1; j>=0; j--)
+       cout << a[b[j]] << " ";
+       cout << endl;
+     }
+   }
+ }
+
+
+#endif

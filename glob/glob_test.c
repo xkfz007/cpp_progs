@@ -22,7 +22,7 @@ int main(int argc,char* argv[]){
 
     for (i = 1; i < argc; ++i)
     {
-        char **value = glob_filename (argv[i], 0);
+        char **value = glob_filename (argv[i], 1);
         if (value == NULL)
             puts ("Out of memory.");
         else if (value == &glob_error_return)
