@@ -341,10 +341,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\getextension.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\getline.cc"
 				>
 			</File>
@@ -353,19 +349,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\getwords.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\ip2num.c"
-				>
-			</File>
-			<File
-				RelativePath=".\macros.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\memory_ops.cc"
+				RelativePath=".\getword.cc"
 				>
 			</File>
 			<File
@@ -391,6 +375,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fx_dirwalk.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_fileops.h"
 				>
 			</File>
@@ -399,11 +387,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fx_getline.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_getopt.h"
 				>
 			</File>
 			<File
+				RelativePath=".\fx_getword.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_inetaton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_macros.h"
 				>
 			</File>
 			<File
