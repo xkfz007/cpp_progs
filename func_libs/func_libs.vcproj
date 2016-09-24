@@ -3,8 +3,8 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="func_libs"
-    ProjectGUID="{666FA101-37E2-418B-9E8F-C7050AC700D3}"
-    RootNamespace="func_libs"
+	ProjectGUID="{B95101A8-0498-4BC5-B514-8DE9333B463F}"
+	RootNamespace="func_libs"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -91,6 +91,78 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
@@ -141,78 +213,6 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -321,135 +321,63 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\BaziEval.cpp"
+				RelativePath=".\bin_search.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\card_shuffle_deal.c"
+				RelativePath=".\cpu_detect.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\count_keywords.c"
+				RelativePath=".\date_time.c"
 				>
 			</File>
 			<File
-				RelativePath=".\cross_referencer.c"
+				RelativePath=".\dirwalk.c"
 				>
 			</File>
 			<File
-				RelativePath=".\cross_referencer2.cpp"
+				RelativePath=".\file_ops.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\dcl.c"
+				RelativePath=".\general_log.c"
 				>
 			</File>
 			<File
-				RelativePath=".\dd.cpp"
+				RelativePath=".\getextension.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\degree.c"
+				RelativePath=".\getline.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\dump.c"
+				RelativePath=".\getwords.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\emulate_tac.c"
+				RelativePath=".\ip2num.c"
 				>
 			</File>
 			<File
-				RelativePath=".\file_destroyer.c"
+				RelativePath=".\macros.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\file_record.c"
+				RelativePath=".\math_ops.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\fold_lines.cc"
+				RelativePath=".\memory_ops.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\handle_signal.c"
+				RelativePath=".\string_c_ops.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\hex_dec.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\hist_print.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\macro_preprocessor.c"
-				>
-			</File>
-			<File
-				RelativePath=".\prime.c"
-				>
-			</File>
-			<File
-				RelativePath=".\print_variables.c"
-				>
-			</File>
-			<File
-				RelativePath=".\psnr.c"
-				>
-			</File>
-			<File
-				RelativePath=".\qpscale.c"
-				>
-			</File>
-			<File
-				RelativePath=".\rat.c"
-				>
-			</File>
-			<File
-				RelativePath=".\rearrange.c"
-				>
-			</File>
-			<File
-				RelativePath=".\remove_comments.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\remove_comments2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\simple_calculator.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\simple_calculator2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\simple_grep.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\simple_tail.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\sort_input_lines.c"
-				>
-			</File>
-			<File
-				RelativePath=".\syntax_checker.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\text_query.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\viewer.c"
+				RelativePath=".\string_cpp_ops.cpp"
 				>
 			</File>
 		</Filter>
@@ -458,6 +386,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\general_log.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
