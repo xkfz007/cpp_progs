@@ -11,7 +11,7 @@ static double qscale2qp(double qscale)
 {
         return 12.0 + 6.0 * log(qscale/0.85) / log(2.0) ;
 }
-static void help(){
+static void usage(){
     printf("usage:qpscale.exe number\n\
              int: qp=>qscale\n\
              float: qscale=>qp");
@@ -25,7 +25,7 @@ int main(int argc,char* argv[])
 
     if(argc<2){
         //fprintf(stderr,"Not enough parameters!\n");
-        help();
+        usage();
         exit(-1);
     }
     for(i=1;i<argc;i++){

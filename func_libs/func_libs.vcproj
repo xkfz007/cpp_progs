@@ -353,6 +353,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\getopt.c"
+				>
+			</File>
+			<File
 				RelativePath=".\getwords.cc"
 				>
 			</File>
@@ -388,6 +392,10 @@
 			>
 			<File
 				RelativePath=".\general_log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\getopt.h"
 				>
 			</File>
 		</Filter>

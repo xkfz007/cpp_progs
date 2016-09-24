@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="practise"
-	ProjectGUID="{142DEC31-B33E-4C33-8738-1205E357BC57}"
-	RootNamespace="practise"
+	Name="small_progs"
+	ProjectGUID="{666FA101-37E2-418B-9E8F-C7050AC700D3}"
+	RootNamespace="small_progs"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -67,6 +67,79 @@
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../func_libs"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkIncremental="2"
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -165,78 +238,6 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
 			Name="Release|x64"
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -264,6 +265,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="../func_libs"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -321,7 +323,135 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\test.c"
+				RelativePath=".\BaziEval.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\card_shuffle_deal.c"
+				>
+			</File>
+			<File
+				RelativePath=".\count_keywords.c"
+				>
+			</File>
+			<File
+				RelativePath=".\cross_referencer.c"
+				>
+			</File>
+			<File
+				RelativePath=".\cross_referencer2.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\dcl.c"
+				>
+			</File>
+			<File
+				RelativePath=".\dd.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\degree.c"
+				>
+			</File>
+			<File
+				RelativePath=".\dump.c"
+				>
+			</File>
+			<File
+				RelativePath=".\emulate_tac.c"
+				>
+			</File>
+			<File
+				RelativePath=".\file_destroyer.c"
+				>
+			</File>
+			<File
+				RelativePath=".\file_record.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fold_lines.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\handle_signal.c"
+				>
+			</File>
+			<File
+				RelativePath=".\hex_dec.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\hist_print.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\macro_preprocessor.c"
+				>
+			</File>
+			<File
+				RelativePath=".\prime.c"
+				>
+			</File>
+			<File
+				RelativePath=".\print_variables.c"
+				>
+			</File>
+			<File
+				RelativePath=".\psnr.c"
+				>
+			</File>
+			<File
+				RelativePath=".\qpscale.c"
+				>
+			</File>
+			<File
+				RelativePath=".\rat.c"
+				>
+			</File>
+			<File
+				RelativePath=".\rearrange.c"
+				>
+			</File>
+			<File
+				RelativePath=".\remove_comments.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\remove_comments2.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\simple_calculator.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\simple_calculator2.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\simple_grep.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\simple_tail.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\sort_input_lines.c"
+				>
+			</File>
+			<File
+				RelativePath=".\syntax_checker.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\text_query.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\viewer.c"
 				>
 			</File>
 		</Filter>
