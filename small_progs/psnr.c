@@ -6,19 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "stdint.h"
-#include "file_ops.h"
+#include "fx_types.h"
+#include "fx_fileops.h"
 typedef unsigned char byte;
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#define MIN3(a, b, c) MIN((a), MIN((b), (c)))
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#define MAX3(a, b, c) MAX((a), MAX((b), (c)))
 
 static int show_frame_number=0;
 static int calc_average=0;
 static int depth=8;
 
-#include "general_log.c"
+#include "fx_log.c"
 
 static double calc_psnr(byte* orig,byte* rec,int N){
     int i;

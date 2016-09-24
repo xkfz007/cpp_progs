@@ -375,10 +375,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\getopt_test.c"
-				>
-			</File>
-			<File
 				RelativePath=".\handle_signal.c"
 				>
 			</File>
