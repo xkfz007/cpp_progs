@@ -1,5 +1,3 @@
-#define _GETOPT
-#ifdef _GETOPT
 #include <stdio.h>
 
 /* This version of `getopt' appears to the caller like standard Unix `getopt'
@@ -214,7 +212,6 @@ static const char * _getopt_initialize (int argc, char *const *argv, const char 
 
     return optstring;
 }
-
 /* Scan elements of ARGV (whose length is ARGC) for option characters
    given in OPTSTRING.
    
@@ -725,7 +722,7 @@ static int _getopt_internal (int argc, char *const *argv, const char *optstring,
     }
 }
 
-int getopt (int argc, char *const *argv, const char *optstring)
+static int getopt (int argc, char *const *argv, const char *optstring)
 {
     return _getopt_internal (argc, argv, optstring,
         (const struct option *) 0,
@@ -733,20 +730,97 @@ int getopt (int argc, char *const *argv, const char *optstring)
         0);
 }
 
-int getopt_long (int argc, char *const *argv, const char *optstring,
+static int getopt_long (int argc, char *const *argv, const char *optstring,
     const struct option *long_options, int *opt_index)
 {
     return _getopt_internal (argc, argv, optstring, long_options, opt_index, 0);
 }
 
-//#endif	/* Not ELIDE_CODE.  */
-
-//#ifdef TEST
+/*
+ * this program is the usage example of function "getopt_long"
+ */
+#ifdef _GETOPT_TEST
+#include <stdio.h>     /* for printf */
+#include <stdlib.h>    /* for exit */
+#include "getopt.c"
+int main(int argc, char **argv)
+{
+    int c;
+    int digit_optind = 0;
+
+    while (1) {
+        int this_option_optind = optind ? optind : 1;
+        int option_index = 0;
+        static struct option long_options[] = {
+            {"add", 1, 0, 0},
+            {"append", 0, 0, 0},
+            {"delete", 1, 0, 0},
+            {"verbose", 0, 0, 0},
+            {"create", 1, 0, 'c'},
+            {"file", 1, 0, 0},
+            {0, 0, 0, 0}
+        };
+
+        c = getopt_long(argc, argv, "abc:d:012",
+                long_options, &option_index);
+        if (c == -1)
+            break;
+
+        switch (c) {
+            case 0:
+                printf("option %s", long_options[option_index].name);
+                if (optarg)
+                    printf(" with arg %s", optarg);
+                printf("\n");
+                break;
+
+            case '0':
+            case '1':
+            case '2':
+                if (digit_optind != 0 && digit_optind != this_option_optind)
+                    printf("digits occur in two different argv-elements.\n");
+                digit_optind = this_option_optind;
+                printf("option %c\n", c);
+                break;
+
+            case 'a':
+                printf("option a\n");
+                break;
+
+            case 'b':
+                printf("option b\n");
+                break;
+
+            case 'c':
+                printf("option c with value '%s'\n", optarg);
+                break;
+
+            case 'd':
+                printf("option d with value '%s'\n", optarg);
+                break;
+
+            case '?':
+                break;
+
+            default:
+                printf("?? getopt returned character code 0%o ??\n", c);
+        }
+    }
+
+    if (optind < argc) {
+        printf("non-option ARGV-elements: ");
+        while (optind < argc)
+            printf("%s ", argv[optind++]);
+        printf("\n");
+    }
+
+    exit(EXIT_SUCCESS);
+}
 
 /* Compile with -DTEST to make an executable for use in testing
 the above definition of `getopt'.  */
 
-int main (int argc, char **argv)
+int main2 (int argc, char **argv)
 {
     int c;
     int digit_optind = 0;
@@ -812,4 +886,5 @@ int main (int argc, char **argv)
     exit (0);
 }
 
-#endif /* TEST */
+
+#endif

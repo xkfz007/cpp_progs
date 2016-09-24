@@ -6,27 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-//#include <stdint.h>
-typedef signed char int8_t;
-typedef short int int16_t;
-typedef int int32_t;
-typedef unsigned char uint8_t;
-typedef unsigned short int uint16_t;
-typedef unsigned int uint32_t;
-#if defined(__GNUC__)
-#if defined(__MINGW32__)
-#define fseeko fseeko64
-#define ftello ftello64
-#endif
-typedef long long int64_t;
-typedef unsigned long long uint64_t;
-
-#elif defined(_MSC_VER)
-#define fseeko _fseeki64
-#define ftello _ftelli64
-typedef __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-#endif 
+#include "stdint.h"
+#include "file_ops.h"
 typedef unsigned char byte;
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MIN3(a, b, c) MIN((a), MIN((b), (c)))
