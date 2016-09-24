@@ -1,10 +1,110 @@
 /*
- * file_ops.cc
+ * fx_fileops.c
  *
- *  Created on: 2016-5月-21 下午6:05:55
- *      Author: Felix
+ *  Created on: 2016-05-21 6:05:55 pm
+ *  Author: Felix
  */
+#include <string.h>
+#include "fx_fileops.h"
 
+/*
+ * get file name extension
+ */
+static inline char *fx_get_filename_extension( char *filename )
+{
+    char *ext = filename + strlen( filename );
+    while( *ext != '.' && ext > filename )
+        ext--;
+    ext += *ext == '.';
+    return ext;
+}
+
+
+#ifdef _WIN32
+/* Functions for dealing with Unicode on Windows. */
+FILE *fx_fopen( const char *filename, const char *mode )
+{
+    wchar_t filename_utf16[MAX_PATH];
+    wchar_t mode_utf16[16];
+    if( utf8_to_utf16( filename, filename_utf16 ) && utf8_to_utf16( mode, mode_utf16 ) )
+        return _wfopen( filename_utf16, mode_utf16 );
+    return NULL;
+}
+
+int fx_rename( const char *oldname, const char *newname )
+{
+    wchar_t oldname_utf16[MAX_PATH];
+    wchar_t newname_utf16[MAX_PATH];
+    if( utf8_to_utf16( oldname, oldname_utf16 ) && utf8_to_utf16( newname, newname_utf16 ) )
+    {
+        /* POSIX says that rename() removes the destination, but Win32 doesn't. */
+        _wunlink( newname_utf16 );
+        return _wrename( oldname_utf16, newname_utf16 );
+    }
+    return -1;
+}
+
+int fx_stat( const char *path, fx_struct_stat *buf )
+{
+    wchar_t path_utf16[MAX_PATH];
+    if( utf8_to_utf16( path, path_utf16 ) )
+        return _wstati64( path_utf16, buf );
+    return -1;
+}
+
+int fx_vfprintf( FILE *stream, const char *format, va_list arg )
+{
+    HANDLE console = NULL;
+    DWORD mode;
+
+    if( stream == stdout )
+        console = GetStdHandle( STD_OUTPUT_HANDLE );
+    else if( stream == stderr )
+        console = GetStdHandle( STD_ERROR_HANDLE );
+
+    /* Only attempt to convert to UTF-16 when writing to a non-redirected console screen buffer. */
+    if( GetConsoleMode( console, &mode ) )
+    {
+        char buf[4096];
+        wchar_t buf_utf16[4096];
+
+        int length = vsnprintf( buf, sizeof(buf), format, arg );
+        if( length > 0 && length < sizeof(buf) )
+        {
+            /* WriteConsoleW is the most reliable way to output Unicode to a console. */
+            int length_utf16 = MultiByteToWideChar( CP_UTF8, 0, buf, length, buf_utf16, sizeof(buf_utf16)/sizeof(wchar_t) );
+            DWORD written;
+            WriteConsoleW( console, buf_utf16, length_utf16, &written, NULL );
+            return length;
+        }
+    }
+    return vfprintf( stream, format, arg );
+}
+
+int fx_is_pipe( const char *path )
+{
+    wchar_t path_utf16[MAX_PATH];
+    if( utf8_to_utf16( path, path_utf16 ) )
+        return WaitNamedPipeW( path_utf16, 0 );
+    return 0;
+}
+#endif
+
+static inline int fx_is_regular_file( FILE *filehandle )
+{
+    fx_struct_stat file_stat;
+    if( fx_fstat( fileno( filehandle ), &file_stat ) )
+        return 1;
+    return S_ISREG( file_stat.st_mode );
+}
+
+static inline int fx_is_regular_file_path( const char *filename )
+{
+    fx_struct_stat file_stat;
+    if( fx_stat( filename, &file_stat ) )
+        return !fx_is_pipe( filename );
+    return S_ISREG( file_stat.st_mode );
+}
 //c获取文件的大小的两种方法和行读取
 //1. fseek移动指针获取
 #if 0

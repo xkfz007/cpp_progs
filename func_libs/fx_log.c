@@ -1,7 +1,7 @@
-#include "general_log.h"
+#include "fx_log.h"
 #include <errno.h>
 #include <stdarg.h>
-static void general_log(const char* caller, int level, const char* fmt, ...)
+static void fx_log(const char* caller, int level, const char* fmt, ...)
 {
 #define  bufferSize 4096
     char buffer[bufferSize];
@@ -17,9 +17,9 @@ static void general_log(const char* caller, int level, const char* fmt, ...)
 	};
     if (caller)
         p += sprintf(buffer, "[%-4s]", caller);
-	if(level>GENL_LOG_FULL)
-		level=GENL_LOG_NONE;
-	if(level==GENL_LOG_ERROR)
+	if(level>FX_LOG_FULL)
+		level=FX_LOG_NONE;
+	if(level==FX_LOG_ERROR)
 		p += sprintf(buffer, "[%s]:[Errno=%d Err=%s]: ", log_level[level],errno,strerror(errno));
 	else
 		p += sprintf(buffer, "[%s]: ", log_level[level]);

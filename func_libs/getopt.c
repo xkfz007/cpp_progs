@@ -14,7 +14,16 @@
    GNU application programs can use a third alternative mode in which
    they can distinguish the relative order of options and other arguments.  */
 
-#include "getopt.h"
+//#include "getopt.h"
+struct option
+{
+  const char *name;
+  /* has_arg can't be an enum because some compilers complain about
+     type mismatches in all the code that assumes it is an int.  */
+  int has_arg;
+  int *flag;
+  int val;
+};
 
 /* For communication from `getopt' to the caller.
    When `getopt' finds an option that takes an argument,
@@ -22,7 +31,7 @@
    Also, when `ordering' is RETURN_IN_ORDER,
    each non-option ARGV-element is returned here.  */
 
-char *optarg;
+static char *optarg;
 
 /* Index in ARGV of the next element to be scanned.
    This is used for communication to and from the caller
@@ -37,13 +46,13 @@ char *optarg;
    how much of ARGV has been scanned so far.  */
 
 /* 1003.2 says this must be 1 before any call.  */
-int optind = 1;
+static int optind = 1;
 
 /* Formerly, initialization of getopt depended on optind==0, which
    causes problems with re-calling getopt as programs generally don't
    know that. */
 
-int __getopt_initialized;
+static int __getopt_initialized;
 
 /* The next char to be scanned in the option-element
    in which the last option character we returned was found.
@@ -57,13 +66,13 @@ static char *nextchar;
 /* Callers store zero here to inhibit the error message
    for unrecognized options.  */
 
-int opterr = 1;
+static int opterr = 1;
 
 /* Set to an option character which was unrecognized.
    This must be initialized on some systems to avoid linking in the
    system's own getopt implementation.  */
 
-int optopt = '?';
+static int optopt = '?';
 
 /* Describe how to deal with options that follow non-option ARGV-elements.
    
@@ -268,7 +277,7 @@ static const char * _getopt_initialize (int argc, char *const *argv, const char 
    If LONG_ONLY is nonzero, '-' as well as '--' can introduce
    long-named options.  */
 
-static int _getopt_internal (int argc, char *const *argv, const char *optstring,
+static int fx_getopt_internal (int argc, char *const *argv, const char *optstring,
     const struct option *longopts, int *longind, int long_only)
 {
     int print_errors = opterr;
@@ -722,18 +731,18 @@ static int _getopt_internal (int argc, char *const *argv, const char *optstring,
     }
 }
 
-static int getopt (int argc, char *const *argv, const char *optstring)
+static int fx_getopt (int argc, char *const *argv, const char *optstring)
 {
-    return _getopt_internal (argc, argv, optstring,
+    return fx_getopt_internal (argc, argv, optstring,
         (const struct option *) 0,
         (int *) 0,
         0);
 }
 
-static int getopt_long (int argc, char *const *argv, const char *optstring,
+static int fx_getopt_long (int argc, char *const *argv, const char *optstring,
     const struct option *long_options, int *opt_index)
 {
-    return _getopt_internal (argc, argv, optstring, long_options, opt_index, 0);
+    return fx_getopt_internal (argc, argv, optstring, long_options, opt_index, 0);
 }
 
 /*
@@ -761,7 +770,7 @@ int main(int argc, char **argv)
             {0, 0, 0, 0}
         };
 
-        c = getopt_long(argc, argv, "abc:d:012",
+        c = fx_getopt_long(argc, argv, "abc:d:012",
                 long_options, &option_index);
         if (c == -1)
             break;
@@ -829,7 +838,7 @@ int main2 (int argc, char **argv)
     {
         int this_option_optind = optind ? optind : 1;
 
-        c = getopt (argc, argv, "abc:d0123456789");
+        c = fx_getopt (argc, argv, "abc:d0123456789");
         if (c == -1)
             break;
 

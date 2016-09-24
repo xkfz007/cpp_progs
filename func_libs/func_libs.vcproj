@@ -337,11 +337,27 @@
 				>
 			</File>
 			<File
-				RelativePath=".\file_ops.cc"
+				RelativePath=".\fx_fileops.c"
 				>
 			</File>
 			<File
-				RelativePath=".\general_log.c"
+				RelativePath=".\fx_log.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_mathops.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_memops.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_thread.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_threadpool.c"
 				>
 			</File>
 			<File
@@ -369,10 +385,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\math_ops.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\memory_ops.cc"
 				>
 			</File>
@@ -391,11 +403,43 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\general_log.h"
+				RelativePath=".\fx_fileops.h"
 				>
 			</File>
 			<File
-				RelativePath=".\getopt.h"
+				RelativePath=".\fx_funcproperties.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_mathops.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_memops.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_string.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_thread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_threadpool.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_time.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_types.h"
 				>
 			</File>
 		</Filter>

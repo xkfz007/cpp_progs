@@ -5,7 +5,7 @@ time_t       tv_sec;    // seconds
 suseconds_t   tv_usec; // microseconds
 };
 */
-int64_t x264_mdate( void )
+int64_t fx_mdate( void )
 {
 #if SYS_WINDOWS//windows
     struct timeb tb;
@@ -19,8 +19,8 @@ int64_t x264_mdate( void )
 }
 
 /*get the current time
-i_start = x264_mdate();
-i_end = x264_mdate();
+i_start = fx_mdate();
+i_end = fx_mdate();
 duration=(i_end-i_start)*1.0/1000 //microseconds
 duration=(i_end-i_start)*1.0/1000000 //seconds
 */

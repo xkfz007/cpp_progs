@@ -1,9 +1,12 @@
 
-#include <stdlib.h>
-#include <string.h>
+#include "fx_types.h"
+#include "fx_log.h"
+/****************************************************************************
+ * fx_malloc:
+ ****************************************************************************/
 void *fx_malloc( int i_size )
 {
-    uint8_t *align_buf = NULL;
+    FX_U8 *align_buf = NULL;
 #if HAVE_MALLOC_H
 #if HAVE_THP
 #define HUGE_PAGE_SIZE 2*1024*1024
@@ -25,7 +28,7 @@ void *fx_malloc( int i_size )
 #endif
         align_buf = memalign( NATIVE_ALIGN, i_size );
 #else
-    uint8_t *buf = malloc( i_size + (NATIVE_ALIGN-1) + sizeof(void **) );
+    FX_U8 *buf = malloc( i_size + (NATIVE_ALIGN-1) + sizeof(void **) );
     if( buf )
     {
         align_buf = buf + (NATIVE_ALIGN-1) + sizeof(void **);
@@ -34,9 +37,13 @@ void *fx_malloc( int i_size )
     }
 #endif
     if( !align_buf )
-        fx_log( NULL, fx_LOG_ERROR, "malloc of size %d failed\n", i_size );
+        fx_log( NULL, FX_LOG_ERROR, "malloc of size %d failed\n", i_size );
     return align_buf;
 }
+
+/****************************************************************************
+ * fx_free:
+ ****************************************************************************/
 void fx_free( void *p )
 {
     if( p )
@@ -48,35 +55,3 @@ void fx_free( void *p )
 #endif
     }
 }
-
-
-/*
- *    Description: 检查当前系统类型是大端还是小端(intel)
- */
-#if 0
-#include <stdio.h>
-int checkSystem()
-{
-    union check
-    {
-        int i;
-        char ch;
-    }c;
-    c.i=1;
-    return (c.ch==1);
-}
-int checkSystem2()
-{
-    int i=1;
-    return ((i>>24&&15)==0);
-}
-int main(int argc,char*argv[])
-{
-    if(checkSystem2())
-        printf("littleEndian\n");
-    else
-        printf("bigEndian\n");
-    return 0;
-}
-
-#endif
