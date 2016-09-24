@@ -1,4 +1,3 @@
-
 #ifndef _FX_MEMOPS_H
 #define _FX_MEMOPS_H
 
@@ -24,5 +23,61 @@
 #define ALIGNED_N ALIGNED_16
 #define ALIGNED_ARRAY_N ALIGNED_ARRAY_16
 #endif
+
+
+#include "fx_types.h"
+#include "fx_log.h"
+/****************************************************************************
+ * fx_malloc:
+ ****************************************************************************/
+static void *fx_malloc( int i_size )
+{
+    FX_U8 *align_buf = NULL;
+    FX_U8 *buf = malloc( i_size + (NATIVE_ALIGN-1) + sizeof(void **) );
+    if( buf )
+    {
+        align_buf = buf + (NATIVE_ALIGN-1) + sizeof(void **);
+        align_buf -= (intptr_t) align_buf & (NATIVE_ALIGN-1);
+        *( (void **) ( align_buf - sizeof(void **) ) ) = buf;
+    }
+    if( !align_buf )
+        fx_log( __FUNCTION__, FX_LOG_ERROR, "malloc of size %d failed\n", i_size );
+    return align_buf;
+}
+
+static void *fx_realloc(void *ptr, size_t size)
+{
+    return realloc(ptr, size + !size);
+}
+
+/****************************************************************************
+ * fx_free:
+ ****************************************************************************/
+static void fx_free( void *p )
+{
+    if( p )
+    {
+#if HAVE_MALLOC_H
+        free( p );
+#else
+        free( *( ( ( void **) p ) - 1 ) );
+#endif
+    }
+}
+
+
+
+#define FX_CHECKED_MALLOC( var, size )\
+do {\
+    var = fx_malloc( size );\
+    if( !var )\
+        goto fail;\
+} while( 0 )
+
+#define FX_CHECKED_MALLOCZERO( var, size )\
+do {\
+    FX_CHECKED_MALLOC( var, size );\
+    memset( var, 0, size );\
+} while( 0 )
 
 #endif

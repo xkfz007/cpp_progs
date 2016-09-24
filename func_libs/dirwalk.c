@@ -1,70 +1,9 @@
 /*
  * this is a great program to traverse the directory.
  */
-#ifdef _SHOWDIR
-#include <stdio.h>
-#include <dirent.h>
-#include <string.h>
-#include <unistd.h>
+#include "fx_log.h"
+#include "fx_dirwalk.h"
 
-void show_directory(char* path)
-{
-    DIR *dir;
-    struct dirent*entry;
-    static int count=0;
-    int i=0;
-    int j=0;
-    if(NULL==(dir=opendir(path)))
-    printf("error opening dir\n");
-    else
-    {
-        chdir(path);
-//        system("pwd");
-//
-        count+=1;
-        while(entry=readdir(dir))
-        {
-//            if(strcmp(entry->d_name,".")==0||
-//                    strcmp(entry->d_name,"..")==0)
-            if((entry->d_name)[0]=='.')
-                continue;
-            i=0;
-            j=0;
-            switch(entry->d_type){
-                case DT_DIR:
-                    while(i++<count)
-                        printf("+");
-                    printf("\e[32;44m%s\e[0m\n",entry->d_name );
-                    show_directory(entry->d_name);
-                    break;
-                case DT_REG:
-                    while(j++<count+4)
-                        printf("-");
-                    printf("\e[30;41m%s\e[0m\n",entry->d_name );
-                    break;
-                default:
-                    printf("%s\n",entry->d_name );
-                    break;
-            }
-        }
-        count-=1;
-        chdir("..");
-        closedir(dir);
-    }
-
-
-}
-int main(int argc,char**argv)
-{
-    if(argc<2)
-    {
-        printf("Not enough arguments!\n");
-        return -1;
-    }
-    show_directory(argv[1]);
-    return 0;
-}
-#endif
 #ifdef _DIRWALK
 #include <unistd.h>
 #include <stdio.h>
@@ -123,6 +62,24 @@ int main(int argc, char* argv[])
 
 
 #endif
+
+
+/*  Now we move onto the main function.  */
+
+int main(int argc, char* argv[])
+{
+    char *topdir, pwd[2]=".";
+    if (argc != 2)
+        topdir=pwd;
+    else
+        topdir=argv[1];
+
+    printf("Directory scan of %s:\n",topdir);
+    printdir(topdir,0);
+    printf("------done-------\n");
+
+    return (0);
+}
 #if 0
 #include <windows.h>
 #include <string.h>

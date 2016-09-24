@@ -337,27 +337,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fx_fileops.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fx_log.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fx_mathops.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fx_memops.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fx_thread.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fx_threadpool.c"
+				RelativePath=".\fileops.c"
 				>
 			</File>
 			<File
@@ -403,11 +383,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\fx_binsearch.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_cpu.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_fileops.h"
 				>
 			</File>
 			<File
 				RelativePath=".\fx_funcproperties.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_getopt.h"
 				>
 			</File>
 			<File

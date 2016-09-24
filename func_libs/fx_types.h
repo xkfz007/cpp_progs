@@ -17,12 +17,12 @@
 //typedef signed char int8_t;
 //typedef short int int16_t;
 //typedef int int32_t;
-//typedef __int64 int64_t;
+//typedef __int64 FX_S64;
 //
 //typedef unsigned char uint8_t;
 //typedef unsigned short int uint16_t;
 //typedef unsigned int uint32_t;
-//typedef unsigned __int64 uint64_t;
+//typedef unsigned __int64 uFX_S64;
 
 #ifndef _FX_TYPES_H
 #define _FX_TYPES_H

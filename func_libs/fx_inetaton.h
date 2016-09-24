@@ -1,15 +1,12 @@
-#ifdef _IP2NUM
-// ip地址结构体
+#ifndef _FX_INETATON_H
+#define _FX_INETATON_H
 struct in_addr  
 {  
     unsigned int s_addr; // network byte order( big-endian)  
 };  
-// inet_aton将 点分十进制串cp 转换为一个网络字节顺序的32位整数 IP地址
-// 例如将串cp "192.168.33.123 "
-// 转为 1100 0000   1010 1000    0010 0001     0111 1011
-// 成功返回1，出错返回0
-// 转换成功，结果保存在结构体指针ap中
-int inet_aton(const char *cp, struct in_addr *ap)  
+// convert ip to number
+// "192.168.33.123"=> 1100 0000 1010 1000 0010 0001 0111 1011
+int fx_inet_aton(const char *cp, struct in_addr *ap)  
 {  
     int dots = 0;  
     register u_long acc = 0, addr = 0;  
@@ -40,7 +37,7 @@ int inet_aton(const char *cp, struct in_addr *ap)
             {  
                 return 0;  
             }  
-            addr = addr << 8 | acc; // 这句是精华,每次将当前值左移八位加上后面的值
+            addr = addr << 8 | acc; 
             acc = 0;  
             break;  
         default:  
@@ -66,9 +63,9 @@ int inet_aton(const char *cp, struct in_addr *ap)
  * This replaces inet_addr, the return value from which
  * cannot distinguish between failure and a local broadcast address.
  */
-int inet_aton_bsd(const char *cp, struct in_addr *addr)
+int fx_inet_aton_bsd(const char *cp, struct in_addr *addr)
 {
-    register u_int32_t val;
+    register unsigned int val;
     register int base, n;
     register char c;
     unsigned int parts[4];
