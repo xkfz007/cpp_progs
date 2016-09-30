@@ -1,63 +1,60 @@
 /*
  * calculate psnr between original yuv and reconstructed yuv
  */
-#define _PSNR
+
 #ifdef _PSNR
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "fx_types.h"
 #include "fx_fileops.h"
-typedef unsigned char byte;
+#include "fx_mathops.h"
+#include "fx_image.h"
 
 static int show_frame_number=0;
 static int calc_average=0;
 static int depth=8;
 
-#include "fx_log.c"
+#include "fx_log.h"
 
-static double calc_psnr(byte* orig,byte* rec,int N){
-    int i;
-    int err_sum=0;
-    int e;
-    double mse;
-	int Max=(1<<depth)-1;
-    for(i=0;i<N;i++){
-        e=*(orig+i)-*(rec+i);
-        err_sum+=e*e;
-    }
-    mse=(err_sum*1.0/N);
+static double calc_psnr(byte* orig,byte* rec,int w,int h){
+	int stride1=w;
+	int stride2=w;
+	double mse,Max;
+	mse=get_mse(orig,stride1,rec,stride2,w,h);
+	Max=(1<<depth)-1;
 	if(mse)
-		return 10*log10(Max*Max/mse);
+		return get_psnr(mse,Max);
 	else
 		return 0;
 }
-static void calc_all(FILE* p_orig,FILE* p_rec,int from,int to,int width,int height){
+
+static void calc_all_psnr(FILE* p_orig,FILE* p_rec,int from,int to,int width,int height){
     double psnr[3],psnr_sum[3];
     int pic_num;
     int frame_sz;
     int luma_sz,chroma_sz;
     byte *orig_frm,*rec_frm;
-	int ret;
+	int ret,ret2;
     //frame_sz=height*width+height/2*width/2*2;
     luma_sz=height*width;
     chroma_sz=height/2*width/2;
 	frame_sz=luma_sz+2*chroma_sz;
     if(NULL==(orig_frm=(byte*)calloc(frame_sz,sizeof(byte)))
             ||NULL==(rec_frm=(byte*)calloc(frame_sz,sizeof(byte)))) {
-        general_log(NULL,GENL_LOG_ERROR,"Merrory allocation error!\n");
+        fx_log(NULL,FX_LOG_ERROR,"Merrory allocation error!\n");
         exit(-2);
     }
     pic_num=from;
     psnr_sum[0]=psnr_sum[1]=psnr_sum[2]=0.0;
-    if((ret=fseeko(p_orig,(uint64_t)from*frame_sz, SEEK_SET))) {
+    if((ret=fseeko(p_orig,(FX_U64)from*frame_sz, SEEK_SET))) {
     //if((ret1=fseek(p_orig,from*frame_sz, SEEK_SET))) {
-		general_log(NULL,GENL_LOG_ERROR,"Seek origin file error\n");
+		fx_log(NULL,FX_LOG_ERROR,"Seek origin file error\n");
 		exit(-2);
 	}
-    if((ret=fseeko(p_rec,(uint64_t)from*frame_sz, SEEK_SET))) {
+    if((ret=fseeko(p_rec,(FX_U64)from*frame_sz, SEEK_SET))) {
     //if((ret1=fseek(p_rec,from*frame_sz, SEEK_SET))) {
-		general_log(NULL,GENL_LOG_ERROR,"Seek rec file error\n");
+		fx_log(NULL,FX_LOG_ERROR,"Seek rec file error\n");
 		exit(-2);
 	}
 	//ret1=fread(orig_frm,sizeof(byte),frame_sz,p_orig);
@@ -67,21 +64,24 @@ static void calc_all(FILE* p_orig,FILE* p_rec,int from,int to,int width,int heig
 	//fprintf(stderr,"error %d",errno);
 
 	
-	while(pic_num<=to)
+	while(pic_num<=to
+		&&(ret=fread(orig_frm,sizeof(byte),frame_sz,p_orig))>0
+		&&(ret2=fread(rec_frm,sizeof(byte),frame_sz,p_rec))>0
+		)
 	{
-		if(frame_sz!=(ret=fread(orig_frm,sizeof(byte),frame_sz,p_orig)))
+		if(frame_sz!=ret)
 		{
-			general_log(NULL,GENL_LOG_ERROR,"Read origin file error, ret=%d\n",ret);
+			fx_log(NULL,FX_LOG_ERROR,"Read origin file error, ret=%d\n",ret);
 			exit(-2);
 		}
-		if(frame_sz!=(ret=fread(rec_frm,sizeof(byte),frame_sz,p_rec))){
-			general_log(NULL,GENL_LOG_ERROR,"Read rec file error, ret=%d\n",ret);
+		if(frame_sz!=ret2){
+			fx_log(NULL,FX_LOG_ERROR,"Read rec file error, ret=%d\n",ret);
 			exit(-2);
 		}
 
-        psnr[0]=calc_psnr(orig_frm,                  rec_frm,                  luma_sz);
-        psnr[1]=calc_psnr(orig_frm+luma_sz,          rec_frm+luma_sz,          chroma_sz);
-        psnr[2]=calc_psnr(orig_frm+luma_sz+chroma_sz,rec_frm+luma_sz+chroma_sz,chroma_sz);
+        psnr[0]=calc_psnr(orig_frm,                  rec_frm,                  width,height);
+        psnr[1]=calc_psnr(orig_frm+luma_sz,          rec_frm+luma_sz,          width/2,height/2);
+        psnr[2]=calc_psnr(orig_frm+luma_sz+chroma_sz,rec_frm+luma_sz+chroma_sz,width/2,height/2);
         psnr_sum[0]+=psnr[0];
         psnr_sum[1]+=psnr[1];
         psnr_sum[2]+=psnr[2];
@@ -89,7 +89,7 @@ static void calc_all(FILE* p_orig,FILE* p_rec,int from,int to,int width,int heig
 			fprintf(stdout,"%4d ",pic_num);
 		fprintf(stdout,"%7.4f %7.4f %7.4f\n",psnr[0],psnr[1],psnr[2]);
 		fflush(stdout);
-		general_log(NULL,GENL_LOG_INFO,"Frame %d is done\n",pic_num);
+		//fx_log(NULL,FX_LOG_INFO,"Frame %d is done\n",pic_num);
 		pic_num++;
 	}
 	if(calc_average)
@@ -99,18 +99,19 @@ static void calc_all(FILE* p_orig,FILE* p_rec,int from,int to,int width,int heig
 }
 
 static int count_frames(FILE*fp,int width,int height){
-	uint64_t len=0;
+	FX_U64 len=0;
     int framebytes=height*width+height/2*width/2*2;
-	if(fseeko(fp,0,SEEK_END)<0)
+	if(fseeko(fp,(FX_U64)0,SEEK_END)<0)
 		return -1; 
 	if((len=ftello(fp))<0)
 		return -1;
 
-	return len/framebytes;
+	return (int)(len/framebytes);
 
 }
 static void usage(){
-	printf("Usage:\n"
+	printf("Program used to calculate psnr between two yuv files.Version 0.4\n"
+		   "Usage:\n"
 		   "\tpsnr <width> <height> <orig.yuv> <rec.yuv> from to\n"
 		   "or\n"
            "\tpsnr -s <width>x<height> -i <orig.yuv>:<rec.yuv> -r from:to -n -c\n"
@@ -124,7 +125,7 @@ static void usage(){
 static int parse_opt_string(char* arg,char **x,char**y,char delim){
 	char *p;
 	if(arg==NULL){
-		general_log(NULL,GENL_LOG_ERROR,"Error:empty arg\n");
+		fx_log(NULL,FX_LOG_ERROR,"Error:empty arg\n");
 		return 0;
 	}
 	p=arg;
@@ -134,7 +135,7 @@ static int parse_opt_string(char* arg,char **x,char**y,char delim){
 		||*p=='\0'//format "x"
 		||*(p+1)=='\0'//format "x:"
 		){
-		general_log(NULL,GENL_LOG_ERROR,"Error:invalid format of arg %s\n",arg);
+		fx_log(NULL,FX_LOG_ERROR,"Error:invalid format of arg %s\n",arg);
 		return -1;
 	}
 	*x=arg;
@@ -208,13 +209,13 @@ int main(int argc,char*argv[])
 	}
 	else{
 		if(reso==NULL){
-			general_log(NULL,GENL_LOG_ERROR,"width and height are needed\n");
+			fx_log(NULL,FX_LOG_ERROR,"width and height are needed\n");
 			return -1;
 		}
 		if((ret=parse_opt_int(reso,&width,&height,'x'))<0)
 			return -1;
 		if(infile==NULL){
-			general_log(NULL,GENL_LOG_ERROR,"original and reconstructed files are needed\n");
+			fx_log(NULL,FX_LOG_ERROR,"original and reconstructed files are needed\n");
 			return -1;
 		}
 		if((ret=parse_opt_int(reso,&org_file,&rec_file,':'))<0)
@@ -226,30 +227,30 @@ int main(int argc,char*argv[])
 	}
 	
     if(width<=0||height<=0){
-        general_log(NULL,GENL_LOG_ERROR,"width or height can't be 0 or negative\n");
+        fx_log(NULL,FX_LOG_ERROR,"width or height can't be 0 or negative\n");
 		return -1;
     }
     if(NULL==(p_orig=fopen(org_file,"rb"))) {
-        general_log(NULL,GENL_LOG_ERROR,"can't open the original yuv file\n");
+        fx_log(NULL,FX_LOG_ERROR,"can't open the original yuv file\n");
 		return -1;
     }
     if(NULL==(p_rec=fopen(rec_file,"rb"))) {
-        general_log(NULL,GENL_LOG_ERROR,"can't open the reconstruct yuv file\n");
+        fx_log(NULL,FX_LOG_ERROR,"can't open the reconstruct yuv file\n");
 		return -1;
     }
 	if(to<0){//get the frame number of input files
 		int c1,c2;
-		if((c1=count_frames(org_file,width,height))<0||
-			(c2=count_frames(rec_file,width,height))<0)
+		if((c1=count_frames(p_orig,width,height))<0||
+			(c2=count_frames(p_rec,width,height))<0)
 		{
-			general_log(NULL,GENL_LOG_ERROR,"could not count frames\n");
+			fx_log(NULL,FX_LOG_ERROR,"could not count frames\n");
 			to=1<<16;
 		}
 		else
-			to=MAX(0,MIN(c1,c2));
+			to=FX_MAX(0,FX_MIN(c1,c2));
 	}
 
-    calc_all(p_orig,p_rec,from,to,width,height);
+    calc_all_psnr(p_orig,p_rec,from,to,width,height);
 
     fclose(p_orig);
     fclose(p_rec);

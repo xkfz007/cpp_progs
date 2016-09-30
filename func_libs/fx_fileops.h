@@ -8,7 +8,10 @@
 #ifndef _FX_FILEOPS_H
 #define _FX_FILEOPS_H
 #include <stdio.h>
+#include <wchar.h>
 #include "fx_log.h"
+
+//#define MAX_PATH  1024
 
 #if defined(__GNUC__)
 #define fseeko  fseeko
@@ -25,6 +28,7 @@
 #endif 
 
 #ifdef _WIN32
+#include <windows.h>
 #define utf8_to_utf16( utf8, utf16 )\
     MultiByteToWideChar( CP_UTF8, MB_ERR_INVALID_CHARS, utf8, -1, utf16, sizeof(utf16)/sizeof(wchar_t) )
 FILE *fx_fopen( const char *filename, const char *mode );
@@ -138,7 +142,7 @@ static int fx_is_pipe( const char *path )
 }
 #endif
 
-static inline int fx_is_regular_file( FILE *filehandle )
+static int fx_is_regular_file( FILE *filehandle )
 {
     fx_struct_stat file_stat;
     if( fx_fstat( fileno( filehandle ), &file_stat ) )
@@ -146,7 +150,7 @@ static inline int fx_is_regular_file( FILE *filehandle )
     return S_ISREG( file_stat.st_mode );
 }
 
-static inline int fx_is_regular_file_path( const char *filename )
+static int fx_is_regular_file_path( const char *filename )
 {
     fx_struct_stat file_stat;
     if( fx_stat( filename, &file_stat ) )

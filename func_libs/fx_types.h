@@ -34,6 +34,8 @@ typedef signed short     FX_S16;
 typedef unsigned int     FX_U32;
 typedef signed int       FX_S32;
 
+typedef unsigned char byte;
+
 #if defined(WIN32)
 /** FX_U64 is a 64 bit unsigned quantity that is 64 bit word aligned */   
 typedef unsigned __int64  FX_U64;

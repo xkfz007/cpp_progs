@@ -44,6 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="../func_libs"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -266,7 +267,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="../func_libs"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_PSNR"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -347,6 +348,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\dd.c"
+				>
+			</File>
+			<File
 				RelativePath=".\dd.cpp"
 				>
 			</File>
@@ -391,6 +396,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\merge_yuv.c"
+				>
+			</File>
+			<File
 				RelativePath=".\prime.c"
 				>
 			</File>
@@ -408,6 +417,10 @@
 			</File>
 			<File
 				RelativePath=".\rat.c"
+				>
+			</File>
+			<File
+				RelativePath=".\readimg.c"
 				>
 			</File>
 			<File
@@ -440,6 +453,14 @@
 			</File>
 			<File
 				RelativePath=".\sort_input_lines.c"
+				>
+			</File>
+			<File
+				RelativePath=".\ssim.c"
+				>
+			</File>
+			<File
+				RelativePath=".\ssim_compare.cc"
 				>
 			</File>
 			<File

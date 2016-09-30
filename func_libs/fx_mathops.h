@@ -33,7 +33,7 @@
 /*
  * greatest common divisor
  */
-static inline FX_U64 fx_gcd( FX_U64 a, FX_U64 b )
+static FX_U64 fx_gcd( FX_U64 a, FX_U64 b )
 {
     while( 1 )
     {
@@ -47,7 +47,7 @@ static inline FX_U64 fx_gcd( FX_U64 a, FX_U64 b )
 /*
  * least common multiple
  */
-static inline FX_U64 lcm( FX_U64 a, FX_U64 b )
+static FX_U64 lcm( FX_U64 a, FX_U64 b )
 {
     return ( a / gcd( a, b ) ) * b;
 }
@@ -121,7 +121,7 @@ static int fx_log2_fast(int x)
         then x>>31 is 0x00000000, namely 0, then after xor, result is -1
  *
  */
-static inline int fx_xsign (int x )
+static int fx_xsign (int x )
 {
   return (( x >> 31) | (( int)( ((( FX_U32) - x)) >> 31)));
 }

@@ -80,4 +80,64 @@ do {\
     memset( var, 0, size );\
 } while( 0 )
 
+
+void *fx_mallocz(size_t size)
+{
+    void *ptr = fx_malloc(size);
+    if (ptr)
+        memset(ptr, 0, size);
+    return ptr;
+}
+
+void *fx_calloc(size_t nmemb, size_t size)
+{
+    if (size <= 0 || nmemb >= INT_MAX / size)
+        return NULL;
+    return fx_mallocz(nmemb * size);
+}
+
+char *fx_strdup(const char *s)
+{
+    char *ptr = NULL;
+    if (s) {
+        size_t len = strlen(s) + 1;
+        ptr = fx_realloc(NULL, len);
+        if (ptr)
+            memcpy(ptr, s, len);
+    }
+    return ptr;
+}
+
+char *fx_strndup(const char *s, size_t len)
+{
+    char *ret = NULL, *end;
+
+    if (!s)
+        return NULL;
+
+    end = memchr(s, 0, len);
+    if (end)
+        len = end - s;
+
+    ret = fx_realloc(NULL, len + 1);
+    if (!ret)
+        return NULL;
+
+    memcpy(ret, s, len);
+    ret[len] = 0;
+    return ret;
+}
+
+void *fx_memdup(const void *p, size_t size)
+{
+    void *ptr = NULL;
+    if (p) {
+        ptr = fx_malloc(size);
+        if (ptr)
+            memcpy(ptr, p, size);
+    }
+    return ptr;
+}
+
+
 #endif

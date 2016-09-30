@@ -10,6 +10,7 @@
 
 #include <errno.h>
 #include <stdarg.h>
+#include <string.h>
 static void fx_log(const char* caller, int level, const char* fmt, ...)
 {
 #define  bufferSize 4096

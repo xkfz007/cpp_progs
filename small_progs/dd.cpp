@@ -1,6 +1,7 @@
 /*
  * a simple implenmentation of UNIX dd
  */
+//#define _DD
 #ifdef _DD
 #include <stdio.h>
 #include <stdlib.h>
