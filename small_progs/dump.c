@@ -1,22 +1,27 @@
 /*
+ * dump.c HEXDUMP utility
  * this is a great program. it is used to print the binary file content on the
  * screen in hex form.
- *    Description:  使用十六进制的形式输出文本文件
  */
-//#define _DUMP
+#define _DUMP
 #ifdef _DUMP
 
 #include <stdio.h>
-#include <ctype.h>
-
+//#include <ctype.h>
+#include "fx_dump.h"
+void usage(){
+	fprintf (stderr, "Prints a hexdump of specified files to stdout. Version 0.2\n"
+                     "Similar in behavior to 'od -Ax -tx2z [a file]'\n\n"
+		             "Usage: dump [files...]\n\n"
+					 );
+}
 #define NBYTES 16
-void dump(FILE*,char*);
 int main(int argc,char*argv[])
 {
     int i;
-    if(argc<1)
+    if(argc<2)
     {
-        printf("usage:dump <file>\n");
+		usage();
         exit(1);
     }
     for(i=1;i<argc;++i)
@@ -26,42 +31,13 @@ int main(int argc,char*argv[])
             fprintf(stderr,"Can't open %s\n",argv[i]);
         else
         {
-            dump(f,argv[i]);
+			fprintf(stdout,"Dump of %s:\n\n",argv[i]);
+            dump(f,NBYTES);
             fclose(f);
             putchar('\f');
         }
     }
     return 0;
-}
-void dump(FILE *f,char*s)
-{
-    unsigned char buf[NBYTES];
-    int count;
-    long size=0L;
-    int i;
-    printf("Dump of %s:\n\n",s);
-    while((count=fread(buf,1,NBYTES,f))>0)
-    {
-        printf(" %06X ",size+=count);
-        for(i=0;i<NBYTES;++i)
-        {
-            if(i==NBYTES/2)
-                putchar(' ');
-            if(i<count)
-            {
-                printf(" %02X",buf[i]);
-                if(!isprint(buf[i]))
-                        buf[i]='.';
-            }
-            else
-            {
-            fputs("   ",stdout);
-            buf[i]=' ';
-            }
-        }
-        printf(" |%16.16s|\n",buf);
-
-    }
 }
 #endif
 

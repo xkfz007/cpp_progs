@@ -7,7 +7,7 @@
 #include <math.h>
 
 typedef unsigned char imgpel;
-typedef unsigned char byte;
+typedef unsigned char FX_Byte;
 
 void getmem2D(imgpel***img,int dim0,int dim1)
 {
@@ -31,10 +31,10 @@ void freemem2D(imgpel**img,int dim0) {
     free(img);
 }
 void getImageData(char*filename,imgpel**img,int height,int width) {
-    byte *buf;
+    FX_Byte *buf;
     FILE *pImg;
     int frame_bytes=height*width;
-    if(NULL==(buf=(byte*)calloc(frame_bytes,sizeof(byte)))) {
+    if(NULL==(buf=(FX_Byte*)calloc(frame_bytes,sizeof(FX_Byte)))) {
         printf("Memorry allocate error\n");
         exit(-2);
     }
@@ -47,7 +47,7 @@ void getImageData(char*filename,imgpel**img,int height,int width) {
         printf("read image file error\n");
         exit(-1);
     }
-    if(frame_bytes!=fread(buf,sizeof(byte),frame_bytes,pImg)) {
+    if(frame_bytes!=fread(buf,sizeof(FX_Byte),frame_bytes,pImg)) {
         printf("read file error -3\n");
         exit(-3);
     }
@@ -55,7 +55,7 @@ void getImageData(char*filename,imgpel**img,int height,int width) {
     {
         int j;
         for(j=0;j<height;++j) {
-            memcpy(img[j],buf+j*width,sizeof(byte)*width);
+            memcpy(img[j],buf+j*width,sizeof(FX_Byte)*width);
         }
     }
     free(buf);

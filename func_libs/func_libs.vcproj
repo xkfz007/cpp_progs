@@ -379,6 +379,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fx_dump.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_fileops.h"
 				>
 			</File>

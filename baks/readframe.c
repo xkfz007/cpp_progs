@@ -1,6 +1,7 @@
 /*
  * this program is used to obtain the specific frame from the yuv sequence.
  */
+//#define _READIMG
 #ifdef _READIMG
 #include <stdio.h>
 #include <stdlib.h>

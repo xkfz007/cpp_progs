@@ -17,7 +17,7 @@ static int depth=8;
 
 #include "fx_log.h"
 
-static double calc_psnr(byte* orig,byte* rec,int w,int h){
+static double calc_psnr(FX_Byte* orig,FX_Byte* rec,int w,int h){
 	int stride1=w;
 	int stride2=w;
 	double mse,Max;
@@ -34,14 +34,14 @@ static void calc_all_psnr(FILE* p_orig,FILE* p_rec,int from,int to,int width,int
     int pic_num;
     int frame_sz;
     int luma_sz,chroma_sz;
-    byte *orig_frm,*rec_frm;
+    FX_Byte *orig_frm,*rec_frm;
 	int ret,ret2;
     //frame_sz=height*width+height/2*width/2*2;
     luma_sz=height*width;
     chroma_sz=height/2*width/2;
 	frame_sz=luma_sz+2*chroma_sz;
-    if(NULL==(orig_frm=(byte*)calloc(frame_sz,sizeof(byte)))
-            ||NULL==(rec_frm=(byte*)calloc(frame_sz,sizeof(byte)))) {
+    if(NULL==(orig_frm=(FX_Byte*)calloc(frame_sz,sizeof(FX_Byte)))
+            ||NULL==(rec_frm=(FX_Byte*)calloc(frame_sz,sizeof(FX_Byte)))) {
         fx_log(NULL,FX_LOG_ERROR,"Merrory allocation error!\n");
         exit(-2);
     }
@@ -65,8 +65,8 @@ static void calc_all_psnr(FILE* p_orig,FILE* p_rec,int from,int to,int width,int
 
 	
 	while(pic_num<=to
-		&&(ret=fread(orig_frm,sizeof(byte),frame_sz,p_orig))>0
-		&&(ret2=fread(rec_frm,sizeof(byte),frame_sz,p_rec))>0
+		&&(ret=fread(orig_frm,sizeof(FX_Byte),frame_sz,p_orig))>0
+		&&(ret2=fread(rec_frm,sizeof(FX_Byte),frame_sz,p_rec))>0
 		)
 	{
 		if(frame_sz!=ret)

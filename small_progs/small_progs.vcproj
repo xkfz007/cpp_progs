@@ -267,7 +267,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="../func_libs"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_PSNR"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -396,10 +396,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\merge_yuv.c"
-				>
-			</File>
-			<File
 				RelativePath=".\prime.c"
 				>
 			</File>
@@ -408,19 +404,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\psnr.c"
-				>
-			</File>
-			<File
 				RelativePath=".\qpscale.c"
 				>
 			</File>
 			<File
 				RelativePath=".\rat.c"
-				>
-			</File>
-			<File
-				RelativePath=".\readimg.c"
 				>
 			</File>
 			<File
@@ -483,10 +471,14 @@
 			>
 		</Filter>
 		<Filter
-			Name="Resource Files"
+			Name="useful"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\psnr.c"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

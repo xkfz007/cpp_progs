@@ -6,8 +6,8 @@ static double get_psnr(double mse,int Max){
 	return 10*log10(Max*Max/mse);
 }
 
-static double get_ssd(byte* pix1, int stride1,
-					  byte* pix2, int stride2,
+static double get_ssd(FX_Byte* pix1, int stride1,
+					  FX_Byte* pix2, int stride2,
 					  int w, int h)
 {
 
@@ -25,8 +25,8 @@ static double get_ssd(byte* pix1, int stride1,
     }
 	return sum;
 }
-static double get_mse(byte* pix1, int stride1,
-					  byte* pix2, int stride2,
+static double get_mse(FX_Byte* pix1, int stride1,
+					  FX_Byte* pix2, int stride2,
 					  int w, int h)
 {
 	double ssd_sum=get_ssd(pix1,stride1,pix2,stride2,w,h);
