@@ -1,7 +1,7 @@
 /*
  * calculate psnr/ssim between original yuv and reconstructed yuv
  */
-#define _MEASURE
+//#define _MEASURE
 #ifdef _MEASURE
 #include <stdio.h>
 #include <stdlib.h>
@@ -124,7 +124,7 @@ static int count_frames(FILE*fp,int width,int height){
 
 }
 
-static void usage(){
+static static void usage(){
 	printf("Program used to calculate "MEA_STR(MEA)" between two yuv files.Version 0.4\n"
 		   "Usage:\n"
 		   "   "MEA_STR(MEA)" <width> <height> <orig.yuv> <rec.yuv> from to\n"

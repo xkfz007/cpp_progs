@@ -1,8 +1,9 @@
 /* Fig. 11.16: fig11_16.c
    This program reads a random access file sequentially, updates data
    already written to the file, creates new data to be placed in the
-   file, and deletes data previously in the file. */
-//#define _FILE_RECORD
+   file, and deletes data previously in the file. 
+   */
+#define _FILE_RECORD
 #ifdef _FILE_RECORD
 #include <stdio.h>
 

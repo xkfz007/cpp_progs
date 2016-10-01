@@ -1,63 +1,64 @@
 /*
- *    Description: 利用一个比较好的方法判断是否是素数：根据5以后的素数之间的间隔都是2或4
+ * check or print primes
  */
+//#define _PRIME
 #ifdef _PRIME
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//方法一：
-//这个是最原始的做法：从2开始，检测数n是否能被其之前的任意一个数整除，如果能，说明其不是素数。
-int isPrime(int n)//函数返回1表示是质数，返回0表示不是质数
+
+// the original way
+// check numbers between 2 and n
+int isPrime(int n)
 {
-	int i;
-	for (i = 2; i < n; i++)
-	if (n % i == 0)
-	return 0;
-	return 1;
+    int i;
+    for (i = 2; i < n; i++)
+        if (n % i == 0)
+            return 0;
+    return 1;
 }
 
-// 方法二：
-//对上面算法的优化是缩小搜索范围，将范围有[2,n)缩小到[2, sqrt(n)). 因为对于一个小于n的整数x，如何n不能整除x，则n必然不能整除n/x，
-//反之，相同，所以只需到sqrt(n)即可。
+// check numbers between 2 and sqrt(n)
 int isPrime2(int n)
 {
-	int i;
-	for (i = 2; i*i<n; i++)
-	if (n % i == 0)
-	return 0;
-	return 1;
+    int i;
+    for (i = 2; i*i<n; i++)
+        if (n % i == 0)
+            return 0;
+    return 1;
 }
 
-// 方法三：
-//这个方法是删除掉偶数。因为我们知道，一个数如果不能被2整除，那么也就不能被4、6、等所有的偶数整除。所以我们可以把循环规则改变成先判断2，
-//如果不能被2整除就从3开始判断所有的奇数。
+// split even and odd numbers
 int isPrime3(int n)
 {
-	int i;
-	if (n <= 3) return 1;
-	if (n % 2 == 0) return 0;
-	for (i = 3; i*i<n; i += 2)
-	if (n % i == 0)
-	return 0;
-	return 1;
+    int i;
+    if (n <= 3) 
+        return 1;
+    if (n % 2 == 0) 
+        return 0;
+    for (i = 3; i*i<n; i += 2)
+        if (n % i == 0)
+            return 0;
+    return 1;
 }
 
+//
 int is_prime(int n)
 {
-	int i,step=2;
-	if(n<=3)
-	return 1;
-	if(n%2==0)
-	return 0;
-	if(n%3==0)
-	return 0;
-	for(i=5;i*i<=n;i+=step)
-	{
-		if(n%i==0)
-		return 0;
-		step^=6;
-	}
-	return 1;
+    int i,step=2;
+    if(n<=3)
+        return 1;
+    if(n%2==0)
+        return 0;
+    if(n%3==0)
+        return 0;
+    for(i=5;i*i<=n;i+=step)
+    {
+        if(n%i==0)
+            return 0;
+        step^=6;
+    }
+    return 1;
 }
 
 void print_primes(int n1,int n2)
@@ -109,7 +110,7 @@ void print_primes2(int n1,int n2) {
 	}
 }
 
-void usage() {
+static void usage() {
 	fprintf(stdout,"Usage:\n");
 	fprintf(stdout,"prime n1 n2 n3 ....\n");
 	fprintf(stdout,"\tcheck if n1/n2/n3 is prime number\n");

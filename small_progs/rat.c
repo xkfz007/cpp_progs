@@ -1,35 +1,35 @@
 /*
  * this program is used to get the numerator and denominator of a fraction
  */
+//#define _RAT
 #ifdef _RAT
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define ABS(X) ((X)>0?(X):-(X))
+#include "fx_mathops.h"
 
-void reduceFraction(int* n, int* d) {
-  int a = *n;
-  int b = *d;
-  int c;
-  if(!a || !b)
-    return;
-  c = a % b;
-  while(c) {
-    a = b;
-    b = c;
-    c = a % b;
-  }
-  *n /= b;
-  *d /= b;
-}
-void usage(){
+//void reduceFraction(int* n, int* d) {
+//  int a = *n;
+//  int b = *d;
+//  int c;
+//  if(!a || !b)
+//    return;
+//  c = a % b;
+//  while(c) {
+//    a = b;
+//    b = c;
+//    c = a % b;
+//  }
+//  *n /= b;
+//  *d /= b;
+//}
+static void usage(){
     printf("usage:\n");
-    printf("\t\trat.exe <int> <int>\n");
-    printf("\t\trat.exe <float> <float>\n");
-    printf("\t\trat.exe <string> the string format is a/b or a:b, a and b may be int or float\n");
-    printf("\t\trat.exe <float> \n");
-    printf("\t\trat.exe <int> \n");
-    exit(0);
+    printf("     rat <int> <int>\n");
+    printf("     rat <float> <float>\n");
+    printf("     rat <string> the string format is a/b or a:b, a and b may be int or float\n");
+    printf("     rat <float> \n");
+    printf("     rat <int> \n");
 }
 
 int get_factor(double d){
@@ -71,9 +71,9 @@ int main(int argc,char**argv){
     //n2=atof(argv[1]);
     //n=get_factor(n2);
     //printf("%f:%d\n",n2,n);
-#if 1
     if(argc<2||argc>3){
         usage();
+        exit(0);
     }
     if(argc==3){
         process_two_args(argv[1],argv[2],&n,&d);
@@ -95,8 +95,7 @@ int main(int argc,char**argv){
         }
         printf("%s= ",argv[1]);
     }
-    reduceFraction(&n,&d);
+    fx_reduce_fraction(&n,&d);
     printf("%d/%d\n",n,d);
-#endif
 }
 #endif

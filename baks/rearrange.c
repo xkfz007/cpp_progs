@@ -9,7 +9,7 @@
 ** For example, 0 3 10 12 -1 indicates that only columns 0 through 3
 ** and columns 10 through 12 will be printed.
 */
-//#define _REARRANGE
+#define _REARRANGE
 #ifdef _REARRANGE
 
 #include <stdio.h>

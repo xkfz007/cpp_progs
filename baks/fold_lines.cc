@@ -1,5 +1,5 @@
 //fold long input lines into sereval short lines
-//#define _FOLD_LINES
+#define _FOLD_LINES
 #ifdef _FOLD_LINES
 #include <stdio.h>
 #define MAXCOL 10

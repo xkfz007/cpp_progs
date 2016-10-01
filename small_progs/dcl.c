@@ -55,50 +55,50 @@ int prevtoken=NO;
 #define BUFSIZE 10
 char buf[BUFSIZE];
 int bufp=0;
-int getch(void){
-    return bufp>0?buf[--bufp]:getchar();
-}
-void ungetch(int c){
-    if(bufp>=BUFSIZE)
-        printf("ungetch: too many characters\n");
-    else
-        buf[bufp++]=c;
-}
+//int getch(void){
+//    return bufp>0?buf[--bufp]:getchar();
+//}
+//void ungetch(int c){
+//    if(bufp>=BUFSIZE)
+//        printf("ungetch: too many characters\n");
+//    else
+//        buf[bufp++]=c;
+//}
 void errmsg(char *msg){
     printf("%s",msg);
     prevtoken=YES;
 }
 
-int gettoken(){
+int gettoken(FILE* f){
     char *p=token;
     int c;
     if(prevtoken==YES){
         prevtoken=NO;
         return tokentype;
     }
-    while((c=getch())==' '||c=='\t')
+    while((c=fgetc(f))==' '||c=='\t')
         ;
     if(c=='('){
-        if((c=getch())==')'){
+        if((c=fgetc(f))==')'){
             strcpy(token,"()");
             return tokentype=PARENS;
         }
         else{
-            ungetch(c);
+            ungetc(c,f);
             return tokentype='(';
         }
     }
     else if(c=='['){
-        for(*p++=c;(*p++=getch())!=']';)
+        for(*p++=c;(*p++=fgetc(f))!=']';)
             ;
         *p='\0';
         return tokentype=BRACKETS;
     }
     else if(isalpha(c)){
-        for(*p++=c;isalnum(c=getch());)
+        for(*p++=c;isalnum(c=fgetc(f));)
             *p++=c;
         *p='\0';
-        ungetch(c);
+        ungetc(c,f);
         return tokentype=NAME;
     }
     else
@@ -129,25 +129,25 @@ int typequal(void){
     else
         return YES;
 }
-void dcl(void);
-void dclspec(void){
+void dcl(FILE* f);
+void dclspec(FILE *f){
     char temp[MAXTOKEN];
     temp[0]='\0';
-    gettoken();
+    gettoken(f);
     do{
         if(tokentype!=NAME){
             prevtoken=YES;
-            dcl();
+            dcl(f);
         }
         else if(typespec()==YES){
             strcat(temp," ");
             strcat(temp,token);
-            gettoken();
+            gettoken(f);
         }
         else if(typequal()==YES){
             strcat(temp," ");
             strcat(temp,token);
-            gettoken();
+            gettoken(f);
         }
         else
             errmsg("unknown type in parameter list\n");
@@ -157,17 +157,17 @@ void dclspec(void){
     if(tokentype==',')
         strcat(out,",");
 }
-void parmdcl(void){
+void parmdcl(FILE* f){
     do{
-        dclspec();
+        dclspec(f);
     }while(tokentype==',');
     if(tokentype!=')')
         errmsg("missing ) in parameter declaration\n");
 }
-void dirdcl(void){
+void dirdcl(FILE* f){
     int type;
     if(tokentype=='('){
-        dcl();
+        dcl(f);
         if(tokentype!=')')
             printf("error:missing )\n");
     }
@@ -177,12 +177,12 @@ void dirdcl(void){
     }
     else
         prevtoken=YES;
-    while((type=gettoken())==PARENS||type==BRACKETS||type=='(')
+    while((type=gettoken(f))==PARENS||type==BRACKETS||type=='(')
         if(type==PARENS)
             strcat(out," function returning");
     else if(type=='('){
         strcat(out," function expecting");
-        parmdcl();
+        parmdcl(f);
         strcat(out," and returning");
     }
         else{
@@ -191,20 +191,20 @@ void dirdcl(void){
         strcat(out," of");
     }
 }
-void dcl(void){
+void dcl(FILE* f){
     int ns;
-    for(ns=0;gettoken()=='*';)
+    for(ns=0;gettoken(f)=='*';)
         ns++;
-    dirdcl();
+    dirdcl(f);
     while(ns-->0)
         strcat(out," pointer to");
 }
 
-int dcl_main(){
-    while(gettoken()!=EOF){
+int dcl_main(FILE* f){
+    while(gettoken(f)!=EOF){
         strcpy(datatype,token);
         out[0]='\0';
-        dcl();
+        dcl(f);
         if(tokentype!='\n')
             printf("syntax error\n");
         printf("%s: %s %s\n",name,out,datatype);
@@ -212,22 +212,22 @@ int dcl_main(){
     return 0;
 }
 
-int nexttoken(){
+int nexttoken(FILE* f){
     int type;
-    type=gettoken();
+    type=gettoken(f);
     prevtoken=YES;
     return type;
 }
-int undcl_main(){
+int undcl_main(FILE* f){
     int type;
     char temp[MAXTOKEN];
-    while(gettoken()!=EOF){
+    while(gettoken(f)!=EOF){
         strcpy(out,token);
-        while((type=gettoken())!='\n')
+        while((type=gettoken(f))!='\n')
             if(type==PARENS||type==BRACKETS)
                 strcat(out,token);
             else if(type=='*'){
-                if((type=nexttoken())==PARENS||             
+                if((type=nexttoken(f))==PARENS||             
                     type==BRACKETS)
                     sprintf(temp,"(*%s)",out);
                 else
@@ -247,7 +247,7 @@ int undcl_main(){
     return 0;
 }
 int main(){
-    undcl_main();
+    undcl_main(stdin);
 
 }
 #endif

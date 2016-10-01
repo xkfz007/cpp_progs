@@ -1,5 +1,5 @@
 
-//#define _SIMPLE_TAIL
+#define _SIMPLE_TAIL
 #ifdef _SIMPLE_TAIL
 #include <stdio.h>
 #include <stdlib.h>

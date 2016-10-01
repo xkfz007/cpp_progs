@@ -1,5 +1,5 @@
 /*
- *    File Destroyer 文件安全销毁
+ *    File Destroyer 
  *
  *    Copyright (C) 2015 Chaobs
  *

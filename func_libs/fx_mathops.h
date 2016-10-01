@@ -37,6 +37,11 @@
 #define MAX4(a,b,c,d) MAX((a),MAX3((b),(c),(d)))
 #endif
 
+#ifndef ABS
+#define ABS(X) ((X)>0?(X):-(X))
+#endif
+
+
 #ifndef XCHG
 #define XCHG(type,a,b) do{ type t = a; a = b; b = t; } while(0)
 #endif
@@ -55,6 +60,10 @@
 #endif
 #ifndef LOG2
 #define LOG2(x) (log(x)/0.693147180559945)
+#endif
+
+#ifndef PI
+#define PI 3.1415926
 #endif
 
 

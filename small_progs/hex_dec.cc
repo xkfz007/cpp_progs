@@ -1,13 +1,9 @@
 /*
  * hex_dec.cc
- *
- *  Created on: 2016-5月-21 下午2:58:10
- *      Author: Felix
+ * convert decimal to hex
  */
 
-/*
- *    Description: 十进制转化为十六进制
- */
+//#define _DEC2HEX
 #ifdef _DEC2HEX
 #include <stdio.h>
 #include <string.h>

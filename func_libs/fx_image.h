@@ -2,6 +2,7 @@
 #define _FX_IMAGE_H
 #include "fx_types.h"
 
+
 static double get_psnr(double mse,int Max){
 	return 10*log10(Max*Max/mse);
 }
@@ -215,4 +216,14 @@ static float get_ssim_x264(pixel *pix1, intptr_t stride1, pixel *pix2, intptr_t 
 	return ssim;
 }
 
+
+static double qp2qscale(int qp)
+{
+        return 0.85 * pow(2.0, ( qp - 12.0 ) / 6.0);
+}
+
+static double qscale2qp(double qscale)
+{
+        return 12.0 + 6.0 * log(qscale/0.85) / log(2.0) ;
+}
 #endif

@@ -431,6 +431,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fx_preprocess.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_rcomment.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_string.h"
 				>
 			</File>

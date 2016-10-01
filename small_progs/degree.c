@@ -1,13 +1,13 @@
 /*
- *    Description:  根据点的坐标来计算角度 
+ * calculate degree from coordinate
  */
-
+//#define _DEGREE
 #ifdef _DEGREE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#define PI 3.1415926
+#include "fx_mathops.h"
 int main(int argc,char*argv[])
 {
     int y,x;

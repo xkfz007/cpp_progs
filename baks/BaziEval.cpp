@@ -13,7 +13,7 @@
 #include <wchar.h>
 using namespace std;
 
-void Usage() {
+static void usage() {
 	cout << "Usage:\tBaziEval.exe -q <生辰八字中之前六字> -t hh" << endl;
 	cout << "\tBaziEval.exe -e <生辰八字>" << endl;
 	return;

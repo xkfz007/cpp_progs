@@ -1,10 +1,11 @@
 /*
-Write a cross-referencer that prints a list of all words in a document, and for
-each word, a list of the line numbers on which it occurs. Remove noise words like ``the,''
-``and,'' and so on.
+Write a program that reads a C program and prints in alphabetical order each
+group of variable names that are identical in the first 6 characters, but different somewhere
+thereafter. Don't count words within strings and comments. Make 6 a parameter that can be set
+from the command line.
 */
-//#define _CROSS_REFERENCER
-#ifdef _CROSS_REFERENCER
+#define _PRINT_VARIABLES
+#ifdef _PRINT_VARIABLES
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -21,7 +22,7 @@ void ungetch(int c){
     else                                           
         buf[bufp++]=c;                             
 }                                                  
-int comment(void){
+int c_comment(void){
     int c;
     while((c=getch())!=EOF)
         if(c=='*')
@@ -31,10 +32,10 @@ int comment(void){
                 ungetch(c);
     return c;
 }
-int getword(char *word,int lim){
+int fx_getword(char *word,int lim){
     char *w=word;
     int c,d;
-    while(isspace(c=getch())&&c!='\n')//return '\n' to count the linenumber
+    while(isspace(c=getch()))
         ;
     if(c!=EOF)
         *w++=c;
@@ -59,19 +60,15 @@ int getword(char *word,int lim){
     }
     else if(c=='/')
         if((d=getch())=='*')
-            c=comment();
+            c=c_comment();
     else
         ungetch(d);
     *w='\0';
     return c;
 }
-struct linklist{
-    int lnum;
-    struct linklist *ptr;
-};
 struct tnode{
-    char *word;//variable
-    struct linklist *lines;//line numbers 
+    char *word;
+    int match;
     struct tnode *left;
     struct tnode *right;
 };
@@ -79,11 +76,20 @@ struct tnode{
 #define YES 1
 #define NO 0
 
+int compare(char *s,struct tnode *p,int num,int *found){
+    int i;
+    char *t=p->word;
+    for(i=0;*s==*t;i++,s++,t++)
+        if(*s=='\0')
+            return 0;
+    if(i>=num){
+        *found=YES;
+        p->match=YES;
+    }
+    return *s-*t;
+}
 struct tnode* talloc(void){
     return (struct tnode*)malloc(sizeof(struct tnode));
-}
-struct linklist *lalloc(void){
-    return (struct linklist*)malloc(sizeof(struct linklist));
 }
 char *strdup_(char *s){
     char *p;
@@ -92,44 +98,26 @@ char *strdup_(char *s){
         strcpy(p,s);
     return p;
 }
-void addln(struct tnode *p,int linenum){
-    struct linklist *temp;
-    temp=p->lines;
-    while(temp->ptr!=NULL&&temp->lnum!=linenum)
-        temp=temp->ptr;
-    if(temp->lnum!=linenum){
-        temp->ptr=lalloc();
-        temp->ptr->lnum=linenum;
-        temp->ptr->ptr=NULL;
-    }
-}
 
-struct tnode* addtreex(struct tnode*p,char *w,int linenum){
+struct tnode* addtreex(struct tnode*p,char *w,int num,int *found){
     int cond;
     if(p==NULL){
         p=talloc();
         p->word=strdup_(w);
-        p->lines=lalloc();
-        p->lines->lnum=linenum;
-        p->lines->ptr=NULL;
+        p->match=*found;
         p->left=p->right=NULL;
     }
-    else if((cond=strcmp(w,p->word))<0)
-        p->left=addtreex(p->left,w,linenum);
+    else if((cond=compare(w,p,num,found))<0)
+        p->left=addtreex(p->left,w,num,found);
     else if(cond>0)
-        p->right=addtreex(p->right,w,linenum);
-    else
-        addln(p,linenum);
+        p->right=addtreex(p->right,w,num,found);
     return p;
 }
 void treeprint(struct tnode* p){
-    struct linklist *temp;
     if(p!=NULL){
         treeprint(p->left);
-        printf("%10s: ",p->word);
-        for(temp=p->lines;temp!=NULL;temp=temp->ptr)
-            printf("%4d ",temp->lnum);
-        printf("\n");
+        if(p->match)
+            printf("%s]n",p->word);
         treeprint(p->right);
     }
 }
@@ -138,38 +126,20 @@ void freetree(struct tnode*p){
         freetree(p->left);
         freetree(p->right);
         free(p->word);
-        free(p->lines);
     }
-}
-int noiseword(char *w){
-    static char *nw[]={
-        "a","an","and","are","in","is","of","or","that","the","this","to"
-    };
-    int cond,mid;
-    int low=0;
-    int high=sizeof(nw)/sizeof(char*)-1;
-    while(low<=high){
-        mid=(low+high)/2;
-        if((cond=strcmp(w,nw[mid]))<0)
-            high=mid-1;
-        else if(cond>0)
-            low=mid+1;
-        else 
-            return mid;
-    }
-    return -1;
 }
 
 int main(int argc,char *argv[]){
     struct tnode *root;
     char word[MAXWORD];
-    int linenum=1;
+    int found=NO;
+    int num;
+    num=(--argc&&(*++argv)[0]=='-')?atoi(argv[0]+1):6;
     root=NULL;
-    while(getword(word,MAXWORD)!=EOF){
-        if(isalpha(word[0])&&noiseword(word)==-1)
-            root=addtreex(root,word,linenum);
-        else if(word[0]=='\n')
-            linenum++;
+    while(fx_getword(word,MAXWORD)!=EOF){
+        if(isalpha(word[0])&&strlen(word)>=num)
+            root=addtreex(root,word,num,&found);
+        found=NO;
     }
     treeprint(root);
     freetree(root);

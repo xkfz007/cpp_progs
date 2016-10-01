@@ -1,5 +1,5 @@
 
-//#define _SIMPLE_GREP
+#define _SIMPLE_GREP
 #ifdef _SIMPLE_GREP
 #include <stdio.h>
 #include <string.h>

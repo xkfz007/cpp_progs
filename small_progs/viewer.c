@@ -1,8 +1,8 @@
 /*
  * This is a simple file viewer
  */
-//#define _SIMPLE_FILE_VIEWER
-#ifdef _SIMPLE_FILE_VIEWER
+//#define _VIEWER
+#ifdef _VIEWER
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,6 @@
 #define NROWS 24 
 #define NCOLS 79 
 #define HORIZ 20 
-#define RANDOM() rand()%NMAX
 // defination of stack    
 typedef  fpos_t  TYPE;
 TYPE stack[NMAX];

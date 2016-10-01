@@ -4,18 +4,18 @@
 #ifndef FX_MACROS_H
 #define FX_MACROS_H
 #include <limits.h>
-#define FX_MASK1(i) (1u<<i)
-#define FX_MASK0(i) ~(1u<<i)
+#define MASK1(i) (1u<<i)
+#define MASK0(i) ~(1u<<i)
 
-#define FX_SET(n,i)    ((n)|FX_MASK1(i))
-#define FX_RESET(n,i)  ((n)&FX_MASK0(i))
-#define FX_TOGGLE(n,i) ((n)^FX_MASK1(i))
-#define FX_TEST(n,i)   !!((n)&FX_MASK1(i))
-#define FX_NBITS(x)    (sizeof(x) * CHAR_BIT)
+#define SET(n,i)    ((n)|MASK1(i))
+#define RESET(n,i)  ((n)&MASK0(i))
+#define TOGGLE(n,i) ((n)^MASK1(i))
+#define TEST(n,i)   !!((n)&MASK1(i))
+#define NBITS(x)    (sizeof(x) * CHAR_BIT)
 
 //circlar shift
-#define FX_ROTL(val,s,n) (((val)<<n)|((val)>>(sizeof(val)*s-n)))
-#define FX_ROTR(val,s,n) (((val)>>n)|((val)<<(sizeof(val)*s-n)))
+#define ROTL(val,s,n) (((val)<<n)|((val)>>(sizeof(val)*s-n)))
+#define ROTR(val,s,n) (((val)>>n)|((val)<<(sizeof(val)*s-n)))
 
 //count '1' in number n
 static unsigned fx_count_one(unsigned n)
@@ -29,11 +29,14 @@ static unsigned fx_count_one(unsigned n)
     }
     return sum;
 }
-void _assert(char*cond,char*filename,long lineno)
+
+#ifndef ASSERT
+static void _assert(char*cond,char*filename,long lineno)
 {
 	fprintf(stdout,"assert:%s in file:%s, at line:%d\n",cond,filename,lineno);
 }
-#define FX_ASSERT(cond) ((cond)?(void)0:_assert(#cond,__FILE__,__LINE__))
+#define ASSERT(cond) ((cond)?(void)0:_assert(#cond,__FILE__,__LINE__))
+#endif
 
 
 //#define FX_TOUPPER(ch) ((ch)+'A'-'a')
@@ -42,8 +45,10 @@ void _assert(char*cond,char*filename,long lineno)
 /*
  * get the position of each MEMBER of the struct.
  */
-#define FX_OFFSETOF(type,f) ((int)((char*)&(((type*)0)->f)-(char*)(type*)0))
-#define FX_OFFSET(type,f) ((int)&(((type*)0)->f)
+#ifndef OFFSETOF
+#define OFFSETOF(type,f) ((int)((char*)&(((type*)0)->f)-(char*)(type*)0))
+#endif
+//#define OFFSET(type,f) ((int)&(((type*)0)->f)
 
 //typedef struct
 //{

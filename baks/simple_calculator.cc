@@ -1,5 +1,5 @@
 
-//#define _SIMPLE_CALCULATOR
+#define _SIMPLE_CALCULATOR
 #ifdef _SIMPLE_CALCULATOR
 #include <stdio.h>
 #include <stdlib.h>

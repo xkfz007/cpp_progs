@@ -474,5 +474,10 @@ int fx_match_list(const char *name, const char *list, char separator)
 }
 
 
+void fx_ungets(FILE*f,char *s){
+    int len=strlen(s);
+    while(len>0)
+        ungetc(s[--len],f);
+}
 
 #endif

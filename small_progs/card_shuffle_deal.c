@@ -15,32 +15,6 @@ struct card {
 
 typedef struct card Card; /* new type name for struct card */
 
-/* prototypes */
-void fillDeck( Card * const wDeck, const char * wFace[], 
-   const char * wSuit[] );
-void shuffle( Card * const wDeck );
-void deal( const Card * const wDeck );
-
-int main( void )
-{ 
-   Card deck[ 52 ]; /* define array of Cards */
-
-   /* initialize array of pointers */
-   const char *face[] = { "Ace", "Deuce", "Three", "Four", "Five",
-      "Six", "Seven", "Eight", "Nine", "Ten",
-      "Jack", "Queen", "King"};
-
-   /* initialize array of pointers */
-   const char *suit[] = { "Hearts", "Diamonds", "Clubs", "Spades"};
-
-   srand( time( NULL ) ); /* randomize */
-
-   fillDeck( deck, face, suit ); /* load the deck with Cards */
-   shuffle( deck ); /* put Cards in random order */
-   deal( deck ); /* deal all 52 Cards */
-   return 0; /* indicates successful termination */
-} /* end main */
-
 /* place strings into Card structures */
 void fillDeck( Card * const wDeck, const char * wFace[], 
    const char * wSuit[] )
@@ -81,5 +55,27 @@ void deal( const Card * const wDeck )
          ( i + 1 ) % 4 ? "  " : "\n" );
    } /* end for */
 } /* end function deal */
+int main( void )
+{ 
+   Card deck[ 52 ]; /* define array of Cards */
+
+   /* initialize array of pointers */
+   const char *face[] = { 
+      "Ace", "Deuce", "Three", "Four", "Five",
+      "Six", "Seven", "Eight", "Nine", "Ten",
+      "Jack", "Queen", "King"
+   };
+
+   /* initialize array of pointers */
+   const char *suit[] = { "Hearts", "Diamonds", "Clubs", "Spades"};
+
+   srand( time( NULL ) ); /* randomize */
+
+   fillDeck( deck, face, suit ); /* load the deck with Cards */
+   shuffle( deck ); /* put Cards in random order */
+   deal( deck ); /* deal all 52 Cards */
+   return 0; /* indicates successful termination */
+} /* end main */
+
 
 #endif

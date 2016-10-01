@@ -37,7 +37,7 @@ int dd(FILE *inf,FILE *outf,int sp,int length,int block){
     //assert(length==len_copyed);
     return len_copyed;
 }
-void usage(){
+static void usage(){
     fprintf(stdout,
 		"A simple implenmentation of UNIX dd. Version 0.2\n"
 		"Usage:dd <infile> <outfile> <startpos> <length> <block>\n"

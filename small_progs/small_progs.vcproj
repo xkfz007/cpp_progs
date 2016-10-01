@@ -332,47 +332,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\count_keywords.c"
-				>
-			</File>
-			<File
-				RelativePath=".\cross_referencer.c"
-				>
-			</File>
-			<File
-				RelativePath=".\cross_referencer2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\dcl.c"
-				>
-			</File>
-			<File
-				RelativePath=".\degree.c"
-				>
-			</File>
-			<File
-				RelativePath=".\emulate_tac.c"
-				>
-			</File>
-			<File
-				RelativePath=".\file_destroyer.c"
-				>
-			</File>
-			<File
-				RelativePath=".\file_record.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fold_lines.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\handle_signal.c"
-				>
-			</File>
-			<File
-				RelativePath=".\hex_dec.cc"
 				>
 			</File>
 			<File
@@ -380,67 +340,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\macro_preprocessor.c"
-				>
-			</File>
-			<File
-				RelativePath=".\prime.c"
-				>
-			</File>
-			<File
-				RelativePath=".\print_variables.c"
-				>
-			</File>
-			<File
-				RelativePath=".\qpscale.c"
-				>
-			</File>
-			<File
-				RelativePath=".\rat.c"
-				>
-			</File>
-			<File
-				RelativePath=".\rearrange.c"
-				>
-			</File>
-			<File
-				RelativePath=".\remove_comments.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\remove_comments2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\simple_calculator.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\simple_calculator2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\simple_grep.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\simple_tail.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\sort_input_lines.c"
-				>
-			</File>
-			<File
-				RelativePath=".\syntax_checker.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\text_query.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\viewer.c"
 				>
 			</File>
 		</Filter>
@@ -456,7 +356,19 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath=".\cref.c"
+				>
+			</File>
+			<File
+				RelativePath=".\dcl.c"
+				>
+			</File>
+			<File
 				RelativePath=".\dd.c"
+				>
+			</File>
+			<File
+				RelativePath=".\degree.c"
 				>
 			</File>
 			<File
@@ -464,7 +376,47 @@
 				>
 			</File>
 			<File
+				RelativePath=".\file_destroyer.c"
+				>
+			</File>
+			<File
+				RelativePath=".\hex_dec.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\keywords.c"
+				>
+			</File>
+			<File
 				RelativePath=".\measure.c"
+				>
+			</File>
+			<File
+				RelativePath=".\preprocess.c"
+				>
+			</File>
+			<File
+				RelativePath=".\prime.c"
+				>
+			</File>
+			<File
+				RelativePath=".\qpscale.c"
+				>
+			</File>
+			<File
+				RelativePath=".\rat.c"
+				>
+			</File>
+			<File
+				RelativePath=".\rcomment.c"
+				>
+			</File>
+			<File
+				RelativePath=".\syntax_checker.c"
+				>
+			</File>
+			<File
+				RelativePath=".\viewer.c"
 				>
 			</File>
 		</Filter>

@@ -1,21 +1,14 @@
+//#define _QPSCALE
 #ifdef _QPSCALE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-static double qp2qscale(int qp)
-{
-        return 0.85 * pow(2.0, ( qp - 12.0 ) / 6.0);
-}
-static double qscale2qp(double qscale)
-{
-        return 12.0 + 6.0 * log(qscale/0.85) / log(2.0) ;
-}
-static void usage(){
+#include "fx_image.h"
+static static void usage(){
     printf("usage:qpscale.exe number\n\
              int: qp=>qscale\n\
              float: qscale=>qp");
-    exit(-1);
 }
 
 int main(int argc,char* argv[])
