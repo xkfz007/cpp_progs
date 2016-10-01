@@ -348,19 +348,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\dd.c"
-				>
-			</File>
-			<File
-				RelativePath=".\dd.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\degree.c"
-				>
-			</File>
-			<File
-				RelativePath=".\dump.c"
 				>
 			</File>
 			<File
@@ -444,14 +432,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ssim.c"
-				>
-			</File>
-			<File
-				RelativePath=".\ssim_compare.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\syntax_checker.cc"
 				>
 			</File>
@@ -476,7 +456,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\psnr.c"
+				RelativePath=".\dd.c"
+				>
+			</File>
+			<File
+				RelativePath=".\dump.c"
+				>
+			</File>
+			<File
+				RelativePath=".\measure.c"
 				>
 			</File>
 		</Filter>

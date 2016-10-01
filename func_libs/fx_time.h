@@ -12,16 +12,16 @@
 #include <time.h>
 
 
-static FX_S64 fx_mdate( void )
+static int64_t fx_mdate( void )
 {
 #if _WIN32
     struct timeb tb;
     ftime( &tb );
-    return ((FX_S64)tb.time * 1000 + (FX_S64)tb.millitm) * 1000;
+    return ((int64_t)tb.time * 1000 + (int64_t)tb.millitm) * 1000;
 #else
     struct timeval tv_date;
     gettimeofday( &tv_date, NULL );
-    return (FX_S64)tv_date.tv_sec * 1000000 + (FX_S64)tv_date.tv_usec;
+    return (int64_t)tv_date.tv_sec * 1000000 + (int64_t)tv_date.tv_usec;
 #endif
 }
 /*get duration

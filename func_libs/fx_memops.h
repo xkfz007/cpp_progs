@@ -32,8 +32,8 @@
  ****************************************************************************/
 static void *fx_malloc( int i_size )
 {
-    FX_U8 *align_buf = NULL;
-    FX_U8 *buf = malloc( i_size + (NATIVE_ALIGN-1) + sizeof(void **) );
+    uint8_t *align_buf = NULL;
+    uint8_t *buf = malloc( i_size + (NATIVE_ALIGN-1) + sizeof(void **) );
     if( buf )
     {
         align_buf = buf + (NATIVE_ALIGN-1) + sizeof(void **);

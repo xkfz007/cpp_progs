@@ -27,28 +27,29 @@
 #ifndef _FX_TYPES_H
 #define _FX_TYPES_H
 
-typedef unsigned char    FX_U8;
-typedef signed char      FX_S8;
-typedef unsigned short   FX_U16;
-typedef signed short     FX_S16;
-typedef unsigned int     FX_U32;
-typedef signed int       FX_S32;
+typedef unsigned char    uint8_t;
+typedef signed char      int8_t;
+typedef unsigned short   uint16_t;
+typedef signed short     int16_t;
+typedef unsigned int     uint32_t;
+typedef signed int       int32_t;
 
-typedef unsigned char FX_Byte;
+typedef unsigned char    byte;
+typedef unsigned char    pixel;
 
 #if defined(WIN32)
-/** FX_U64 is a 64 bit unsigned quantity that is 64 bit word aligned */   
-typedef unsigned __int64  FX_U64;
+/** uint64_t is a 64 bit unsigned quantity that is 64 bit word aligned */   
+typedef unsigned __int64  uint64_t;
 
-/** FX_S64 is a 64 bit signed quantity that is 64 bit word aligned */
-typedef signed   __int64  FX_S64;
+/** int64_t is a 64 bit signed quantity that is 64 bit word aligned */
+typedef signed   __int64  int64_t;
 
 #else /* WIN32 */
-/** FX_U64 is a 64 bit unsigned quantity that is 64 bit word aligned */
-typedef unsigned long long FX_U64;
+/** uint64_t is a 64 bit unsigned quantity that is 64 bit word aligned */
+typedef unsigned long long uint64_t;
 
-/** FX_S64 is a 64 bit signed quantity that is 64 bit word aligned */
-typedef signed long long FX_S64;
+/** int64_t is a 64 bit signed quantity that is 64 bit word aligned */
+typedef signed long long int64_t;
 #endif /* WIN32 */
 
 #endif

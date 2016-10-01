@@ -427,6 +427,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fx_parseopt.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_string.h"
 				>
 			</File>

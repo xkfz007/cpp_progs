@@ -332,7 +332,7 @@ static int fx_isxdigit(int c)
  */
 int fx_strcasecmp(const char *a, const char *b)
 {
-    FX_U8 c1, c2;
+    uint8_t c1, c2;
     do {
         c1 = fx_tolower(*a++);
         c2 = fx_tolower(*b++);
@@ -348,7 +348,7 @@ int fx_strcasecmp(const char *a, const char *b)
 int fx_strncasecmp(const char *a, const char *b, size_t n)
 {
     const char *end = a + n;
-    FX_U8 c1, c2;
+    uint8_t c1, c2;
     do {
         c1 = fx_tolower(*a++);
         c2 = fx_tolower(*b++);
@@ -371,7 +371,7 @@ const char *fx_basename(const char *path)
     char *q = strrchr(path, '\\');
     char *d = strchr(path, ':');
 
-    p = FX_MAX3(p, q, d);
+    p = MAX3(p, q, d);
 #endif
 
     if (!p)
@@ -397,7 +397,7 @@ const char *fx_dirname(char *path)
 
     d = d ? d + 1 : d;
 
-    p = FX_MAX3(p, q, d);
+    p = MAX3(p, q, d);
 #endif
 
     if (!p)
@@ -435,8 +435,8 @@ int fx_match_name_internal(const char *name, const char *names,char delim)
         if (!p)
             p = names + strlen(names);
         names += negate;
-        len = FX_MAX(p - names, namelen);
-        if (!fx_strncasecmp(name, names, len) || !strncmp("ALL", names, FX_MAX(3, p - names)))
+        len = MAX(p - names, namelen);
+        if (!fx_strncasecmp(name, names, len) || !strncmp("ALL", names, MAX(3, p - names)))
             return !negate;
         names = p + (*p == ',');
     }

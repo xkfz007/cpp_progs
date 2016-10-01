@@ -2,30 +2,60 @@
 #define _FX_MATHOPS_H
 
 //decide if x is power of 2
-#define FX_ISPOWER2(x) ((x > 0) && (0 == (x & (x - 1))))
+#ifndef ISPOWER2
+#define ISPOWER2(x) ((x > 0) && (0 == (x & (x - 1))))
+#endif
 /*
  * get min of two numbers using bitwise ops
  * y^((x^y)&(-(x<y)))
  * x<y:  y^((x^y)&(-(x<y))) = y^((x^y)&(-1)) = y^((x^y)&0xffffffff) = y^(x^y) = (y^y)^x = 0^x = x
  * x>=y: y^((x^y)&(-(x<y))) = y^((x^y)&(-0)) = y^((x^y)&0) = y^0 = y
  */
-#define FX_MIN_BW(x,y) (y^((x^y)&(-(x<y))))
-#define FX_SWAP_BW(x,y) ((x)==(y)?NULL:((x)^=(y),(y)^=(x),(x)^=(y)))
+#ifndef MIN_BW
+#define MIN_BW(x,y) (y^((x^y)&(-(x<y))))
+#endif
+#ifndef SWAP_BW
+#define SWAP_BW(x,y) ((x)==(y)?NULL:((x)^=(y),(y)^=(x),(x)^=(y)))
+#endif
 
-#define FX_MIN(a,b) ( (a)<(b) ? (a) : (b) )
-#define FX_MAX(a,b) ( (a)>(b) ? (a) : (b) )
-#define FX_MIN3(a,b,c) FX_MIN((a),FX_MIN((b),(c)))
-#define FX_MAX3(a,b,c) FX_MAX((a),FX_MAX((b),(c)))
-#define FX_MIN4(a,b,c,d) FX_MIN((a),FX_MIN3((b),(c),(d)))
-#define FX_MAX4(a,b,c,d) FX_MAX((a),FX_MAX3((b),(c),(d)))
+#ifndef MIN
+#define MIN(a,b) ( (a)<(b) ? (a) : (b) )
+#endif
+#ifndef MAX
+#define MAX(a,b) ( (a)>(b) ? (a) : (b) )
+#endif
+#ifndef MIN3
+#define MIN3(a,b,c) MIN((a),MIN((b),(c)))
+#endif
+#ifndef MAX3
+#define MAX3(a,b,c) MAX((a),MAX((b),(c)))
+#endif
+#ifndef MIN4
+#define MIN4(a,b,c,d) MIN((a),MIN3((b),(c),(d)))
+#endif
+#ifndef MAX4
+#define MAX4(a,b,c,d) MAX((a),MAX3((b),(c),(d)))
+#endif
 
-#define FX_XCHG(type,a,b) do{ type t = a; a = b; b = t; } while(0)
-#define FX_FIX8(f) ((int)(f*(1<<8)+.5))
-#define FX_ALIGN(x,a) (((x)+((a)-1))&~((a)-1))
-#define FX_ARRAY_ELEMS(a) ((sizeof(a))/(sizeof(a[0])))
+#ifndef XCHG
+#define XCHG(type,a,b) do{ type t = a; a = b; b = t; } while(0)
+#endif
+#ifndef FIX8
+#define FIX8(f) ((int)(f*(1<<8)+.5))
+#endif
+#ifndef ALIGN
+#define ALIGN(x,a) (((x)+((a)-1))&~((a)-1))
+#endif
+#ifndef ARRAY_ELEMS
+#define ARRAY_ELEMS(a) ((sizeof(a))/(sizeof(a[0])))
+#endif
 
+#ifndef LOG2F
 #define LOG2F(x) (logf(x)/0.693147180559945f)
+#endif
+#ifndef LOG2
 #define LOG2(x) (log(x)/0.693147180559945)
+#endif
 
 
 #include "fx_types.h"
@@ -33,11 +63,11 @@
 /*
  * greatest common divisor
  */
-static FX_U64 fx_gcd( FX_U64 a, FX_U64 b )
+static uint64_t gcd( uint64_t a, uint64_t b )
 {
     while( 1 )
     {
-        FX_S64 c = a % b;
+        int64_t c = a % b;
         if( !c )
             return b;
         a = b;
@@ -47,7 +77,7 @@ static FX_U64 fx_gcd( FX_U64 a, FX_U64 b )
 /*
  * least common multiple
  */
-static FX_U64 lcm( FX_U64 a, FX_U64 b )
+static uint64_t lcm( uint64_t a, uint64_t b )
 {
     return ( a / gcd( a, b ) ) * b;
 }
@@ -77,8 +107,8 @@ static void name( type *n, type *d )\
     *d /= b;        \
 }
 
-REDUCE_FRACTION( fx_reduce_fraction  , FX_U32 )
-REDUCE_FRACTION( fx_reduce_fraction64, FX_U64 )
+REDUCE_FRACTION( fx_reduce_fraction  , uint32_t )
+REDUCE_FRACTION( fx_reduce_fraction64, uint64_t )
 
 
 
@@ -123,7 +153,7 @@ static int fx_log2_fast(int x)
  */
 static int fx_xsign (int x )
 {
-  return (( x >> 31) | (( int)( ((( FX_U32) - x)) >> 31)));
+  return (( x >> 31) | (( int)( ((( uint32_t) - x)) >> 31)));
 }
 
 

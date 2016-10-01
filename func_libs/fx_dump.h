@@ -4,12 +4,12 @@
 #include <stdio.h>
 void dump(FILE *f,int NBYTES)
 {
-    FX_Byte buf[512];
+    byte buf[512];
     int count;
     long address=0L;
 	//int NBYTES=16;
     int i;
-    while((count=fread(buf,sizeof(FX_Byte),NBYTES,f))>0)
+    while((count=fread(buf,sizeof(byte),NBYTES,f))>0)
     {
         fprintf(stdout," %06X ",address);
         for(i=0;i<NBYTES;++i)

@@ -38,6 +38,7 @@ int fx_rename( const char *oldname, const char *newname );
 int fx_stat( const char *path, fx_struct_stat *buf );
 int fx_vfprintf( FILE *stream, const char *format, va_list arg );
 int fx_is_pipe( const char *path );
+//#define S_ISREG(x) (((x) & S_IFMT) == S_IFREG)
 #else
 #define fx_fopen       fopen
 #define fx_rename      rename
@@ -142,28 +143,28 @@ static int fx_is_pipe( const char *path )
 }
 #endif
 
-static int fx_is_regular_file( FILE *filehandle )
-{
-    fx_struct_stat file_stat;
-    if( fx_fstat( fileno( filehandle ), &file_stat ) )
-        return 1;
-    return S_ISREG( file_stat.st_mode );
-}
-
-static int fx_is_regular_file_path( const char *filename )
-{
-    fx_struct_stat file_stat;
-    if( fx_stat( filename, &file_stat ) )
-        return !fx_is_pipe( filename );
-    return S_ISREG( file_stat.st_mode );
-}
+//static int fx_is_regular_file( FILE *filehandle )
+//{
+//    fx_struct_stat file_stat;
+//    if( fx_fstat( fileno( filehandle ), &file_stat ) )
+//        return 1;
+//    return S_ISREG( file_stat.st_mode );
+//}
+//
+//static int fx_is_regular_file_path( const char *filename )
+//{
+//    fx_struct_stat file_stat;
+//    if( fx_stat( filename, &file_stat ) )
+//        return !fx_is_pipe( filename );
+//    return S_ISREG( file_stat.st_mode );
+//}
 /*
  * get filesize
 */
-FX_S64 fx_get_filesize( FILE *fp )
+int64_t fx_get_filesize( FILE *fp )
 {
-    FX_S64 save_pos;
-    FX_S64 size_of_file;
+    int64_t save_pos;
+    int64_t size_of_file;
 	int ret;
 
 	if((save_pos = ftello( fp ))<0){

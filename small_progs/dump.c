@@ -3,7 +3,7 @@
  * this is a great program. it is used to print the binary file content on the
  * screen in hex form.
  */
-#define _DUMP
+//#define _DUMP
 #ifdef _DUMP
 
 #include <stdio.h>

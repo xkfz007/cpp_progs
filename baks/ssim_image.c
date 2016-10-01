@@ -1,36 +1,35 @@
 /*
  * this program is used to calculate the SSIM value between two images
  */
-#ifdef _SSIM
+#define _SSIM_IMAGE
+#ifdef  _SSIM_IMAGE
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "fx_types.h"
 
-typedef unsigned char imgpel;
-typedef unsigned char FX_Byte;
-
-void getmem2D(imgpel***img,int dim0,int dim1)
+void getmem2D(FX_Pixel***img,int dim0,int dim1)
 {
     int i;
-    if(NULL==(*img=(imgpel**)calloc(dim0,sizeof(imgpel*)))) {
+    if(NULL==(*img=(FX_Pixel**)calloc(dim0,sizeof(FX_Pixel*)))) {
         printf("memorry allocate errror\n");
         exit(-2);
     }
     for(i=0;i<dim0;++i) {
-        if(NULL==((*img)[i]=(imgpel*)calloc(dim1,sizeof(imgpel)))) {
+        if(NULL==((*img)[i]=(FX_Pixel*)calloc(dim1,sizeof(FX_Pixel)))) {
         printf("memorry allocate errror\n");
         exit(-2);
         }
     }
 }
 
-void freemem2D(imgpel**img,int dim0) {
+void freemem2D(FX_Pixel**img,int dim0) {
     int i;
     for(i=0;i<dim0;++i)
         free(img[i]);
     free(img);
 }
-void getImageData(char*filename,imgpel**img,int height,int width) {
+void getImageData(char*filename,FX_Pixel**img,int height,int width) {
     FX_Byte *buf;
     FILE *pImg;
     int frame_bytes=height*width;
@@ -61,7 +60,7 @@ void getImageData(char*filename,imgpel**img,int height,int width) {
     free(buf);
 }
 
-float compute_ssim (imgpel **refImg, imgpel **encImg, int height, int width, int win_height, int win_width)
+float compute_ssim (FX_Pixel **refImg, FX_Pixel **encImg, int height, int width, int win_height, int win_width)
 {
   static const float K1 = 0.01f, K2 = 0.03f;
   static float max_pix_value_sqd;
@@ -123,11 +122,10 @@ float compute_ssim (imgpel **refImg, imgpel **encImg, int height, int width, int
   return cur_distortion;
 }
 
-#if 0
 int main(int argc,char*argv[])
 {
     char*refname,*encname;
-    imgpel **refImg,**encImg;
+    FX_Pixel **refImg,**encImg;
     int height,width;
     int win_height,win_width;
     float ssim_score;
@@ -167,5 +165,4 @@ int main(int argc,char*argv[])
 
     return 0;
 }
-#endif
 #endif
