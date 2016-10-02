@@ -6,6 +6,7 @@
 #if _WIN32
 #include <sys/types.h>
 #include <sys/timeb.h>
+#define HAVE_GETSYSTEMTIMEASFILETIME 1
 #else
 #include <sys/time.h>
 #endif
@@ -30,5 +31,22 @@ i_end = fx_mdate();
 duration=(i_end-i_start)*1.0/1000 //microseconds
 duration=(i_end-i_start)*1.0/1000000 //seconds
 */
+
+static int64_t fx_gettime(void)
+{
+#if HAVE_GETTIMEOFDAY
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (int64_t)tv.tv_sec * 1000000 + tv.tv_usec;
+#elif HAVE_GETSYSTEMTIMEASFILETIME
+    FILETIME ft;
+    int64_t t;
+    GetSystemTimeAsFileTime(&ft);
+    t = (int64_t)ft.dwHighDateTime << 32 | ft.dwLowDateTime;
+    return t / 10 - 11644473600000000; /* Jan 1, 1601 */
+#else
+    return -1;
+#endif
+}
 
 #endif

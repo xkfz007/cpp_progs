@@ -26,18 +26,19 @@ static void fx_log(const char* caller, int level, const char* fmt, ...)
 		"Full",
 	};
     if (caller)
-        p += sprintf(buffer, "[%-4s]", caller);
+        p += sprintf(buffer+p, "[%-4s]", caller);
 	if(level>FX_LOG_TRACE)
 		level=FX_LOG_NONE;
 	if(level==FX_LOG_ERROR)
-		p += sprintf(buffer, "[%s]:[Errno=%d Err=%s]: ", log_level[level],errno,strerror(errno));
+		p += sprintf(buffer+p, "[%s]:[Errno=%d Err=%s]: ", log_level[level],errno,strerror(errno));
 	else
-		p += sprintf(buffer, "[%s]: ", log_level[level]);
+		p += sprintf(buffer+p, "[%s]: ", log_level[level]);
 
     va_start(arg, fmt);
     vsnprintf(buffer + p, bufferSize - p, fmt, arg);
     va_end(arg);
     fputs(buffer, stderr);
+    fflush(stderr);
 
 #undef bufferSize
 }
@@ -79,8 +80,8 @@ const char *colors[]={
 };
 const char *const normal = "\033[0m";
 static void color_print(int c,const char* fmt, ...){
-    printf("%s",colors[c]);
     va_list arg;
+    printf("%s",colors[c]);
     va_start(arg, fmt);
     vprintf(fmt, arg);
     va_end(arg);
@@ -144,7 +145,7 @@ static void colored_fputs(int level, int tint, const char *str)
     if (use_color < 0)
         check_color_terminal();
 
-    if (level == AV_LOG_INFO/8) local_use_color = 0;
+    if (level == FX_LOG_INFO/8) local_use_color = 0;
     else                        local_use_color = use_color;
 
 #if defined(_WIN32) && !defined(__MINGW32CE__) && HAVE_SETCONSOLETEXTATTRIBUTE

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="small_progs"
+	ProjectGUID="{79ADB4C7-819C-4375-9A63-49D2133D3F4A}"
+	VCNestedProjectGUID="{666FA101-37E2-418B-9E8F-C7050AC700D3}"
+	VCNestedProjectFileName="small_progs.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Debug|x64">
+			<Tool
+				Name="CppCmplrTool"
+				C99Support="true"/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64">
+			<Tool
+				Name="CppCmplrTool"
+				C99Support="true"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

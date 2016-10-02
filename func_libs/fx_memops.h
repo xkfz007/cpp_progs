@@ -61,20 +61,15 @@ static void fx_free( void *p )
     }
 }
 
+static void fx_freep(void *arg)
+{
+    void *val;
+    memcpy(&val, arg, sizeof(val));
+    //memcpy(arg, &(void *){ NULL }, sizeof(val));
+    memset(arg, 0, sizeof(val));
+    fx_free(val);
+}
 
-
-#define FX_CHECKED_MALLOC( var, size )\
-do {\
-    var = fx_malloc( size );\
-    if( !var )\
-        goto fail;\
-} while( 0 )
-
-#define FX_CHECKED_MALLOCZERO( var, size )\
-do {\
-    FX_CHECKED_MALLOC( var, size );\
-    memset( var, 0, size );\
-} while( 0 )
 
 
 void *fx_mallocz(size_t size)

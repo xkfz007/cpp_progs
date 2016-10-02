@@ -21,6 +21,61 @@
 
 
 /**
+ * Locale-independent conversion of ASCII isdigit.
+ */
+static int fx_isdigit(int c)
+{
+    return c >= '0' && c <= '9';
+}
+
+/**
+ * Locale-independent conversion of ASCII isgraph.
+ */
+static  int fx_isgraph(int c)
+{
+    return c > 32 && c < 127;
+}
+
+/**
+ * Locale-independent conversion of ASCII isspace.
+ */
+static int fx_isspace(int c)
+{
+    return c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' ||
+           c == '\v';
+}
+
+/**
+ * Locale-independent conversion of ASCII characters to uppercase.
+ */
+static int fx_toupper(int c)
+{
+    if (c >= 'a' && c <= 'z')
+        c ^= 0x20;
+    return c;
+}
+
+/**
+ * Locale-independent conversion of ASCII characters to lowercase.
+ */
+static int fx_tolower(int c)
+{
+    if (c >= 'A' && c <= 'Z')
+        c ^= 0x20;
+    return c;
+}
+
+/**
+ * Locale-independent conversion of ASCII isxdigit.
+ */
+static int fx_isxdigit(int c)
+{
+    c = fx_tolower(c);
+    return fx_isdigit(c) || (c >= 'a' && c <= 'f');
+}
+
+
+/**
  * Return non-zero if pfx is a prefix of str. If it is, *ptr is set to
  * the address of the first character in str after the prefix.
  *
@@ -55,8 +110,8 @@ int fx_stristart(const char *str, const char *pfx, const char **ptr)
 /* strend: return 1 if string sfix occurs at the end of str */
 int fx_strend(const char *s, const char *t,const char **ptr)
 {
-    char *bs=s; /* remember beginning of strs */
-    char *bt=t;
+    const char *bs=s; /* remember beginning of strs */
+    const char *bt=t;
     for(;*s;s++)/* end of the string */
         ;
     for(;*t;t++)
@@ -271,61 +326,6 @@ char *fx_strtok(char *s, const char *delim, char **saveptr)
     return tok;
 }
 
-
-/**
- * Locale-independent conversion of ASCII isdigit.
- */
-static int fx_isdigit(int c)
-{
-    return c >= '0' && c <= '9';
-}
-
-/**
- * Locale-independent conversion of ASCII isgraph.
- */
-static  int fx_isgraph(int c)
-{
-    return c > 32 && c < 127;
-}
-
-/**
- * Locale-independent conversion of ASCII isspace.
- */
-static int fx_isspace(int c)
-{
-    return c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' ||
-           c == '\v';
-}
-
-/**
- * Locale-independent conversion of ASCII characters to uppercase.
- */
-static int fx_toupper(int c)
-{
-    if (c >= 'a' && c <= 'z')
-        c ^= 0x20;
-    return c;
-}
-
-/**
- * Locale-independent conversion of ASCII characters to lowercase.
- */
-static int fx_tolower(int c)
-{
-    if (c >= 'A' && c <= 'Z')
-        c ^= 0x20;
-    return c;
-}
-
-/**
- * Locale-independent conversion of ASCII isxdigit.
- */
-static int fx_isxdigit(int c)
-{
-    c = fx_tolower(c);
-    return fx_isdigit(c) || (c >= 'a' && c <= 'f');
-}
-
 /**
  * Locale-independent case-insensitive compare.
  * @note This means only ASCII-range characters are case-insensitive
@@ -474,10 +474,11 @@ int fx_match_list(const char *name, const char *list, char separator)
 }
 
 
-void fx_ungets(FILE*f,char *s){
+static void fx_ungets(FILE*f,char *s){
     int len=strlen(s);
     while(len>0)
         ungetc(s[--len],f);
 }
+
 
 #endif

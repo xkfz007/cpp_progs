@@ -1,5 +1,6 @@
 #ifndef _FX_MATHOPS_H
 #define _FX_MATHOPS_H
+#include "fx_types.h"
 
 //decide if x is power of 2
 #ifndef ISPOWER2
@@ -62,17 +63,37 @@
 #define LOG2(x) (log(x)/0.693147180559945)
 #endif
 
-#ifndef PI
-#define PI 3.1415926
+#ifndef M_E
+#define M_E            2.7182818284590452354   /* e */
+#endif
+#ifndef M_LN2
+#define M_LN2          0.69314718055994530942  /* log_e 2 */
+#endif
+#ifndef M_LN10
+#define M_LN10         2.30258509299404568402  /* log_e 10 */
+#endif
+#ifndef M_LOG2_10
+#define M_LOG2_10      3.32192809488736234787  /* log_2 10 */
+#endif
+#ifndef M_PHI
+#define M_PHI          1.61803398874989484820   /* phi / golden ratio */
+#endif
+#ifndef M_PI
+#define M_PI           3.14159265358979323846  /* pi */
 #endif
 
+#ifndef NAN
+#define NAN            (float)(0x7fc00000)
+#endif
+#ifndef INFINITY
+#define INFINITY       (float)(0x7f800000)
+#endif
 
-#include "fx_types.h"
-
+#define UINT64_MAX      ((uint64_t)(0xffffffffffffffff))
 /*
  * greatest common divisor
  */
-static uint64_t gcd( uint64_t a, uint64_t b )
+static int64_t fx_gcd( int64_t a, int64_t b )
 {
     while( 1 )
     {
@@ -86,9 +107,9 @@ static uint64_t gcd( uint64_t a, uint64_t b )
 /*
  * least common multiple
  */
-static uint64_t lcm( uint64_t a, uint64_t b )
+static int64_t fx_lcm( int64_t a, int64_t b )
 {
-    return ( a / gcd( a, b ) ) * b;
+    return ( a / fx_gcd( a, b ) ) * b;
 }
 
 
@@ -166,6 +187,29 @@ static int fx_xsign (int x )
 }
 
 
+#define FX_CLIP(name, type)\
+static int name(type a, type amin, type amax)\
+{\
+    if      (a < amin) return amin;\
+    else if (a > amax) return amax;\
+    else               return a;\
+}
+FX_CLIP(fx_clip,int)
+FX_CLIP(fx_clipd,double)
 
+static int fx_median( int a, int b, int c )
+{
+    int t = (a-b)&((a-b)>>31);
+    a -= t;
+    b += t;
+    b -= (b-c)&((b-c)>>31);
+    b += (a-b)&((a-b)>>31);
+    return b;
+}
+
+static double fx_trunc(double x)
+{
+    return (x > 0) ? floor(x) : ceil(x);
+}
 
 #endif

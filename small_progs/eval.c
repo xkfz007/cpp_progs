@@ -25,6 +25,9 @@
  *
  * see http://joe.hotchkiss.com/programming/eval/eval.html
  */
+/*
+ * Modified by Felix
+ */
 #define _EVAL_FF
 #ifdef _EVAL_FF
 #include <float.h>
@@ -34,58 +37,39 @@
 #include <time.h>
 #include <Windows.h>
 #include <stdio.h>
-typedef char int8_t;
-typedef unsigned char uint8_t;
-typedef unsigned int uint32_t;
-typedef __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-#define      UINT64_MAX      ((unsigned __int64)(0xffffffffffffffff))
+#include "fx_mathops.h"
+#include "fx_log.h"
+#include "fx_string.h"
+#include "fx_time.h"
+#include "fx_memops.h"
+//typedef char int8_t;
+//typedef unsigned char uint8_t;
+//typedef unsigned int uint32_t;
+//typedef __int64 int64_t;
+//typedef unsigned __int64 uint64_t;
+//#define      UINT64_MAX      ((unsigned __int64)(0xffffffffffffffff))
 //#ifndef NAN
 //#define NAN 0
 //#endif
 
-#ifndef M_E
-#define M_E            2.7182818284590452354   /* e */
-#endif
-#ifndef M_LN2
-#define M_LN2          0.69314718055994530942  /* log_e 2 */
-#endif
-#ifndef M_LN10
-#define M_LN10         2.30258509299404568402  /* log_e 10 */
-#endif
-#ifndef M_LOG2_10
-#define M_LOG2_10      3.32192809488736234787  /* log_2 10 */
-#endif
-#ifndef M_PHI
-#define M_PHI          1.61803398874989484820   /* phi / golden ratio */
-#endif
-#ifndef M_PI
-#define M_PI           3.14159265358979323846  /* pi */
-#endif
 
-#define CONFIG_FTRAPV 0
-#define FF_QP2LAMBDA 118 ///< factor to convert from H.263 QP to lambda
-#define ENOMEM          12
-#define EINVAL          22
-#define AV_LOG_INFO     32
-#define AV_LOG_ERROR    16
+#define CONFIG_FTRAPV   0
+#define FF_QP2LAMBDA    118 ///< factor to convert from H.263 QP to lambda
+#define ENOMEM          -12
+#define EINVAL          -22
+//#define AV_LOG_INFO     32
+//#define AV_LOG_ERROR    16
 
 /* error handling */
-#if EDOM > 0
-#define AVERROR(e) (-(e))   ///< Returns a negative error code from a POSIX error code, to return from library functions.
-#define AVUNERROR(e) (-(e)) ///< Returns a POSIX error code from a library function error return value.
-#else
-/* Some platforms have E* and errno already negated. */
-#define AVERROR(e) (e)
-#define AVUNERROR(e) (e)
-#endif
+//#if EDOM > 0
+//#define AVERROR(e) (-(e))   ///< Returns a negative error code from a POSIX error code, to return from library functions.
+//#define AVUNERROR(e) (-(e)) ///< Returns a POSIX error code from a library function error return value.
+//#else
+///* Some platforms have E* and errno already negated. */
+//#define AVERROR(e) (e)
+//#define AVUNERROR(e) (e)
+//#endif
 
-#ifndef NAN
-#define NAN            (float)(0x7fc00000)
-#endif
-#ifndef INFINITY
-#define INFINITY       (float)(0x7f800000)
-#endif
 
 
 const uint8_t av_reverse[256] = {
@@ -160,44 +144,6 @@ static const struct {
     { "QP2LAMBDA", FF_QP2LAMBDA },
 };
 
-double av_strtod(const char *numstr, char **tail)
-{
-    double d;
-    char *next;
-    if(numstr[0]=='0' && (numstr[1]|0x20)=='x') {
-        d = strtoul(numstr, &next, 16);
-    } else
-        d = strtod(numstr, &next);
-    /* if parsing succeeded, check for and interpret postfixes */
-    if (next!=numstr) {
-        if (next[0] == 'd' && next[1] == 'B') {
-            /* treat dB as decibels instead of decibytes */
-            d = pow(10, d / 20);
-            next += 2;
-        } else if (*next >= 'E' && *next <= 'z') {
-            int e= si_prefixes[*next - 'E'];
-            if (e) {
-                if (next[1] == 'i') {
-                    d*= pow( 2, e/0.3);
-                    next+=2;
-                } else {
-                    d*= pow(10, e);
-                    next++;
-                }
-            }
-        }
-
-        if (*next=='B') {
-            d*=8;
-            next++;
-        }
-    }
-    /* if requested, fill in tail with the position after the last parsed
-       character */
-    if (tail)
-        *tail = next;
-    return d;
-}
 
 #define IS_IDENTIFIER_CHAR(c) ((c) - '0' <= 9U || (c) - 'a' <= 25U || (c) - 'A' <= 25U || (c) == '_')
 
@@ -231,48 +177,19 @@ typedef struct AVExpr {
     struct AVExpr *param[3];
     double *var;
 }AVExpr;
-#define HAVE_GETSYSTEMTIMEASFILETIME 1
-int64_t av_gettime(void)
-{
-#if HAVE_GETTIMEOFDAY
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (int64_t)tv.tv_sec * 1000000 + tv.tv_usec;
-#elif HAVE_GETSYSTEMTIMEASFILETIME
-    FILETIME ft;
-    int64_t t;
-    GetSystemTimeAsFileTime(&ft);
-    t = (int64_t)ft.dwHighDateTime << 32 | ft.dwLowDateTime;
-    return t / 10 - 11644473600000000; /* Jan 1, 1601 */
-#else
-    return -1;
-#endif
-}
 
-void av_log(void* avcl, int level, const char *fmt, ...)
-{
-    va_list vl;
-    va_start(vl, fmt);
-    vprintf(fmt,vl);
-    va_end(vl);
-}
+//void av_log(void* avcl, int level, const char *fmt, ...)
+//{
+//    va_list vl;
+//    va_start(vl, fmt);
+//    vprintf(fmt,vl);
+//    va_end(vl);
+//}
 static double etime(double v)
 {
-    return av_gettime() * 0.000001;
+    return fx_gettime() * 0.000001;
 }
 
-static int av_clip(int a, int amin, int amax)
-{
-    if      (a < amin) return amin;
-    else if (a > amax) return amax;
-    else               return a;
-}
-static double av_clipd(double a, double amin, double amax)
-{
-    if      (a < amin) return amin;
-    else if (a > amax) return amax;
-    else               return a;
-}
 
 union av_intfloat32 {
     uint32_t i;
@@ -299,18 +216,14 @@ static int isinf(float x)
     return !(v & 0x007fffff);
 }
 
-static double trunc(double x)
-{
-    return (x > 0) ? floor(x) : ceil(x);
-}
 
-int64_t av_gcd(int64_t a, int64_t b)
-{
-    if (b)
-        return av_gcd(b, a % b);
-    else
-        return a;
-}
+//int64_t av_gcd(int64_t a, int64_t b)
+//{
+//    if (b)
+//        return av_gcd(b, a % b);
+//    else
+//        return a;
+//}
 static double eval_expr(Parser *p, AVExpr *e)
 {
     switch (e->type) {
@@ -321,12 +234,12 @@ static double eval_expr(Parser *p, AVExpr *e)
         case e_func2:  return e->value * e->a.func2(p->opaque, eval_expr(p, e->param[0]), eval_expr(p, e->param[1]));
         case e_squish: return 1/(1+exp(4*eval_expr(p, e->param[0])));
         case e_gauss: { double d = eval_expr(p, e->param[0]); return exp(-d*d/2)/sqrt(2*M_PI); }
-        case e_ld:     return e->value * p->var[av_clip(eval_expr(p, e->param[0]), 0, VARS-1)];
+        case e_ld:     return e->value * p->var[fx_clip(eval_expr(p, e->param[0]), 0, VARS-1)];
         case e_isnan:  return e->value * !!isnan(eval_expr(p, e->param[0]));
         case e_isinf:  return e->value * !!isinf(eval_expr(p, e->param[0]));
         case e_floor:  return e->value * floor(eval_expr(p, e->param[0]));
         case e_ceil :  return e->value * ceil (eval_expr(p, e->param[0]));
-        case e_trunc:  return e->value * trunc(eval_expr(p, e->param[0]));
+        case e_trunc:  return e->value * fx_trunc(eval_expr(p, e->param[0]));
         case e_sqrt:   return e->value * sqrt (eval_expr(p, e->param[0]));
         case e_not:    return e->value * (eval_expr(p, e->param[0]) == 0);
         case e_if:     return e->value * (eval_expr(p, e->param[0]) ? eval_expr(p, e->param[1]) :
@@ -338,7 +251,7 @@ static double eval_expr(Parser *p, AVExpr *e)
             double min = eval_expr(p, e->param[1]), max = eval_expr(p, e->param[2]);
             if (isnan(min) || isnan(max) || isnan(x) || min > max)
                 return NAN;
-            return e->value * av_clipd(eval_expr(p, e->param[0]), min, max);
+            return e->value * fx_clipd(eval_expr(p, e->param[0]), min, max);
         }
         case e_between: {
             double d = eval_expr(p, e->param[0]);
@@ -347,12 +260,12 @@ static double eval_expr(Parser *p, AVExpr *e)
         }
         case e_print: {
             double x = eval_expr(p, e->param[0]);
-            int level = e->param[1] ? av_clip(eval_expr(p, e->param[1]), INT_MIN, INT_MAX) : AV_LOG_INFO;
-            av_log(p, level, "%f\n", x);
+            int level = e->param[1] ? fx_clip(eval_expr(p, e->param[1]), INT_MIN, INT_MAX) : FX_LOG_INFO;
+            fx_log("EVAL", level, "%f\n", x);
             return x;
         }
         case e_random:{
-            int idx= av_clip(eval_expr(p, e->param[0]), 0, VARS-1);
+            int idx= fx_clip(eval_expr(p, e->param[0]), 0, VARS-1);
             uint64_t r= isnan(p->var[idx]) ? 0 : p->var[idx];
             r= r*1664525+1013904223;
             p->var[idx]= r;
@@ -367,7 +280,7 @@ static double eval_expr(Parser *p, AVExpr *e)
         case e_taylor: {
             double t = 1, d = 0, v;
             double x = eval_expr(p, e->param[1]);
-            int id = e->param[2] ? av_clip(eval_expr(p, e->param[2]), 0, VARS-1) : 0;
+            int id = e->param[2] ? fx_clip(eval_expr(p, e->param[2]), 0, VARS-1) : 0;
             int i;
             double var0 = p->var[id];
             for(i=0; i<1000; i++) {
@@ -429,7 +342,7 @@ static double eval_expr(Parser *p, AVExpr *e)
             double d2 = eval_expr(p, e->param[1]);
             switch (e->type) {
                 case e_mod: return e->value * (d - floor((!CONFIG_FTRAPV || d2) ? d / d2 : d * INFINITY) * d2);
-                case e_gcd: return e->value * av_gcd(d,d2);
+                case e_gcd: return e->value * fx_gcd(d,d2);
                 case e_max: return e->value * (d >  d2 ?   d : d2);
                 case e_min: return e->value * (d <  d2 ?   d : d2);
                 case e_eq:  return e->value * (d == d2 ? 1.0 : 0.0);
@@ -442,7 +355,7 @@ static double eval_expr(Parser *p, AVExpr *e)
                 case e_div: return e->value * ((!CONFIG_FTRAPV || d2 ) ? (d / d2) : d * INFINITY);
                 case e_add: return e->value * (d + d2);
                 case e_last:return e->value * d2;
-                case e_st : return e->value * (p->var[av_clip(d, 0, VARS-1)]= d2);
+                case e_st : return e->value * (p->var[fx_clip(d, 0, VARS-1)]= d2);
                 case e_hypot:return e->value * (sqrt(d*d + d2*d2));
                 case e_bitand: return isnan(d) || isnan(d2) ? NAN : e->value * ((long int)d & (long int)d2);
                 case e_bitor:  return isnan(d) || isnan(d2) ? NAN : e->value * ((long int)d | (long int)d2);
@@ -454,64 +367,102 @@ static double eval_expr(Parser *p, AVExpr *e)
 
 static int parse_expr(AVExpr **e, Parser *p);
 
-void av_free(void *ptr)
+static double fx_strtod(const char *numstr, char **tail)
 {
-    free(ptr);
-}
+    double d;
+    char *next;
+    if(numstr[0]=='0' && (numstr[1]|0x20)=='x') {
+        d = strtoul(numstr, &next, 16);
+    } else
+        d = strtod(numstr, &next);
+    /* if parsing succeeded, check for and interpret postfixes */
+    if (next!=numstr) {
+        if (next[0] == 'd' && next[1] == 'B') {
+            /* treat dB as decibels instead of decibytes */
+            d = pow(10, d / 20);
+            next += 2;
+        } else if (*next >= 'E' && *next <= 'z') {
+            int e= si_prefixes[*next - 'E'];
+            if (e) {
+                if (next[1] == 'i') {
+                    d*= pow( 2, e/0.3);
+                    next+=2;
+                } else {
+                    d*= pow(10, e);
+                    next++;
+                }
+            }
+        }
 
-void av_freep(void *arg)
-{
-    void *val;
-
-    memcpy(&val, arg, sizeof(val));
-    //memcpy(arg, &(void *){ NULL }, sizeof(val));
-    memset(arg, 0, sizeof(val));
-    av_free(val);
+        if (*next=='B') {
+            d*=8;
+            next++;
+        }
+    }
+    /* if requested, fill in tail with the position after the last parsed
+       character */
+    if (tail)
+        *tail = next;
+    return d;
 }
-void av_expr_free(AVExpr *e)
+//void av_free(void *ptr)
+//{
+//    free(ptr);
+//}
+
+//void av_freep(void *arg)
+//{
+//    void *val;
+//
+//    memcpy(&val, arg, sizeof(val));
+//    //memcpy(arg, &(void *){ NULL }, sizeof(val));
+//    memset(arg, 0, sizeof(val));
+//    av_free(val);
+//}
+void fx_expr_free(AVExpr *e)
 {
     if (!e) return;
-    av_expr_free(e->param[0]);
-    av_expr_free(e->param[1]);
-    av_expr_free(e->param[2]);
-    av_freep(&e->var);
-    av_freep(&e);
+    fx_expr_free(e->param[0]);
+    fx_expr_free(e->param[1]);
+    fx_expr_free(e->param[2]);
+    fx_freep(&e->var);
+    fx_freep(&e);
 }
 static size_t max_alloc_size= INT_MAX;
-void *av_malloc(size_t size)
-{
-    void *ptr = NULL;
-
-    /* let's disallow possibly ambiguous cases */
-    if (size > (max_alloc_size - 32))
-        return NULL;
-
-    ptr = malloc(size);
-    if(!ptr && !size) {
-        size = 1;
-        ptr= av_malloc(1);
-    }
-    return ptr;
-}
-void *av_mallocz(size_t size)
-{
-    void *ptr = av_malloc(size);
-    if (ptr)
-        memset(ptr, 0, size);
-    return ptr;
-}
+//void *av_malloc(size_t size)
+//{
+//    void *ptr = NULL;
+//
+//    /* let's disallow possibly ambiguous cases */
+//    if (size > (max_alloc_size - 32))
+//        return NULL;
+//
+//    ptr = malloc(size);
+//    if(!ptr && !size) {
+//        size = 1;
+//        ptr= av_malloc(1);
+//    }
+//    return ptr;
+//}
+//void *av_mallocz(size_t size)
+//{
+//    void *ptr = av_malloc(size);
+//    if (ptr)
+//        memset(ptr, 0, size);
+//    return ptr;
+//}
 #define FF_ARRAY_ELEMS(a) (sizeof(a) / sizeof((a)[0]))
 static int parse_primary(AVExpr **e, Parser *p)
 {
-    AVExpr *d = av_mallocz(sizeof(AVExpr));
+    AVExpr *d = fx_mallocz(sizeof(AVExpr));
     char *next = p->s, *s0 = p->s;
     int ret, i;
 
     if (!d)
-        return AVERROR(ENOMEM);
+        return ENOMEM;
 
     /* number */
-    d->value = av_strtod(p->s, &next);
+    d->value = fx_strtod(p->s, &next);
     if (next != p->s) {
         d->type = e_value;
         p->s= next;
@@ -542,27 +493,27 @@ static int parse_primary(AVExpr **e, Parser *p)
 
     p->s= strchr(p->s, '(');
     if (!p->s) {
-        av_log(p, AV_LOG_ERROR, "Undefined constant or missing '(' in '%s'\n", s0);
+        fx_log("EVAL", FX_LOG_ERROR, "Undefined constant or missing '(' in '%s'\n", s0);
         p->s= next;
-        av_expr_free(d);
-        return AVERROR(EINVAL);
+        fx_expr_free(d);
+        return EINVAL;
     }
     p->s++; // "("
     if (*next == '(') { // special case do-nothing
-        av_freep(&d);
+        fx_freep(&d);
         if ((ret = parse_expr(&d, p)) < 0)
             return ret;
         if (p->s[0] != ')') {
-            av_log(p, AV_LOG_ERROR, "Missing ')' in '%s'\n", s0);
-            av_expr_free(d);
-            return AVERROR(EINVAL);
+            fx_log("EVAL", FX_LOG_ERROR, "Missing ')' in '%s'\n", s0);
+            fx_expr_free(d);
+            return EINVAL;
         }
         p->s++; // ")"
         *e = d;
         return 0;
     }
     if ((ret = parse_expr(&(d->param[0]), p)) < 0) {
-        av_expr_free(d);
+        fx_expr_free(d);
         return ret;
     }
     if (p->s[0]== ',') {
@@ -574,9 +525,9 @@ static int parse_primary(AVExpr **e, Parser *p)
         parse_expr(&d->param[2], p);
     }
     if (p->s[0] != ')') {
-        av_log(p, AV_LOG_ERROR, "Missing ')' or too many args in '%s'\n", s0);
-        av_expr_free(d);
-        return AVERROR(EINVAL);
+        fx_log("EVAL", FX_LOG_ERROR, "Missing ')' or too many args in '%s'\n", s0);
+        fx_expr_free(d);
+        return (EINVAL);
     }
     p->s++; // ")"
 
@@ -646,9 +597,9 @@ static int parse_primary(AVExpr **e, Parser *p)
             }
         }
 
-        av_log(p, AV_LOG_ERROR, "Unknown function in '%s'\n", s0);
-        av_expr_free(d);
-        return AVERROR(EINVAL);
+        fx_log("EVAL", FX_LOG_ERROR, "Unknown function in '%s'\n", s0);
+        fx_expr_free(d);
+        return (EINVAL);
     }
 
     *e = d;
@@ -657,7 +608,7 @@ static int parse_primary(AVExpr **e, Parser *p)
 
 static AVExpr *make_eval_expr(int type, int value, AVExpr *p0, AVExpr *p1)
 {
-    AVExpr *e = av_mallocz(sizeof(AVExpr));
+    AVExpr *e = fx_mallocz(sizeof(AVExpr));
     if (!e)
         return NULL;
     e->type     =type   ;
@@ -699,14 +650,14 @@ static int parse_factor(AVExpr **e, Parser *p)
         e1 = e0;
         p->s++;
         if ((ret = parse_dB(&e2, p, &sign2)) < 0) {
-            av_expr_free(e1);
+            fx_expr_free(e1);
             return ret;
         }
         e0 = make_eval_expr(e_pow, 1, e1, e2);
         if (!e0) {
-            av_expr_free(e1);
-            av_expr_free(e2);
-            return AVERROR(ENOMEM);
+            fx_expr_free(e1);
+            fx_expr_free(e2);
+            return (ENOMEM);
         }
         if (e0->param[1]) e0->param[1]->value *= (sign2|1);
     }
@@ -726,14 +677,14 @@ static int parse_term(AVExpr **e, Parser *p)
         int c= *p->s++;
         e1 = e0;
         if ((ret = parse_factor(&e2, p)) < 0) {
-            av_expr_free(e1);
+            fx_expr_free(e1);
             return ret;
         }
         e0 = make_eval_expr(c == '*' ? e_mul : e_div, 1, e1, e2);
         if (!e0) {
-            av_expr_free(e1);
-            av_expr_free(e2);
-            return AVERROR(ENOMEM);
+            fx_expr_free(e1);
+            fx_expr_free(e2);
+            return (ENOMEM);
         }
     }
     *e = e0;
@@ -749,14 +700,14 @@ static int parse_subexpr(AVExpr **e, Parser *p)
     while (*p->s == '+' || *p->s == '-') {
         e1 = e0;
         if ((ret = parse_term(&e2, p)) < 0) {
-            av_expr_free(e1);
+            fx_expr_free(e1);
             return ret;
         }
         e0 = make_eval_expr(e_add, 1, e1, e2);
         if (!e0) {
-            av_expr_free(e1);
-            av_expr_free(e2);
-            return AVERROR(ENOMEM);
+            fx_expr_free(e1);
+            fx_expr_free(e2);
+            return (ENOMEM);
         }
     };
 
@@ -769,7 +720,7 @@ static int parse_expr(AVExpr **e, Parser *p)
     int ret;
     AVExpr *e0, *e1, *e2;
     if (p->stack_index <= 0) //protect against stack overflows
-        return AVERROR(EINVAL);
+        return (EINVAL);
     p->stack_index--;
 
     if ((ret = parse_subexpr(&e0, p)) < 0)
@@ -778,14 +729,14 @@ static int parse_expr(AVExpr **e, Parser *p)
         p->s++;
         e1 = e0;
         if ((ret = parse_subexpr(&e2, p)) < 0) {
-            av_expr_free(e1);
+            fx_expr_free(e1);
             return ret;
         }
         e0 = make_eval_expr(e_last, 1, e1, e2);
         if (!e0) {
-            av_expr_free(e1);
-            av_expr_free(e2);
-            return AVERROR(ENOMEM);
+            fx_expr_free(e1);
+            fx_expr_free(e2);
+            return (ENOMEM);
         }
     };
 
@@ -831,11 +782,11 @@ static int verify_expr(AVExpr *e)
     }
 }
 
-int av_isspace(int c)
-{
-    return c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' ||
-           c == '\v';
-}
+//int av_isspace(int c)
+//{
+//    return c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' ||
+//           c == '\v';
+//}
 int av_expr_parse(AVExpr **expr, const char *s,
                   const char * const *const_names,
                   const char * const *func1_names, double (* const *funcs1)(void *, double),
@@ -844,16 +795,16 @@ int av_expr_parse(AVExpr **expr, const char *s,
 {
     Parser p = { 0 };
     AVExpr *e = NULL;
-    char *w = av_malloc(strlen(s) + 1);
+    char *w = fx_malloc(strlen(s) + 1);
     char *wp = w;
     const char *s0 = s;
     int ret = 0;
 
     if (!w)
-        return AVERROR(ENOMEM);
+        return (ENOMEM);
 
     while (*s)
-        if (!av_isspace(*s++)) *wp++ = s[-1];
+        if (!fx_isspace(*s++)) *wp++ = s[-1];
     *wp++ = 0;
 
     //p.class      = &eval_class;
@@ -870,24 +821,24 @@ int av_expr_parse(AVExpr **expr, const char *s,
     if ((ret = parse_expr(&e, &p)) < 0)
         goto end;
     if (*p.s) {
-        av_log(&p, AV_LOG_ERROR, "Invalid chars '%s' at the end of expression '%s'\n", p.s, s0);
-        ret = AVERROR(EINVAL);
+        fx_log("EVAL", FX_LOG_ERROR, "Invalid chars '%s' at the end of expression '%s'\n", p.s, s0);
+        ret = (EINVAL);
         goto end;
     }
     if (!verify_expr(e)) {
-        ret = AVERROR(EINVAL);
+        ret = (EINVAL);
         goto end;
     }
-    e->var= av_mallocz(sizeof(double) *VARS);
+    e->var= fx_mallocz(sizeof(double) *VARS);
     if (!e->var) {
-        ret = AVERROR(ENOMEM);
+        ret = (ENOMEM);
         goto end;
     }
     *expr = e;
     e = NULL;
 end:
-    av_expr_free(e);
-    av_free(w);
+    fx_expr_free(e);
+    fx_free(w);
     return ret;
 }
 
@@ -915,12 +866,11 @@ int av_expr_parse_and_eval(double *d, const char *s,
         return ret;
     }
     *d = av_expr_eval(e, const_values, opaque);
-    av_expr_free(e);
-    return isnan(*d) ? AVERROR(EINVAL) : 0;
+    fx_expr_free(e);
+    return isnan(*d) ? (EINVAL) : 0;
 }
 
 //#ifdef TEST
-#include <string.h>
 
 static const double const_values[] = {
     M_PI,

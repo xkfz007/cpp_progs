@@ -267,7 +267,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="../func_libs"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -325,6 +325,10 @@
 			>
 			<File
 				RelativePath=".\card_shuffle_deal.c"
+				>
+			</File>
+			<File
+				RelativePath=".\eval.c"
 				>
 			</File>
 			<File

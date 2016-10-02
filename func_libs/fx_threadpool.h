@@ -24,6 +24,20 @@ void  fx_threadpool_delete( fx_threadpool_t *pool );
 
 #define fx_stack_align(func,...) func(__VA_ARGS__)
 
+
+#define FX_CHECKED_MALLOC( var, size )\
+do {\
+    var = fx_malloc( size );\
+    if( !var )\
+        goto fail;\
+} while( 0 )
+
+#define FX_CHECKED_MALLOCZERO( var, size )\
+do {\
+    FX_CHECKED_MALLOC( var, size );\
+    memset( var, 0, size );\
+} while( 0 )
+
 typedef struct fx_frame{
 	int i_frame;//frame no
 	void *data;
