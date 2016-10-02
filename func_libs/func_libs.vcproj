@@ -353,6 +353,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\glob.c"
+				>
+			</File>
+			<File
 				RelativePath=".\string_c_ops.cc"
 				>
 			</File>
@@ -400,6 +404,10 @@
 			</File>
 			<File
 				RelativePath=".\fx_getword.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_glob.h"
 				>
 			</File>
 			<File

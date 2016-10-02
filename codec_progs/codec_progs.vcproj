@@ -3,8 +3,8 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="codec_progs"
-    ProjectGUID="{42741CEB-7FF2-4448-9F2F-D1176C16945D}"
-    RootNamespace="codec_progs"
+	ProjectGUID="{42741CEB-7FF2-4448-9F2F-D1176C16945D}"
+	RootNamespace="codec_progs"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -320,6 +320,70 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\dct.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fourier.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gauss_leg.c"
+				>
+			</File>
+			<File
+				RelativePath=".\getframes.c"
+				>
+			</File>
+			<File
+				RelativePath=".\ggd.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\hm_scan_mode_speedTest.c"
+				>
+			</File>
+			<File
+				RelativePath=".\print_scan_mat.c"
+				>
+			</File>
+			<File
+				RelativePath=".\qp_bitrate.c"
+				>
+			</File>
+			<File
+				RelativePath=".\seq_name_parse.c"
+				>
+			</File>
+			<File
+				RelativePath=".\var_calc.c"
+				>
+			</File>
+			<File
+				RelativePath=".\variable_length_code.c"
+				>
+			</File>
+			<File
+				RelativePath=".\x264_frame_filter_test.c"
+				>
+			</File>
+			<File
+				RelativePath=".\x264_satd4x4_test.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\x264_satd8x8_test.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\x264_var_test.c"
+				>
+			</File>
+			<File
+				RelativePath=".\zigzag.cc"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -327,15 +391,13 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\log.h"
+				RelativePath=".\stdint.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
+			<File
+				RelativePath=".\x264_test.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
