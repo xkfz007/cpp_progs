@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="gdsl"
+	ProjectGUID="{BA0DFDF8-5A55-4FCC-B763-D77810DA02CB}"
+	VCNestedProjectGUID="{737C2C30-5EBE-4C11-A079-20033B30F8E6}"
+	VCNestedProjectFileName="gdsl.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release|x64">
+			<Tool
+				Name="CppCmplrTool"
+				C99Support="true"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>
