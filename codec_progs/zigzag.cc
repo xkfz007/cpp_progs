@@ -5,6 +5,7 @@
  *      Author: Felix
  */
 
+#ifdef _ZIGZAG
 #include <iostream>
 #include <iomanip>
 using namespace std;
@@ -42,6 +43,4 @@ int main(){
     zigzag(n);
 }
 
-
-
-
+#endif
