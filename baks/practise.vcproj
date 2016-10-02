@@ -321,7 +321,91 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\cacheline_test.c"
+				>
+			</File>
+			<File
+				RelativePath=".\consumer_producer.c"
+				>
+			</File>
+			<File
+				RelativePath=".\dltest.c"
+				>
+			</File>
+			<File
+				RelativePath=".\getip.c"
+				>
+			</File>
+			<File
+				RelativePath=".\liberr.c"
+				>
+			</File>
+			<File
+				RelativePath=".\macro_test.c"
+				>
+			</File>
+			<File
+				RelativePath=".\mmap_usage.c"
+				>
+			</File>
+			<File
+				RelativePath=".\opnew.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\rtti.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\search_key_words.c"
+				>
+			</File>
+			<File
+				RelativePath=".\simple_add.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\simple_dict.c"
+				>
+			</File>
+			<File
+				RelativePath=".\static_var.c"
+				>
+			</File>
+			<File
+				RelativePath=".\static_var2.c"
+				>
+			</File>
+			<File
+				RelativePath=".\struct_write.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\test.c"
+				>
+			</File>
+			<File
+				RelativePath=".\test_atexit.c"
+				>
+			</File>
+			<File
+				RelativePath=".\test_cpp.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\test_intel_compiler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\test_mem.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\vecArglist.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\weak_ptr_usage.cc"
 				>
 			</File>
 		</Filter>
@@ -330,6 +414,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\liberr.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
