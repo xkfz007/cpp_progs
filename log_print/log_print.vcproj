@@ -328,10 +328,6 @@
 				RelativePath=".\log.c"
 				>
 			</File>
-			<File
-				RelativePath=".\log_x264.c"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

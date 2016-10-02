@@ -23,6 +23,7 @@
  * @file
  * logging functions
  */
+#define _LOG_FF
 #ifdef _LOG_FF
 
 #include "config.h"
