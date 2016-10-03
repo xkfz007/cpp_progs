@@ -24,7 +24,7 @@
  * AVOptions
  * @author Michael Niedermayer <michaelni@gmx.at>
  */
-#define _OPT
+//#define _OPT
 #ifdef _OPT
 #include "fx_opt.h"
 typedef struct TestContext {
@@ -56,38 +56,38 @@ typedef struct TestContext {
     int bool3;
 } TestContext;
 
-#define OFFSET(x) offsetof(TestContext, x)
+#define OFFSET(x) OFFSETOF(TestContext, x)
 
 #define TEST_FLAG_COOL 01
 #define TEST_FLAG_LAME 02
 #define TEST_FLAG_MU   04
 
 static const AVOption test_options[]= {
-    {"num",        "set num",            OFFSET(num),            AV_OPT_TYPE_INT,            { .i64 = 0 },                      0,       100, 1 },
-    {"toggle",     "set toggle",         OFFSET(toggle),         AV_OPT_TYPE_INT,            { .i64 = 1 },                      0,         1, 1 },
-    {"rational",   "set rational",       OFFSET(rational),       AV_OPT_TYPE_RATIONAL,       { .dbl = 1 },                      0,        10, 1 },
-    {"string",     "set string",         OFFSET(string),         AV_OPT_TYPE_STRING,         { .str = "default" },       CHAR_MIN,  CHAR_MAX, 1 },
-    {"escape",     "set escape str",     OFFSET(escape),         AV_OPT_TYPE_STRING,         { .str = "\\=," },          CHAR_MIN,  CHAR_MAX, 1 },
-    {"flags",      "set flags",          OFFSET(flags),          AV_OPT_TYPE_FLAGS,          { .i64 = 1 },                      0,   INT_MAX, 1, "flags" },
-    {"cool",       "set cool flag",      0,                      AV_OPT_TYPE_CONST,          { .i64 = TEST_FLAG_COOL },   INT_MIN,   INT_MAX, 1, "flags" },
-    {"lame",       "set lame flag",      0,                      AV_OPT_TYPE_CONST,          { .i64 = TEST_FLAG_LAME },   INT_MIN,   INT_MAX, 1, "flags" },
-    {"mu",         "set mu flag",        0,                      AV_OPT_TYPE_CONST,          { .i64 = TEST_FLAG_MU },     INT_MIN,   INT_MAX, 1, "flags" },
-    {"size",       "set size",           OFFSET(w),              AV_OPT_TYPE_IMAGE_SIZE,     { .str="200x300" },                0,         0, 1 },
-    {"pix_fmt",    "set pixfmt",         OFFSET(pix_fmt),        AV_OPT_TYPE_PIXEL_FMT,      { .i64 = AV_PIX_FMT_0BGR },       -1,   INT_MAX, 1 },
-    {"sample_fmt", "set samplefmt",      OFFSET(sample_fmt),     AV_OPT_TYPE_SAMPLE_FMT,     { .i64 = AV_SAMPLE_FMT_S16 },     -1,   INT_MAX, 1 },
-    {"video_rate", "set videorate",      OFFSET(video_rate),     AV_OPT_TYPE_VIDEO_RATE,     { .str = "25" },                   0,         INT_MAX, 1 },
-    {"duration",   "set duration",       OFFSET(duration),       AV_OPT_TYPE_DURATION,       { .i64 = 1000 },                   0, INT64_MAX, 1 },
-    {"color",      "set color",          OFFSET(color),          AV_OPT_TYPE_COLOR,          { .str = "pink" },                 0,         0, 1 },
-    {"cl",         "set channel layout", OFFSET(channel_layout), AV_OPT_TYPE_CHANNEL_LAYOUT, { .i64 = AV_CH_LAYOUT_HEXAGONAL }, 0, INT64_MAX, 1 },
-    {"bin",        "set binary value",   OFFSET(binary),         AV_OPT_TYPE_BINARY,         { .str="62696e00" },               0,         0, 1 },
-    {"bin1",       "set binary value",   OFFSET(binary1),        AV_OPT_TYPE_BINARY,         { .str=NULL },                     0,         0, 1 },
-    {"bin2",       "set binary value",   OFFSET(binary2),        AV_OPT_TYPE_BINARY,         { .str="" },                       0,         0, 1 },
-    {"num64",      "set num 64bit",      OFFSET(num64),          AV_OPT_TYPE_INT64,          { .i64 = 1 },                      0,       100, 1 },
-    {"flt",        "set float",          OFFSET(flt),            AV_OPT_TYPE_FLOAT,          { .dbl = 1.0 / 3 },                0,       100, 1 },
-    {"dbl",        "set double",         OFFSET(dbl),            AV_OPT_TYPE_DOUBLE,         { .dbl = 1.0 / 3 },                0,       100, 1 },
-    {"bool1",      "set boolean value",  OFFSET(bool1),          AV_OPT_TYPE_BOOL,           { .i64 = -1 },                    -1,         1, 1 },
-    {"bool2",      "set boolean value",  OFFSET(bool2),          AV_OPT_TYPE_BOOL,           { .i64 = 1 },                     -1,         1, 1 },
-    {"bool3",      "set boolean value",  OFFSET(bool3),          AV_OPT_TYPE_BOOL,           { .i64 = 0 },                      0,         1, 1 },
+    {"num",        "set num",            OFFSET(num),            FX_OPT_TYPE_INT,            { .i64 = 0 },                      0,       100, 1 },
+    {"toggle",     "set toggle",         OFFSET(toggle),         FX_OPT_TYPE_INT,            { .i64 = 1 },                      0,         1, 1 },
+    {"rational",   "set rational",       OFFSET(rational),       FX_OPT_TYPE_RATIONAL,       { .dbl = 1 },                      0,        10, 1 },
+    {"string",     "set string",         OFFSET(string),         FX_OPT_TYPE_STRING,         { .str = "default" },       CHAR_MIN,  CHAR_MAX, 1 },
+    {"escape",     "set escape str",     OFFSET(escape),         FX_OPT_TYPE_STRING,         { .str = "\\=," },          CHAR_MIN,  CHAR_MAX, 1 },
+    {"flags",      "set flags",          OFFSET(flags),          FX_OPT_TYPE_FLAGS,          { .i64 = 1 },                      0,   INT_MAX, 1, "flags" },
+    {"cool",       "set cool flag",      0,                      FX_OPT_TYPE_CONST,          { .i64 = TEST_FLAG_COOL },   INT_MIN,   INT_MAX, 1, "flags" },
+    {"lame",       "set lame flag",      0,                      FX_OPT_TYPE_CONST,          { .i64 = TEST_FLAG_LAME },   INT_MIN,   INT_MAX, 1, "flags" },
+    {"mu",         "set mu flag",        0,                      FX_OPT_TYPE_CONST,          { .i64 = TEST_FLAG_MU },     INT_MIN,   INT_MAX, 1, "flags" },
+    {"size",       "set size",           OFFSET(w),              FX_OPT_TYPE_IMAGE_SIZE,     { .str="200x300" },                0,         0, 1 },
+    //{"pix_fmt",    "set pixfmt",         OFFSET(pix_fmt),        FX_OPT_TYPE_PIXEL_FMT,      { .i64 = FX_PIX_FMT_0BGR },       -1,   INT_MAX, 1 },
+    //{"sample_fmt", "set samplefmt",      OFFSET(sample_fmt),     FX_OPT_TYPE_SAMPLE_FMT,     { .i64 = FX_SAMPLE_FMT_S16 },     -1,   INT_MAX, 1 },
+    {"video_rate", "set videorate",      OFFSET(video_rate),     FX_OPT_TYPE_VIDEO_RATE,     { .str = "25" },                   0,         INT_MAX, 1 },
+    {"duration",   "set duration",       OFFSET(duration),       FX_OPT_TYPE_DURATION,       { .i64 = 1000 },                   0, INT64_MAX, 1 },
+    {"color",      "set color",          OFFSET(color),          FX_OPT_TYPE_COLOR,          { .str = "pink" },                 0,         0, 1 },
+    //{"cl",         "set channel layout", OFFSET(channel_layout), FX_OPT_TYPE_CHANNEL_LAYOUT, { .i64 = FX_CH_LAYOUT_HEXAGONAL }, 0, INT64_MAX, 1 },
+    {"bin",        "set binary value",   OFFSET(binary),         FX_OPT_TYPE_BINARY,         { .str="62696e00" },               0,         0, 1 },
+    {"bin1",       "set binary value",   OFFSET(binary1),        FX_OPT_TYPE_BINARY,         { .str=NULL },                     0,         0, 1 },
+    {"bin2",       "set binary value",   OFFSET(binary2),        FX_OPT_TYPE_BINARY,         { .str="" },                       0,         0, 1 },
+    {"num64",      "set num 64bit",      OFFSET(num64),          FX_OPT_TYPE_INT64,          { .i64 = 1 },                      0,       100, 1 },
+    {"flt",        "set float",          OFFSET(flt),            FX_OPT_TYPE_FLOAT,          { .dbl = 1.0 / 3 },                0,       100, 1 },
+    {"dbl",        "set double",         OFFSET(dbl),            FX_OPT_TYPE_DOUBLE,         { .dbl = 1.0 / 3 },                0,       100, 1 },
+    {"bool1",      "set boolean value",  OFFSET(bool1),          FX_OPT_TYPE_BOOL,           { .i64 = -1 },                    -1,         1, 1 },
+    {"bool2",      "set boolean value",  OFFSET(bool2),          FX_OPT_TYPE_BOOL,           { .i64 = 1 },                     -1,         1, 1 },
+    {"bool3",      "set boolean value",  OFFSET(bool3),          FX_OPT_TYPE_BOOL,           { .i64 = 0 },                      0,         1, 1 },
     { NULL },
 };
 
@@ -111,14 +111,14 @@ int main(void)
 {
     int i;
 
-    av_log_set_level(AV_LOG_DEBUG);
-    av_log_set_callback(log_callback_help);
+    fx_log_set_level(FX_LOG_DEBUG);
+    //fx_log_set_callback(log_callback_help);
 
     printf("Testing default values\n");
     {
         TestContext test_ctx = { 0 };
         test_ctx.class = &test_class;
-        av_opt_set_defaults(&test_ctx);
+        fx_opt_set_defaults(&test_ctx);
 
         printf("num=%d\n", test_ctx.num);
         printf("toggle=%d\n", test_ctx.toggle);
@@ -128,11 +128,11 @@ int main(void)
         printf("rational=%d/%d\n", test_ctx.rational.num, test_ctx.rational.den);
         printf("video_rate=%d/%d\n", test_ctx.video_rate.num, test_ctx.video_rate.den);
         printf("width=%d height=%d\n", test_ctx.w, test_ctx.h);
-        printf("pix_fmt=%s\n", av_get_pix_fmt_name(test_ctx.pix_fmt));
-        printf("sample_fmt=%s\n", av_get_sample_fmt_name(test_ctx.sample_fmt));
+        //printf("pix_fmt=%s\n", fx_get_pix_fmt_name(test_ctx.pix_fmt));
+        //printf("sample_fmt=%s\n", fx_get_sample_fmt_name(test_ctx.sample_fmt));
         printf("duration=%"PRId64"\n", test_ctx.duration);
         printf("color=%d %d %d %d\n", test_ctx.color[0], test_ctx.color[1], test_ctx.color[2], test_ctx.color[3]);
-        printf("channel_layout=%"PRId64"=%"PRId64"\n", test_ctx.channel_layout, (int64_t)AV_CH_LAYOUT_HEXAGONAL);
+        //printf("channel_layout=%"PRId64"=%"PRId64"\n", test_ctx.channel_layout, (int64_t)FX_CH_LAYOUT_HEXAGONAL);
         if (test_ctx.binary)
             printf("binary=%x %x %x %x\n", ((uint8_t*)test_ctx.binary)[0], ((uint8_t*)test_ctx.binary)[1], ((uint8_t*)test_ctx.binary)[2], ((uint8_t*)test_ctx.binary)[3]);
         printf("binary_size=%d\n", test_ctx.binary_size);
@@ -140,57 +140,57 @@ int main(void)
         printf("flt=%.6f\n", test_ctx.flt);
         printf("dbl=%.6f\n", test_ctx.dbl);
 
-        av_opt_show2(&test_ctx, NULL, -1, 0);
+        fx_opt_show2(&test_ctx, NULL, -1, 0);
 
-        av_opt_free(&test_ctx);
+        fx_opt_free(&test_ctx);
     }
 
-    printf("\nTesting av_opt_is_set_to_default()\n");
+    printf("\nTesting fx_opt_is_set_to_default()\n");
     {
         int ret;
         TestContext test_ctx = { 0 };
         const AVOption *o = NULL;
         test_ctx.class = &test_class;
 
-        av_log_set_level(AV_LOG_QUIET);
+        fx_log_set_level(FX_LOG_QUIET);
 
-        while (o = av_opt_next(&test_ctx, o)) {
-            ret = av_opt_is_set_to_default_by_name(&test_ctx, o->name, 0);
-            printf("name:%10s default:%d error:%s\n", o->name, !!ret, ret < 0 ? av_err2str(ret) : "");
+        while (o = fx_opt_next(&test_ctx, o)) {
+            ret = fx_opt_is_set_to_default_by_name(&test_ctx, o->name, 0);
+            printf("name:%10s default:%d error:%s\n", o->name, !!ret, ret < 0 ? fx_err2str(ret) : "");
         }
-        av_opt_set_defaults(&test_ctx);
-        while (o = av_opt_next(&test_ctx, o)) {
-            ret = av_opt_is_set_to_default_by_name(&test_ctx, o->name, 0);
-            printf("name:%10s default:%d error:%s\n", o->name, !!ret, ret < 0 ? av_err2str(ret) : "");
+        fx_opt_set_defaults(&test_ctx);
+        while (o = fx_opt_next(&test_ctx, o)) {
+            ret = fx_opt_is_set_to_default_by_name(&test_ctx, o->name, 0);
+            printf("name:%10s default:%d error:%s\n", o->name, !!ret, ret < 0 ? fx_err2str(ret) : "");
         }
-        av_opt_free(&test_ctx);
+        fx_opt_free(&test_ctx);
     }
 
-    printf("\nTest av_opt_serialize()\n");
+    printf("\nTest fx_opt_serialize()\n");
     {
         TestContext test_ctx = { 0 };
         char *buf;
         test_ctx.class = &test_class;
 
-        av_log_set_level(AV_LOG_QUIET);
+        fx_log_set_level(FX_LOG_QUIET);
 
-        av_opt_set_defaults(&test_ctx);
-        if (av_opt_serialize(&test_ctx, 0, 0, &buf, '=', ',') >= 0) {
+        fx_opt_set_defaults(&test_ctx);
+        if (fx_opt_serialize(&test_ctx, 0, 0, &buf, '=', ',') >= 0) {
             printf("%s\n", buf);
-            av_opt_free(&test_ctx);
+            fx_opt_free(&test_ctx);
             memset(&test_ctx, 0, sizeof(test_ctx));
             test_ctx.class = &test_class;
-            av_set_options_string(&test_ctx, buf, "=", ",");
-            av_free(buf);
-            if (av_opt_serialize(&test_ctx, 0, 0, &buf, '=', ',') >= 0) {
+            fx_set_options_string(&test_ctx, buf, "=", ",");
+            fx_free(buf);
+            if (fx_opt_serialize(&test_ctx, 0, 0, &buf, '=', ',') >= 0) {
                 printf("%s\n", buf);
-                av_free(buf);
+                fx_free(buf);
             }
         }
-        av_opt_free(&test_ctx);
+        fx_opt_free(&test_ctx);
     }
 
-    printf("\nTesting av_set_options_string()\n");
+    printf("\nTesting fx_set_options_string()\n");
     {
         TestContext test_ctx = { 0 };
         static const char * const options[] = {
@@ -258,25 +258,25 @@ int main(void)
         };
 
         test_ctx.class = &test_class;
-        av_opt_set_defaults(&test_ctx);
+        fx_opt_set_defaults(&test_ctx);
 
-        av_log_set_level(AV_LOG_QUIET);
+        fx_log_set_level(FX_LOG_QUIET);
 
-        for (i=0; i < FF_ARRAY_ELEMS(options); i++) {
+        for (i=0; i < ARRAY_ELEMS(options); i++) {
             int silence_log = !strcmp(options[i], "rational=-1/0"); // inf formating differs between platforms
-            av_log(&test_ctx, AV_LOG_DEBUG, "Setting options string '%s'\n", options[i]);
-            if (silence_log)
-                av_log_set_callback(NULL);
-            if (av_set_options_string(&test_ctx, options[i], "=", ":") < 0)
+            fx_log("OPT", FX_LOG_DEBUG, "Setting options string '%s'\n", options[i]);
+            //if (silence_log)
+            //    fx_log_set_callback(NULL);
+            if (fx_set_options_string(&test_ctx, options[i], "=", ":") < 0)
                 printf("Error '%s'\n", options[i]);
             else
                 printf("OK    '%s'\n", options[i]);
-            av_log_set_callback(log_callback_help);
+            //fx_log_set_callback(log_callback_help);
         }
-        av_opt_free(&test_ctx);
+        fx_opt_free(&test_ctx);
     }
 
-    printf("\nTesting av_opt_set_from_string()\n");
+    printf("\nTesting fx_opt_set_from_string()\n");
     {
         TestContext test_ctx = { 0 };
         static const char * const options[] = {
@@ -293,18 +293,18 @@ int main(void)
         static const char * const shorthand[] = { "num", "string", NULL };
 
         test_ctx.class = &test_class;
-        av_opt_set_defaults(&test_ctx);
+        fx_opt_set_defaults(&test_ctx);
 
-        av_log_set_level(AV_LOG_QUIET);
+        fx_log_set_level(FX_LOG_QUIET);
 
-        for (i=0; i < FF_ARRAY_ELEMS(options); i++) {
-            av_log(&test_ctx, AV_LOG_DEBUG, "Setting options string '%s'\n", options[i]);
-            if (av_opt_set_from_string(&test_ctx, options[i], shorthand, "=", ":") < 0)
+        for (i=0; i < ARRAY_ELEMS(options); i++) {
+            fx_log("OPT", FX_LOG_DEBUG, "Setting options string '%s'\n", options[i]);
+            if (fx_opt_set_from_string(&test_ctx, options[i], shorthand, "=", ":") < 0)
                 printf("Error '%s'\n", options[i]);
             else
                 printf("OK    '%s'\n", options[i]);
         }
-        av_opt_free(&test_ctx);
+        fx_opt_free(&test_ctx);
     }
 
     return 0;

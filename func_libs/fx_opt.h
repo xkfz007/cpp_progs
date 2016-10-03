@@ -22,15 +22,24 @@
 #ifndef AVUTIL_OPT_H
 #define AVUTIL_OPT_H
 
+#include "fx_error.h"
 #include "fx_memops.h"
 #include "fx_audio.h"
 #include "fx_image.h"
 #include "fx_mathops.h"
+#include "fx_log.h"
+#include "fx_eval.h"
+#include "fx_parseutils.h"
+#include "fx_dict.h"
 
 /**
- * @file
- * AVOptions
+ * Return x default pointer in case p is NULL.
  */
+static inline void *fx_x_if_null(const void *p, const void *x)
+{
+    return (void *)(intptr_t)(p ? p : x);
+}
+
 /**
  * @defgroup avoptions AVOptions
  * @ingroup lavu_data
@@ -364,6 +373,123 @@ typedef struct AVOptionRanges {
     int nb_components;
 } AVOptionRanges;
 
+typedef enum {
+    AV_CLASS_CATEGORY_NA = 0,
+    AV_CLASS_CATEGORY_INPUT,
+    AV_CLASS_CATEGORY_OUTPUT,
+    AV_CLASS_CATEGORY_MUXER,
+    AV_CLASS_CATEGORY_DEMUXER,
+    AV_CLASS_CATEGORY_ENCODER,
+    AV_CLASS_CATEGORY_DECODER,
+    AV_CLASS_CATEGORY_FILTER,
+    AV_CLASS_CATEGORY_BITSTREAM_FILTER,
+    AV_CLASS_CATEGORY_SWSCALER,
+    AV_CLASS_CATEGORY_SWRESAMPLER,
+    AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT = 40,
+    AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT,
+    AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT,
+    AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
+    AV_CLASS_CATEGORY_DEVICE_OUTPUT,
+    AV_CLASS_CATEGORY_DEVICE_INPUT,
+    AV_CLASS_CATEGORY_NB, ///< not part of ABI/API
+}AVClassCategory;
+
+#define AV_IS_INPUT_DEVICE(category) \
+    (((category) == AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT) || \
+     ((category) == AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT) || \
+     ((category) == AV_CLASS_CATEGORY_DEVICE_INPUT))
+
+#define AV_IS_OUTPUT_DEVICE(category) \
+    (((category) == AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT) || \
+     ((category) == AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT) || \
+     ((category) == AV_CLASS_CATEGORY_DEVICE_OUTPUT))
+
+struct AVOptionRanges;
+
+/**
+ * Describe the class of an AVClass context structure. That is an
+ * arbitrary struct of which the first field is a pointer to an
+ * AVClass struct (e.g. AVCodecContext, AVFormatContext etc.).
+ */
+typedef struct AVClass {
+    /**
+     * The name of the class; usually it is the same name as the
+     * context structure type to which the AVClass is associated.
+     */
+    const char* class_name;
+
+    /**
+     * A pointer to a function which returns the name of a context
+     * instance ctx associated with the class.
+     */
+    const char* (*item_name)(void* ctx);
+
+    /**
+     * a pointer to the first option specified in the class if any or NULL
+     *
+     * @see av_set_default_options()
+     */
+    const struct AVOption *option;
+
+    /**
+     * LIBAVUTIL_VERSION with which this structure was created.
+     * This is used to allow fields to be added without requiring major
+     * version bumps everywhere.
+     */
+
+    int version;
+
+    /**
+     * Offset in the structure where log_level_offset is stored.
+     * 0 means there is no such variable
+     */
+    int log_level_offset_offset;
+
+    /**
+     * Offset in the structure where a pointer to the parent context for
+     * logging is stored. For example a decoder could pass its AVCodecContext
+     * to eval as such a parent context, which an av_log() implementation
+     * could then leverage to display the parent context.
+     * The offset can be NULL.
+     */
+    int parent_log_context_offset;
+
+    /**
+     * Return next AVOptions-enabled child or NULL
+     */
+    void* (*child_next)(void *obj, void *prev);
+
+    /**
+     * Return an AVClass corresponding to the next potential
+     * AVOptions-enabled child.
+     *
+     * The difference between child_next and this is that
+     * child_next iterates over _already existing_ objects, while
+     * child_class_next iterates over _all possible_ children.
+     */
+    const struct AVClass* (*child_class_next)(const struct AVClass *prev);
+
+    /**
+     * Category used for visualization (like color)
+     * This is only set if the category is equal for all objects using this class.
+     * available since version (51 << 16 | 56 << 8 | 100)
+     */
+    AVClassCategory category;
+
+    /**
+     * Callback to return the category.
+     * available since version (51 << 16 | 59 << 8 | 100)
+     */
+    AVClassCategory (*get_category)(void* ctx);
+
+    /**
+     * Callback to return the supported/allowed ranges.
+     * available since version (52.12)
+     */
+    int (*query_ranges)(struct AVOptionRanges **, void *obj, const char *key, int flags);
+} AVClass;
+
+
 enum {
 
     /**
@@ -539,6 +665,124 @@ static int hexchar2int(char c) {
     return -1;
 }
 
+/**
+ * Iterate over AVOptions-enabled children of obj.
+ *
+ * @param prev result of a previous call to this function or NULL
+ * @return next AVOptions-enabled child or NULL
+ */
+
+void *fx_opt_child_next(void *obj, void *prev)
+{
+    const AVClass *c = *(AVClass **)obj;
+    if (c->child_next)
+        return c->child_next(obj, prev);
+    return NULL;
+}
+/**
+ * Iterate over potential AVOptions-enabled children of parent.
+ *
+ * @param prev result of a previous call to this function or NULL
+ * @return AVClass corresponding to next potential child or NULL
+ */
+const AVClass *fx_opt_child_class_next(const AVClass *parent, const AVClass *prev)
+{
+    if (parent->child_class_next)
+        return parent->child_class_next(prev);
+    return NULL;
+}
+/**
+ * Look for an option in an object. Consider only options which
+ * have all the specified flags set.
+ *
+ * @param[in] obj A pointer to a struct whose first element is a
+ *                pointer to an AVClass.
+ *                Alternatively a double pointer to an AVClass, if
+ *                FX_OPT_SEARCH_FAKE_OBJ search flag is set.
+ * @param[in] name The name of the option to look for.
+ * @param[in] unit When searching for named constants, name of the unit
+ *                 it belongs to.
+ * @param opt_flags Find only options with all the specified flags set (FX_OPT_FLAG).
+ * @param search_flags A combination of FX_OPT_SEARCH_*.
+ * @param[out] target_obj if non-NULL, an object to which the option belongs will be
+ * written here. It may be different from obj if FX_OPT_SEARCH_CHILDREN is present
+ * in search_flags. This parameter is ignored if search_flags contain
+ * FX_OPT_SEARCH_FAKE_OBJ.
+ *
+ * @return A pointer to the option found, or NULL if no option
+ *         was found.
+ */
+const AVOption *fx_opt_find2(void *obj, const char *name, const char *unit,
+                             int opt_flags, int search_flags, void **target_obj)
+{
+    const AVClass  *c;
+    const AVOption *o = NULL;
+
+    if(!obj)
+        return NULL;
+
+    c= *(AVClass**)obj;
+
+    if (!c)
+        return NULL;
+
+    if (search_flags & FX_OPT_SEARCH_CHILDREN) {
+        if (search_flags & FX_OPT_SEARCH_FAKE_OBJ) {
+            const AVClass *child = NULL;
+            while (child = fx_opt_child_class_next(c, child))
+                if (o = fx_opt_find2(&child, name, unit, opt_flags, search_flags, NULL))
+                    return o;
+        } else {
+            void *child = NULL;
+            while (child = fx_opt_child_next(obj, child))
+                if (o = fx_opt_find2(child, name, unit, opt_flags, search_flags, target_obj))
+                    return o;
+        }
+    }
+
+    while (o = fx_opt_next(obj, o)) {
+        if (!strcmp(o->name, name) && (o->flags & opt_flags) == opt_flags &&
+            ((!unit && o->type != FX_OPT_TYPE_CONST) ||
+             (unit  && o->type == FX_OPT_TYPE_CONST && o->unit && !strcmp(o->unit, unit)))) {
+            if (target_obj) {
+                if (!(search_flags & FX_OPT_SEARCH_FAKE_OBJ))
+                    *target_obj = obj;
+                else
+                    *target_obj = NULL;
+            }
+            return o;
+        }
+    }
+    return NULL;
+}
+/**
+ * Look for an option in an object. Consider only options which
+ * have all the specified flags set.
+ *
+ * @param[in] obj A pointer to a struct whose first element is a
+ *                pointer to an AVClass.
+ *                Alternatively a double pointer to an AVClass, if
+ *                FX_OPT_SEARCH_FAKE_OBJ search flag is set.
+ * @param[in] name The name of the option to look for.
+ * @param[in] unit When searching for named constants, name of the unit
+ *                 it belongs to.
+ * @param opt_flags Find only options with all the specified flags set (FX_OPT_FLAG).
+ * @param search_flags A combination of FX_OPT_SEARCH_*.
+ *
+ * @return A pointer to the option found, or NULL if no option
+ *         was found.
+ *
+ * @note Options found with FX_OPT_SEARCH_CHILDREN flag may not be settable
+ * directly with fx_opt_set(). Use special calls which take an options
+ * AVDictionary (e.g. avformat_open_input()) to set options found with this
+ * flag.
+ */
+
+const AVOption *fx_opt_find(void *obj, const char *name, const char *unit,
+                            int opt_flags, int search_flags)
+{
+    return fx_opt_find2(obj, name, unit, opt_flags, search_flags, NULL);
+}
 static int set_string_binary(void *obj, const AVOption *o, const char *val, uint8_t **dst)
 {
     int *lendst = (int *)(dst + 1);
@@ -777,8 +1021,8 @@ static int set_string_fmt(void *obj, const AVOption *o, const char *val, uint8_t
         }
     }
 
-    min = FFMAX(o->min, -1);
-    max = FFMIN(o->max, fmt_nb-1);
+    min = MAX(o->min, -1);
+    max = MIN(o->max, fmt_nb-1);
 
     // hack for compatibility with old ffmpeg
     if(min == 0 && max == 0) {
@@ -797,17 +1041,17 @@ static int set_string_fmt(void *obj, const AVOption *o, const char *val, uint8_t
     return 0;
 }
 
-static int set_string_pixel_fmt(void *obj, const AVOption *o, const char *val, uint8_t *dst)
-{
-    return set_string_fmt(obj, o, val, dst,
-                          FX_PIX_FMT_NB, fx_get_pix_fmt, "pixel format");
-}
-
-static int set_string_sample_fmt(void *obj, const AVOption *o, const char *val, uint8_t *dst)
-{
-    return set_string_fmt(obj, o, val, dst,
-                          FX_SAMPLE_FMT_NB, fx_get_sample_fmt, "sample format");
-}
+//static int set_string_pixel_fmt(void *obj, const AVOption *o, const char *val, uint8_t *dst)
+//{
+//    return set_string_fmt(obj, o, val, dst,
+//                          FX_PIX_FMT_NB, fx_get_pix_fmt, "pixel format");
+//}
+//
+//static int set_string_sample_fmt(void *obj, const AVOption *o, const char *val, uint8_t *dst)
+//{
+//    return set_string_fmt(obj, o, val, dst,
+//                          FX_SAMPLE_FMT_NB, fx_get_sample_fmt, "sample format");
+//}
 /**
  * @defgroup opt_set_funcs Option setting functions
  * @{
@@ -876,10 +1120,10 @@ int fx_opt_set(void *obj, const char *name, const char *val, int search_flags)
             return ret;
         return write_number(obj, o, dst, 1, tmp.den, tmp.num);
     }
-    case FX_OPT_TYPE_PIXEL_FMT:
-        return set_string_pixel_fmt(obj, o, val, dst);
-    case FX_OPT_TYPE_SAMPLE_FMT:
-        return set_string_sample_fmt(obj, o, val, dst);
+    //case FX_OPT_TYPE_PIXEL_FMT:
+    //    return set_string_pixel_fmt(obj, o, val, dst);
+    //case FX_OPT_TYPE_SAMPLE_FMT:
+    //    return set_string_sample_fmt(obj, o, val, dst);
     case FX_OPT_TYPE_DURATION:
         if (!val) {
             *(int64_t *)dst = 0;
@@ -892,19 +1136,19 @@ int fx_opt_set(void *obj, const char *name, const char *val, int search_flags)
         break;
     case FX_OPT_TYPE_COLOR:
         return set_string_color(obj, o, val, dst);
-    case FX_OPT_TYPE_CHANNEL_LAYOUT:
-        if (!val || !strcmp(val, "none")) {
-            *(int64_t *)dst = 0;
-        } else {
-            int64_t cl = fx_get_channel_layout(val);
-            if (!cl) {
-                fx_log(obj, FX_LOG_ERROR, "Unable to parse option value \"%s\" as channel layout\n", val);
-                ret = AVERROR(EINVAL);
-            }
-            *(int64_t *)dst = cl;
-            return ret;
-        }
-        break;
+    //case FX_OPT_TYPE_CHANNEL_LAYOUT:
+    //    if (!val || !strcmp(val, "none")) {
+    //        *(int64_t *)dst = 0;
+    //    } else {
+    //        int64_t cl = fx_get_channel_layout(val);
+    //        if (!cl) {
+    //            fx_log(obj, FX_LOG_ERROR, "Unable to parse option value \"%s\" as channel layout\n", val);
+    //            ret = AVERROR(EINVAL);
+    //        }
+    //        *(int64_t *)dst = cl;
+    //        return ret;
+    //    }
+    //    break;
     }
 
     fx_log(obj, FX_LOG_ERROR, "Invalid option type.\n");
@@ -1043,8 +1287,8 @@ static int set_format(void *obj, const char *name, int fmt, int search_flags,
         return AVERROR(EINVAL);
     }
 
-    min = FFMAX(o->min, -1);
-    max = FFMIN(o->max, nb_fmts-1);
+    min = MAX(o->min, -1);
+    max = MIN(o->max, nb_fmts-1);
 
     if (fmt < min || fmt > max) {
         fx_log(obj, FX_LOG_ERROR,
@@ -1125,7 +1369,7 @@ static void format_duration(char *buf, size_t size, int64_t d)
 {
     char *e;
 
-    fx_assert0(size >= 25);
+    ASSERT(size >= 25);
     if (d < 0 && d != INT64_MIN) {
         *(buf++) = '-';
         size--;
@@ -1247,12 +1491,12 @@ int fx_opt_get(void *obj, const char *name, int search_flags, uint8_t **out_val)
     case FX_OPT_TYPE_IMAGE_SIZE:
         ret = snprintf(buf, sizeof(buf), "%dx%d", ((int *)dst)[0], ((int *)dst)[1]);
         break;
-    case FX_OPT_TYPE_PIXEL_FMT:
-        ret = snprintf(buf, sizeof(buf), "%s", (char *)fx_x_if_null(fx_get_pix_fmt_name(*(enum AVPixelFormat *)dst), "none"));
-        break;
-    case FX_OPT_TYPE_SAMPLE_FMT:
-        ret = snprintf(buf, sizeof(buf), "%s", (char *)fx_x_if_null(fx_get_sample_fmt_name(*(enum AVSampleFormat *)dst), "none"));
-        break;
+    //case FX_OPT_TYPE_PIXEL_FMT:
+    //    ret = snprintf(buf, sizeof(buf), "%s", (char *)fx_x_if_null(fx_get_pix_fmt_name(*(enum AVPixelFormat *)dst), "none"));
+    //    break;
+    //case FX_OPT_TYPE_SAMPLE_FMT:
+    //    ret = snprintf(buf, sizeof(buf), "%s", (char *)fx_x_if_null(fx_get_sample_fmt_name(*(enum AVSampleFormat *)dst), "none"));
+    //    break;
     case FX_OPT_TYPE_DURATION:
         i64 = *(int64_t *)dst;
         format_duration(buf, sizeof(buf), i64);
@@ -1501,6 +1745,125 @@ static const char *get_opt_const_name(void *obj, const char *unit, int64_t value
             return opt->name;
     return NULL;
 }
+/**
+ * Get a default list of allowed ranges for the given option.
+ *
+ * This list is constructed without using the AVClass.query_ranges() callback
+ * and can be used as fallback from within the callback.
+ *
+ * @param flags is a bitmask of flags, undefined flags should not be set and should be ignored
+ *              FX_OPT_SEARCH_FAKE_OBJ indicates that the obj is a double pointer to a AVClass instead of a full instance
+ *              FX_OPT_MULTI_COMPONENT_RANGE indicates that function may return more than one component, @see AVOptionRanges
+ *
+ * The result must be freed with fx_opt_free_ranges.
+ *
+ * @return number of compontents returned on success, a negative errro code otherwise
+ */
+
+int fx_opt_query_ranges_default(AVOptionRanges **ranges_arg, void *obj, const char *key, int flags)
+{
+    AVOptionRanges *ranges = fx_mallocz(sizeof(*ranges));
+    AVOptionRange **range_array = fx_mallocz(sizeof(void*));
+    AVOptionRange *range = fx_mallocz(sizeof(*range));
+    const AVOption *field = fx_opt_find(obj, key, NULL, 0, flags);
+    int ret;
+
+    *ranges_arg = NULL;
+
+    if (!ranges || !range || !range_array || !field) {
+        ret = AVERROR(ENOMEM);
+        goto fail;
+    }
+
+    ranges->range = range_array;
+    ranges->range[0] = range;
+    ranges->nb_ranges = 1;
+    ranges->nb_components = 1;
+    range->is_range = 1;
+    range->value_min = field->min;
+    range->value_max = field->max;
+
+    switch (field->type) {
+    case FX_OPT_TYPE_BOOL:
+    case FX_OPT_TYPE_INT:
+    case FX_OPT_TYPE_INT64:
+    case FX_OPT_TYPE_PIXEL_FMT:
+    case FX_OPT_TYPE_SAMPLE_FMT:
+    case FX_OPT_TYPE_FLOAT:
+    case FX_OPT_TYPE_DOUBLE:
+    case FX_OPT_TYPE_DURATION:
+    case FX_OPT_TYPE_COLOR:
+    case FX_OPT_TYPE_CHANNEL_LAYOUT:
+        break;
+    case FX_OPT_TYPE_STRING:
+        range->component_min = 0;
+        range->component_max = 0x10FFFF; // max unicode value
+        range->value_min = -1;
+        range->value_max = INT_MAX;
+        break;
+    case FX_OPT_TYPE_RATIONAL:
+        range->component_min = INT_MIN;
+        range->component_max = INT_MAX;
+        break;
+    case FX_OPT_TYPE_IMAGE_SIZE:
+        range->component_min = 0;
+        range->component_max = INT_MAX/128/8;
+        range->value_min = 0;
+        range->value_max = INT_MAX/8;
+        break;
+    case FX_OPT_TYPE_VIDEO_RATE:
+        range->component_min = 1;
+        range->component_max = INT_MAX;
+        range->value_min = 1;
+        range->value_max = INT_MAX;
+        break;
+    default:
+        ret = AVERROR(ENOSYS);
+        goto fail;
+    }
+
+    *ranges_arg = ranges;
+    return 1;
+fail:
+    fx_free(ranges);
+    fx_free(range);
+    fx_free(range_array);
+    return ret;
+}
+/**
+ * Get a list of allowed ranges for the given option.
+ *
+ * The returned list may depend on other fields in obj like for example profile.
+ *
+ * @param flags is a bitmask of flags, undefined flags should not be set and should be ignored
+ *              FX_OPT_SEARCH_FAKE_OBJ indicates that the obj is a double pointer to a AVClass instead of a full instance
+ *              FX_OPT_MULTI_COMPONENT_RANGE indicates that function may return more than one component, @see AVOptionRanges
+ *
+ * The result must be freed with fx_opt_freep_ranges.
+ *
+ * @return number of compontents returned on success, a negative errro code otherwise
+ */
+
+int fx_opt_query_ranges(AVOptionRanges **ranges_arg, void *obj, const char *key, int flags)
+{
+    int ret;
+    const AVClass *c = *(AVClass**)obj;
+    int (*callback)(AVOptionRanges **, void *obj, const char *key, int flags) = NULL;
+
+    if (c->version > (52 << 16 | 11 << 8))
+        callback = c->query_ranges;
+
+    if (!callback)
+        callback = fx_opt_query_ranges_default;
+
+    ret = callback(ranges_arg, obj, key, flags);
+    if (ret >= 0) {
+        if (!(flags & FX_OPT_MULTI_COMPONENT_RANGE))
+            ret = 1;
+        (*ranges_arg)->nb_components = ret;
+    }
+    return ret;
+}
 
 static char *get_opt_flags_string(void *obj, const char *unit, int64_t value)
 {
@@ -1521,6 +1884,28 @@ static char *get_opt_flags_string(void *obj, const char *unit, int64_t value)
     if (flags[0])
         return fx_strdup(flags);
     return NULL;
+}
+
+/**
+ * Free an AVOptionRanges struct and set it to NULL.
+ */
+void fx_opt_freep_ranges(AVOptionRanges **rangesp)
+{
+    int i;
+    AVOptionRanges *ranges = *rangesp;
+
+    if (!ranges)
+        return;
+
+    for (i = 0; i < ranges->nb_ranges * ranges->nb_components; i++) {
+        AVOptionRange *range = ranges->range[i];
+        if (range) {
+            fx_freep(&range->str);
+            fx_freep(&ranges->range[i]);
+        }
+    }
+    fx_freep(&ranges->range);
+    fx_freep(rangesp);
 }
 
 static void opt_list(void *obj, void *fx_log_obj, const char *unit,
@@ -1681,12 +2066,12 @@ static void opt_list(void *obj, void *fx_log_obj, const char *unit,
                 AVRational q = fx_d2q(opt->default_val.dbl, INT_MAX);
                 fx_log(fx_log_obj, FX_LOG_INFO, "%d/%d", q.num, q.den); }
                 break;
-            case FX_OPT_TYPE_PIXEL_FMT:
-                fx_log(fx_log_obj, FX_LOG_INFO, "%s", (char *)fx_x_if_null(fx_get_pix_fmt_name(opt->default_val.i64), "none"));
-                break;
-            case FX_OPT_TYPE_SAMPLE_FMT:
-                fx_log(fx_log_obj, FX_LOG_INFO, "%s", (char *)fx_x_if_null(fx_get_sample_fmt_name(opt->default_val.i64), "none"));
-                break;
+            //case FX_OPT_TYPE_PIXEL_FMT:
+            //    fx_log(fx_log_obj, FX_LOG_INFO, "%s", (char *)fx_x_if_null(fx_get_pix_fmt_name(opt->default_val.i64), "none"));
+            //    break;
+            //case FX_OPT_TYPE_SAMPLE_FMT:
+            //    fx_log(fx_log_obj, FX_LOG_INFO, "%s", (char *)fx_x_if_null(fx_get_sample_fmt_name(opt->default_val.i64), "none"));
+            //    break;
             case FX_OPT_TYPE_COLOR:
             case FX_OPT_TYPE_IMAGE_SIZE:
             case FX_OPT_TYPE_STRING:
@@ -1826,7 +2211,7 @@ void fx_opt_set_defaults(void *s)
  * the error code issued by fx_opt_set() if the key/value pair
  * cannot be set
  */
-static int parse_key_value_pair(void *ctx, const char **buf,
+static int parse_key_value_pair2(void *ctx, const char **buf,
                                 const char *key_val_sep, const char *pairs_sep)
 {
     char *key = fx_get_token(buf, key_val_sep);
@@ -1885,7 +2270,7 @@ int fx_set_options_string(void *ctx, const char *opts,
         return 0;
 
     while (*opts) {
-        if ((ret = parse_key_value_pair(ctx, &opts, key_val_sep, pairs_sep)) < 0)
+        if ((ret = parse_key_value_pair2(ctx, &opts, key_val_sep, pairs_sep)) < 0)
             return ret;
         count++;
 
@@ -2008,7 +2393,7 @@ int fx_opt_set_from_string(void *ctx, const char *opts,
 {
     int ret, count = 0;
     const char *dummy_shorthand = NULL;
-    char *fx_uninit(parsed_key), *fx_uninit(value);
+    char *parsed_key, *value;
     const char *key;
 
     if (!opts)
@@ -2134,125 +2519,8 @@ int fx_opt_set_dict(void *obj, AVDictionary **options)
 {
     return fx_opt_set_dict2(obj, options, 0);
 }
-/**
- * Look for an option in an object. Consider only options which
- * have all the specified flags set.
- *
- * @param[in] obj A pointer to a struct whose first element is a
- *                pointer to an AVClass.
- *                Alternatively a double pointer to an AVClass, if
- *                FX_OPT_SEARCH_FAKE_OBJ search flag is set.
- * @param[in] name The name of the option to look for.
- * @param[in] unit When searching for named constants, name of the unit
- *                 it belongs to.
- * @param opt_flags Find only options with all the specified flags set (FX_OPT_FLAG).
- * @param search_flags A combination of FX_OPT_SEARCH_*.
- *
- * @return A pointer to the option found, or NULL if no option
- *         was found.
- *
- * @note Options found with FX_OPT_SEARCH_CHILDREN flag may not be settable
- * directly with fx_opt_set(). Use special calls which take an options
- * AVDictionary (e.g. avformat_open_input()) to set options found with this
- * flag.
- */
 
-const AVOption *fx_opt_find(void *obj, const char *name, const char *unit,
-                            int opt_flags, int search_flags)
-{
-    return fx_opt_find2(obj, name, unit, opt_flags, search_flags, NULL);
-}
-/**
- * Look for an option in an object. Consider only options which
- * have all the specified flags set.
- *
- * @param[in] obj A pointer to a struct whose first element is a
- *                pointer to an AVClass.
- *                Alternatively a double pointer to an AVClass, if
- *                FX_OPT_SEARCH_FAKE_OBJ search flag is set.
- * @param[in] name The name of the option to look for.
- * @param[in] unit When searching for named constants, name of the unit
- *                 it belongs to.
- * @param opt_flags Find only options with all the specified flags set (FX_OPT_FLAG).
- * @param search_flags A combination of FX_OPT_SEARCH_*.
- * @param[out] target_obj if non-NULL, an object to which the option belongs will be
- * written here. It may be different from obj if FX_OPT_SEARCH_CHILDREN is present
- * in search_flags. This parameter is ignored if search_flags contain
- * FX_OPT_SEARCH_FAKE_OBJ.
- *
- * @return A pointer to the option found, or NULL if no option
- *         was found.
- */
-const AVOption *fx_opt_find2(void *obj, const char *name, const char *unit,
-                             int opt_flags, int search_flags, void **target_obj)
-{
-    const AVClass  *c;
-    const AVOption *o = NULL;
 
-    if(!obj)
-        return NULL;
-
-    c= *(AVClass**)obj;
-
-    if (!c)
-        return NULL;
-
-    if (search_flags & FX_OPT_SEARCH_CHILDREN) {
-        if (search_flags & FX_OPT_SEARCH_FAKE_OBJ) {
-            const AVClass *child = NULL;
-            while (child = fx_opt_child_class_next(c, child))
-                if (o = fx_opt_find2(&child, name, unit, opt_flags, search_flags, NULL))
-                    return o;
-        } else {
-            void *child = NULL;
-            while (child = fx_opt_child_next(obj, child))
-                if (o = fx_opt_find2(child, name, unit, opt_flags, search_flags, target_obj))
-                    return o;
-        }
-    }
-
-    while (o = fx_opt_next(obj, o)) {
-        if (!strcmp(o->name, name) && (o->flags & opt_flags) == opt_flags &&
-            ((!unit && o->type != FX_OPT_TYPE_CONST) ||
-             (unit  && o->type == FX_OPT_TYPE_CONST && o->unit && !strcmp(o->unit, unit)))) {
-            if (target_obj) {
-                if (!(search_flags & FX_OPT_SEARCH_FAKE_OBJ))
-                    *target_obj = obj;
-                else
-                    *target_obj = NULL;
-            }
-            return o;
-        }
-    }
-    return NULL;
-}
-
-/**
- * Iterate over AVOptions-enabled children of obj.
- *
- * @param prev result of a previous call to this function or NULL
- * @return next AVOptions-enabled child or NULL
- */
-
-void *fx_opt_child_next(void *obj, void *prev)
-{
-    const AVClass *c = *(AVClass **)obj;
-    if (c->child_next)
-        return c->child_next(obj, prev);
-    return NULL;
-}
-/**
- * Iterate over potential AVOptions-enabled children of parent.
- *
- * @param prev result of a previous call to this function or NULL
- * @return AVClass corresponding to next potential child or NULL
- */
-const AVClass *fx_opt_child_class_next(const AVClass *parent, const AVClass *prev)
-{
-    if (parent->child_class_next)
-        return parent->child_class_next(prev);
-    return NULL;
-}
 /**
  * Gets a pointer to the requested field in a struct.
  * This function allows accessing a struct even when its fields are moved or
@@ -2368,146 +2636,8 @@ int fx_opt_copy(void *dst, const void *src)
     }
     return ret;
 }
-/**
- * Get a list of allowed ranges for the given option.
- *
- * The returned list may depend on other fields in obj like for example profile.
- *
- * @param flags is a bitmask of flags, undefined flags should not be set and should be ignored
- *              FX_OPT_SEARCH_FAKE_OBJ indicates that the obj is a double pointer to a AVClass instead of a full instance
- *              FX_OPT_MULTI_COMPONENT_RANGE indicates that function may return more than one component, @see AVOptionRanges
- *
- * The result must be freed with fx_opt_freep_ranges.
- *
- * @return number of compontents returned on success, a negative errro code otherwise
- */
 
-int fx_opt_query_ranges(AVOptionRanges **ranges_arg, void *obj, const char *key, int flags)
-{
-    int ret;
-    const AVClass *c = *(AVClass**)obj;
-    int (*callback)(AVOptionRanges **, void *obj, const char *key, int flags) = NULL;
 
-    if (c->version > (52 << 16 | 11 << 8))
-        callback = c->query_ranges;
-
-    if (!callback)
-        callback = fx_opt_query_ranges_default;
-
-    ret = callback(ranges_arg, obj, key, flags);
-    if (ret >= 0) {
-        if (!(flags & FX_OPT_MULTI_COMPONENT_RANGE))
-            ret = 1;
-        (*ranges_arg)->nb_components = ret;
-    }
-    return ret;
-}
-/**
- * Get a default list of allowed ranges for the given option.
- *
- * This list is constructed without using the AVClass.query_ranges() callback
- * and can be used as fallback from within the callback.
- *
- * @param flags is a bitmask of flags, undefined flags should not be set and should be ignored
- *              FX_OPT_SEARCH_FAKE_OBJ indicates that the obj is a double pointer to a AVClass instead of a full instance
- *              FX_OPT_MULTI_COMPONENT_RANGE indicates that function may return more than one component, @see AVOptionRanges
- *
- * The result must be freed with fx_opt_free_ranges.
- *
- * @return number of compontents returned on success, a negative errro code otherwise
- */
-
-int fx_opt_query_ranges_default(AVOptionRanges **ranges_arg, void *obj, const char *key, int flags)
-{
-    AVOptionRanges *ranges = fx_mallocz(sizeof(*ranges));
-    AVOptionRange **range_array = fx_mallocz(sizeof(void*));
-    AVOptionRange *range = fx_mallocz(sizeof(*range));
-    const AVOption *field = fx_opt_find(obj, key, NULL, 0, flags);
-    int ret;
-
-    *ranges_arg = NULL;
-
-    if (!ranges || !range || !range_array || !field) {
-        ret = AVERROR(ENOMEM);
-        goto fail;
-    }
-
-    ranges->range = range_array;
-    ranges->range[0] = range;
-    ranges->nb_ranges = 1;
-    ranges->nb_components = 1;
-    range->is_range = 1;
-    range->value_min = field->min;
-    range->value_max = field->max;
-
-    switch (field->type) {
-    case FX_OPT_TYPE_BOOL:
-    case FX_OPT_TYPE_INT:
-    case FX_OPT_TYPE_INT64:
-    case FX_OPT_TYPE_PIXEL_FMT:
-    case FX_OPT_TYPE_SAMPLE_FMT:
-    case FX_OPT_TYPE_FLOAT:
-    case FX_OPT_TYPE_DOUBLE:
-    case FX_OPT_TYPE_DURATION:
-    case FX_OPT_TYPE_COLOR:
-    case FX_OPT_TYPE_CHANNEL_LAYOUT:
-        break;
-    case FX_OPT_TYPE_STRING:
-        range->component_min = 0;
-        range->component_max = 0x10FFFF; // max unicode value
-        range->value_min = -1;
-        range->value_max = INT_MAX;
-        break;
-    case FX_OPT_TYPE_RATIONAL:
-        range->component_min = INT_MIN;
-        range->component_max = INT_MAX;
-        break;
-    case FX_OPT_TYPE_IMAGE_SIZE:
-        range->component_min = 0;
-        range->component_max = INT_MAX/128/8;
-        range->value_min = 0;
-        range->value_max = INT_MAX/8;
-        break;
-    case FX_OPT_TYPE_VIDEO_RATE:
-        range->component_min = 1;
-        range->component_max = INT_MAX;
-        range->value_min = 1;
-        range->value_max = INT_MAX;
-        break;
-    default:
-        ret = AVERROR(ENOSYS);
-        goto fail;
-    }
-
-    *ranges_arg = ranges;
-    return 1;
-fail:
-    fx_free(ranges);
-    fx_free(range);
-    fx_free(range_array);
-    return ret;
-}
-/**
- * Free an AVOptionRanges struct and set it to NULL.
- */
-void fx_opt_freep_ranges(AVOptionRanges **rangesp)
-{
-    int i;
-    AVOptionRanges *ranges = *rangesp;
-
-    if (!ranges)
-        return;
-
-    for (i = 0; i < ranges->nb_ranges * ranges->nb_components; i++) {
-        AVOptionRange *range = ranges->range[i];
-        if (range) {
-            fx_freep(&range->str);
-            fx_freep(&ranges->range[i]);
-        }
-    }
-    fx_freep(&ranges->range);
-    fx_freep(rangesp);
-}
 /**
  * Check if given option is set to its default value.
  *

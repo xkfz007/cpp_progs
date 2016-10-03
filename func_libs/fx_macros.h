@@ -64,5 +64,9 @@ static void _assert(char*cond,char*filename,long lineno)
 #define _GLUE(a, b) a ## b
 #define GLUE(a, b) _GLUE(a, b)
 
+#define MKTAG(a,b,c,d) ((a) | ((b) << 8) | ((c) << 16) | ((unsigned)(d) << 24))
+#define MKBETAG(a,b,c,d) ((d) | ((c) << 8) | ((b) << 16) | ((unsigned)(a) << 24))
+#define FFERRTAG(a, b, c, d) (-(int)MKTAG(a, b, c, d))
+
 #endif
 

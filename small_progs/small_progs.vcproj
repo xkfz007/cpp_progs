@@ -328,10 +328,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\eval.c"
-				>
-			</File>
-			<File
 				RelativePath=".\handle_signal.c"
 				>
 			</File>
