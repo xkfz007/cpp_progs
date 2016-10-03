@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.1"
+	Name="func_libs"
+	ProjectGUID="{CCDAB952-53C6-442F-98A0-DC5947497EB1}"
+	VCNestedProjectGUID="{B95101A8-0498-4BC5-B514-8DE9333B463F}"
+	VCNestedProjectFileName="func_libs.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Debug|x64">
+			<Tool
+				Name="CppCmplrTool"
+				C99Support="true"/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64">
+			<Tool
+				Name="CppCmplrTool"
+				C99Support="true"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

@@ -321,7 +321,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\atomic.c"
+				>
+			</File>
+			<File
 				RelativePath=".\bin_search.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\bprint.c"
+				>
+			</File>
+			<File
+				RelativePath=".\buffer.c"
 				>
 			</File>
 			<File
@@ -333,7 +345,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\dict.c"
+				>
+			</File>
+			<File
 				RelativePath=".\dirwalk.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fifo.c"
 				>
 			</File>
 			<File
@@ -357,11 +377,39 @@
 				>
 			</File>
 			<File
+				RelativePath=".\integer.c"
+				>
+			</File>
+			<File
+				RelativePath=".\lfg.c"
+				>
+			</File>
+			<File
+				RelativePath=".\md5.c"
+				>
+			</File>
+			<File
+				RelativePath=".\opt.c"
+				>
+			</File>
+			<File
+				RelativePath=".\rational.c"
+				>
+			</File>
+			<File
+				RelativePath=".\string.c"
+				>
+			</File>
+			<File
 				RelativePath=".\string_c_ops.cc"
 				>
 			</File>
 			<File
 				RelativePath=".\string_cpp_ops.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\tree.c"
 				>
 			</File>
 		</Filter>
@@ -371,11 +419,35 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\fx_atomic.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_audio.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_binsearch.h"
 				>
 			</File>
 			<File
+				RelativePath=".\fx_bprint.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_bswap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_buffer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_cpu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_dict.h"
 				>
 			</File>
 			<File
@@ -384,6 +456,14 @@
 			</File>
 			<File
 				RelativePath=".\fx_dump.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_error.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_fifo.h"
 				>
 			</File>
 			<File
@@ -419,6 +499,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fx_integer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_intreadwrite.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_lfg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_log.h"
 				>
 			</File>
@@ -431,7 +523,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fx_md5.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_memops.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_opt.h"
 				>
 			</File>
 			<File
@@ -440,6 +540,10 @@
 			</File>
 			<File
 				RelativePath=".\fx_preprocess.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_rational.h"
 				>
 			</File>
 			<File
@@ -459,11 +563,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fx_thread2.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_threadpool.h"
 				>
 			</File>
 			<File
 				RelativePath=".\fx_time.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_tree.h"
 				>
 			</File>
 			<File

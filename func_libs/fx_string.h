@@ -1,5 +1,8 @@
 #ifndef _FX_STRING_H
 #define _FX_STRING_H
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
 #include "fx_types.h"
 #include "fx_mathops.h"
 
@@ -74,6 +77,106 @@ static int fx_isxdigit(int c)
     return fx_isdigit(c) || (c >= 'a' && c <= 'f');
 }
 
+//convert string to lowercase
+static char* fx_strlwr(char*str)
+{
+    char*p=str;
+    while(*str)
+    {
+        *str=fx_tolower(*str);
+        str++;
+    }
+    return p;
+}
+static char* fx_strupr(char*str)
+{
+    char*p=str;
+    while(*str)
+    {
+        *str=fx_toupper(*str);
+        str++;
+    }
+    return p;
+}
+
+//reverse string
+static char* fx_strrev(char*str)
+{
+    char*org=str;
+    char*forward=str;
+    while(*str)
+        str++;
+    str--;
+    while(forward<str)
+    {
+        char tmp=*str;
+        *str=*forward;
+        *forward=tmp;
+        forward++;
+        str--;
+    }
+    return org;
+}
+
+
+//like strstr, but reverse
+static const char* fx_strrstr(const char*s1,const char *s2)
+{
+    const char* t=NULL;
+    while(*s1!='\0')
+    {
+        const char*p=s1;
+        const char *q=s2;
+        while(*q==*p&&*q)
+        {
+            p++;
+            q++;
+        }
+        if(*q=='\0')
+            t=s1;
+        s1++;
+    }
+    return t;
+}
+
+/*
+** Shrink runs of white space in the given string to a single space.
+*/
+static char* deblank( char *string )
+{
+	char *dest;
+	char *src;
+	int ch;
+	/*
+	** Set source and destination pointers to beginning of the string, then
+	** move to 2nd character in string.
+	*/
+	src = string;
+	dest = string++;
+	/*
+	** Examine each character from the source string.
+	*/
+	while( (ch = *src++) != '\0'){
+		if( fx_isspace( ch ) ){
+			/*
+			** We found white space. If we are at the beginning of
+			** the string OR the previous char in the dest is not
+			** white space, store a blank.
+			*/
+			if( src == string || !fx_isspace( dest[-1] ) )
+				*dest++ = ' ';
+		}
+		else {
+			/*
+			** Not white space: just store it.
+			*/
+			*dest++ = ch;
+		}
+	}
+	*dest = '\0';
+
+    return dest;
+}
 
 /**
  * Return non-zero if pfx is a prefix of str. If it is, *ptr is set to

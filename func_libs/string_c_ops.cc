@@ -91,27 +91,6 @@ int strieql(const char*str1,const char*str2){
     }
     return (*str1=='\0')&&(*str2=='\0');
 }
-//将字符串转换成大写或小写
-char* strlwr_(char*str)
-{
-    char*p=str;
-    while(*str)
-    {
-        *str=tolower_(*str);
-        str++;
-    }
-    return p;
-}
-char* strupr_(char*str)
-{
-    char*p=str;
-    while(*str)
-    {
-        *str=toupper_(*str);
-        str++;
-    }
-    return p;
-}
 //获取字符串中第一次出现的某个字符
 char* strchr_(char*str,char c)
 {
@@ -151,24 +130,6 @@ int strrchr_i(const char*str,char c)
        i++;
     }
     return p;
-}
-//计算字符串的内容反转
-char* strrev_(char*str)
-{
-    char*org=str;
-    char*forward=str;
-    while(*str)
-        str++;
-    str--;
-    while(forward<str)
-    {
-        char tmp=*str;
-        *str=*forward;
-        *forward=tmp;
-        forward++;
-        str--;
-    }
-    return org;
 }
 //比较两个字符串
 int strcmp_(const char*str1,const char*str2){
@@ -287,25 +248,6 @@ int  strstr_i(const char*s1,const char *s2)
     return -1;
 
 }
-//获取子字符串的最右端出现
-char* strrstr_(const char*s1,const char *s2)
-{
-    char* t=NULL;
-    while(*s1!='\0')
-    {
-        char*p=s1;
-        char *q=s2;
-        while(*q==*p&&*q)
-        {
-            p++;
-            q++;
-        }
-        if(*q=='\0')
-            t=s1;
-        s1++;
-    }
-    return t;
-}
 //'
 //
 char* strstr_rem(char*str,char*substr)
@@ -382,49 +324,5 @@ printf("%s\n",p);
 }
 #endif
 
-/*
-** Shrink runs of white space in the given string to a single space.
-*/
-#ifdef _DEBLANK
-#define NUL '\0'
-static int is_white( int ch )
-{
-	return ch == ' ' || ch == '\t' || ch == '\v' || ch == '\f' || ch == '\n'
-		|| ch == '\r';
-}
-static void deblank( char *string )
-{
-	char *dest;
-	char *src;
-	int ch;
-	/*
-	** Set source and destination pointers to beginning of the string, then
-	** move to 2nd character in string.
-	*/
-	src = string;
-	dest = string++;
-	/*
-	** Examine each character from the source string.
-	*/
-	while( (ch = *src++) != NUL ){
-		if( is_white( ch ) ){
-			/*
-			** We found white space. If we��re at the beginning of
-			** the string OR the previous char in the dest is not
-			** white space, store a blank.
-			*/
-			if( src == string || !is_white( dest[-1] ) )
-				*dest++ = ' ';
-		}
-		else {
-			/*
-			** Not white space: just store it.
-			*/
-			*dest++ = ch;
-		}
-	}
-	*dest = NUL;
-}
-#endif
 
 

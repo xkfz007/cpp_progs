@@ -9,10 +9,10 @@ typedef struct dir_entry{
 	int type;
 	char name[1024];
 }dir_entry_t;
-static dir_entry_t* dent_list_new(int N){
-	dir_entry_t* den_list;
-	return den_list;
-}
+//static dir_entry_t* dent_list_new(int N){
+//	dir_entry_t* den_list;
+//	return den_list;
+//}
 
 static dir_entry_t* dent_list_add(char* name,int type,dir_entry_t den_list[],int* idx,int *N){
 	if(*idx>=*N){
@@ -71,7 +71,7 @@ static dir_entry_t* fx_dirwalk(char *dir,dir_entry_t den_list[], int* idx, int *
                     continue;
 				p=buf;
                 while(i++<count)
-                    p=sprintf(p,"+");
+                    p+=sprintf(p,"+");
                 fx_log(NULL,FX_LOG_INFO,"%s\e[32;44m%s\e[0m\n",p,FindFileData.cFileName);
                 //StringCchCopy(DirAdd,MAX_PATH,Dir);  
                 //StringCchCat(DirAdd,MAX_PATH,TEXT("\\"));  

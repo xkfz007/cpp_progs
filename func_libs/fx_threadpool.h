@@ -4,7 +4,7 @@
 
 #ifndef FX_THREADPOOL_H
 #define FX_THREADPOOL_H
-#include "fx_thread.h"
+#include "fx_thread2.h"
 #include "fx_memops.h"
 #define HAVE_THREAD 1
 typedef struct fx_threadpool_t fx_threadpool_t;

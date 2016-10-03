@@ -1,6 +1,41 @@
 #ifndef _FX_STRING2_H
 #define _FX_STRING2_H
 #include "fx_memops.h"
+#include "fx_string.h"
+
+static char *fx_asprintf(const char *fmt, ...)
+{
+    char *p = NULL;
+    va_list va;
+    int len;
+
+    va_start(va, fmt);
+    len = vsnprintf(NULL, 0, fmt, va);
+    va_end(va);
+    if (len < 0)
+        goto end;
+
+    p = fx_malloc(len + 1);
+    if (!p)
+        goto end;
+
+    va_start(va, fmt);
+    len = vsnprintf(p, len + 1, fmt, va);
+    va_end(va);
+    if (len < 0)
+        fx_freep(&p);
+
+end:
+    return p;
+}
+
+static char *fx_d2str(double d)
+{
+    char *str = fx_malloc(16);
+    if (str)
+        snprintf(str, 16, "%f", d);
+    return str;
+}
 
 /**
  * Unescape the given string until a non escaped terminating char,

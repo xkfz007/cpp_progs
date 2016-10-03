@@ -1,6 +1,6 @@
+//#define _GLOB
+#if defined (_GLOB)
 #include "fx_glob.h"
-#if defined (TEST)
-
 int main (int argc,char* argv[])
 {
 	unsigned int i;

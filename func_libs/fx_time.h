@@ -6,6 +6,7 @@
 #if _WIN32
 #include <sys/types.h>
 #include <sys/timeb.h>
+#include <Windows.h>
 #define HAVE_GETSYSTEMTIMEASFILETIME 1
 #else
 #include <sys/time.h>
@@ -48,5 +49,31 @@ static int64_t fx_gettime(void)
     return -1;
 #endif
 }
+
+
+#define HAVE_GMTIME_R 0
+#define HAVE_LOCALTIME_R 0
+
+#if !HAVE_GMTIME_R && !defined(gmtime_r)
+static inline struct tm *gmtime_r(const time_t* clock, struct tm *result)
+{
+    struct tm *ptr = gmtime(clock);
+    if (!ptr)
+        return NULL;
+    *result = *ptr;
+    return result;
+}
+#endif
+
+#if !HAVE_LOCALTIME_R && !defined(localtime_r)
+static inline struct tm *localtime_r(const time_t* clock, struct tm *result)
+{
+    struct tm *ptr = localtime(clock);
+    if (!ptr)
+        return NULL;
+    *result = *ptr;
+    return result;
+}
+#endif
 
 #endif

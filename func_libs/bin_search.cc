@@ -1,5 +1,5 @@
 
-#define _BINSEARCH
+//#define _BINSEARCH
 #ifdef _BINSEARCH
 #include <iostream>
 

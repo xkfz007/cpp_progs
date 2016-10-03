@@ -1,5 +1,11 @@
 #ifndef FX_LOG_H
 #define FX_LOG_H
+#include <errno.h>
+#include <stdarg.h>
+#include <string.h>
+#include <stdio.h>
+#include "fx_types.h"
+
 /* Log level */
 #define FX_LOG_NONE           0
 #define FX_LOG_ERROR          1
@@ -8,9 +14,6 @@
 #define FX_LOG_DEBUG          4
 #define FX_LOG_TRACE          5
 
-#include <errno.h>
-#include <stdarg.h>
-#include <string.h>
 static void fx_log(const char* caller, int level, const char* fmt, ...)
 {
 #define  bufferSize 4096

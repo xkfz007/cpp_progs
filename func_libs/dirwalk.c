@@ -1,10 +1,10 @@
 /*
  * this is a great program to traverse the directory.
  */
+#ifdef _DIRWALK
 #include "fx_log.h"
 #include "fx_dirwalk.h"
 
-#ifdef _DIRWALK
 #include <unistd.h>
 #include <stdio.h>
 #include <dirent.h>
@@ -63,23 +63,6 @@ int main(int argc, char* argv[])
 
 #endif
 
-
-/*  Now we move onto the main function.  */
-
-int main(int argc, char* argv[])
-{
-    char *topdir, pwd[2]=".";
-    if (argc != 2)
-        topdir=pwd;
-    else
-        topdir=argv[1];
-
-    printf("Directory scan of %s:\n",topdir);
-    printdir(topdir,0);
-    printf("------done-------\n");
-
-    return (0);
-}
 #if 0
 #include <windows.h>
 #include <string.h>

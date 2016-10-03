@@ -42,6 +42,8 @@
 #include "fx_string.h"
 #include "fx_time.h"
 #include "fx_memops.h"
+#include "fx_image.h"
+#include "fx_error.h"
 //typedef char int8_t;
 //typedef unsigned char uint8_t;
 //typedef unsigned int uint32_t;
@@ -54,9 +56,9 @@
 
 
 #define CONFIG_FTRAPV   0
-#define FF_QP2LAMBDA    118 ///< factor to convert from H.263 QP to lambda
-#define ENOMEM          -12
-#define EINVAL          -22
+//#define FF_QP2LAMBDA    118 ///< factor to convert from H.263 QP to lambda
+//#define ENOMEM          -12
+//#define EINVAL          -22
 //#define AV_LOG_INFO     32
 //#define AV_LOG_ERROR    16
 
@@ -141,7 +143,7 @@ static const struct {
     { "E",   M_E   },
     { "PI",  M_PI  },
     { "PHI", M_PHI },
-    { "QP2LAMBDA", FF_QP2LAMBDA },
+    { "QP2LAMBDA", QP2LAMBDA },
 };
 
 
@@ -191,30 +193,7 @@ static double etime(double v)
 }
 
 
-union av_intfloat32 {
-    uint32_t i;
-    float    f;
-};
-static uint32_t av_float2int(float f)
-{
-    union av_intfloat32 v;
-    v.f = f;
-    return v.i;
-}
-static int isnan(float x)
-{
-    uint32_t v = av_float2int(x);
-    if ((v & 0x7f800000) != 0x7f800000)
-        return 0;
-    return v & 0x007fffff;
-}
-static int isinf(float x)
-{
-    uint32_t v = av_float2int(x);
-    if ((v & 0x7f800000) != 0x7f800000)
-        return 0;
-    return !(v & 0x007fffff);
-}
+
 
 
 //int64_t av_gcd(int64_t a, int64_t b)
@@ -451,7 +430,7 @@ static size_t max_alloc_size= INT_MAX;
 //        memset(ptr, 0, size);
 //    return ptr;
 //}
-#define FF_ARRAY_ELEMS(a) (sizeof(a) / sizeof((a)[0]))
+//#define FF_ARRAY_ELEMS(a) (sizeof(a) / sizeof((a)[0]))
 static int parse_primary(AVExpr **e, Parser *p)
 {
     AVExpr *d = fx_mallocz(sizeof(AVExpr));
@@ -459,7 +438,7 @@ static int parse_primary(AVExpr **e, Parser *p)
     int ret, i;
 
     if (!d)
-        return ENOMEM;
+        return AVERROR(ENOMEM);
 
     /* number */
     d->value = fx_strtod(p->s, &next);
@@ -481,7 +460,7 @@ static int parse_primary(AVExpr **e, Parser *p)
             return 0;
         }
     }
-    for (i = 0; i < FF_ARRAY_ELEMS(constants); i++) {
+    for (i = 0; i < ARRAY_ELEMS(constants); i++) {
         if (strmatch(p->s, constants[i].name)) {
             p->s += strlen(constants[i].name);
             d->type = e_value;
@@ -496,7 +475,7 @@ static int parse_primary(AVExpr **e, Parser *p)
         fx_log("EVAL", FX_LOG_ERROR, "Undefined constant or missing '(' in '%s'\n", s0);
         p->s= next;
         fx_expr_free(d);
-        return EINVAL;
+        return AVERROR(EINVAL);
     }
     p->s++; // "("
     if (*next == '(') { // special case do-nothing
@@ -506,7 +485,7 @@ static int parse_primary(AVExpr **e, Parser *p)
         if (p->s[0] != ')') {
             fx_log("EVAL", FX_LOG_ERROR, "Missing ')' in '%s'\n", s0);
             fx_expr_free(d);
-            return EINVAL;
+            return AVERROR(EINVAL);
         }
         p->s++; // ")"
         *e = d;
@@ -527,7 +506,7 @@ static int parse_primary(AVExpr **e, Parser *p)
     if (p->s[0] != ')') {
         fx_log("EVAL", FX_LOG_ERROR, "Missing ')' or too many args in '%s'\n", s0);
         fx_expr_free(d);
-        return (EINVAL);
+        return AVERROR(EINVAL);
     }
     p->s++; // ")"
 
@@ -599,7 +578,7 @@ static int parse_primary(AVExpr **e, Parser *p)
 
         fx_log("EVAL", FX_LOG_ERROR, "Unknown function in '%s'\n", s0);
         fx_expr_free(d);
-        return (EINVAL);
+        return AVERROR(EINVAL);
     }
 
     *e = d;
@@ -657,7 +636,7 @@ static int parse_factor(AVExpr **e, Parser *p)
         if (!e0) {
             fx_expr_free(e1);
             fx_expr_free(e2);
-            return (ENOMEM);
+            return AVERROR(ENOMEM);
         }
         if (e0->param[1]) e0->param[1]->value *= (sign2|1);
     }
@@ -684,7 +663,7 @@ static int parse_term(AVExpr **e, Parser *p)
         if (!e0) {
             fx_expr_free(e1);
             fx_expr_free(e2);
-            return (ENOMEM);
+            return AVERROR(ENOMEM);
         }
     }
     *e = e0;
@@ -707,7 +686,7 @@ static int parse_subexpr(AVExpr **e, Parser *p)
         if (!e0) {
             fx_expr_free(e1);
             fx_expr_free(e2);
-            return (ENOMEM);
+            return AVERROR(ENOMEM);
         }
     };
 
@@ -720,7 +699,7 @@ static int parse_expr(AVExpr **e, Parser *p)
     int ret;
     AVExpr *e0, *e1, *e2;
     if (p->stack_index <= 0) //protect against stack overflows
-        return (EINVAL);
+        return AVERROR(EINVAL);
     p->stack_index--;
 
     if ((ret = parse_subexpr(&e0, p)) < 0)
@@ -736,7 +715,7 @@ static int parse_expr(AVExpr **e, Parser *p)
         if (!e0) {
             fx_expr_free(e1);
             fx_expr_free(e2);
-            return (ENOMEM);
+            return AVERROR(ENOMEM);
         }
     };
 
@@ -801,7 +780,7 @@ int av_expr_parse(AVExpr **expr, const char *s,
     int ret = 0;
 
     if (!w)
-        return (ENOMEM);
+        return AVERROR(ENOMEM);
 
     while (*s)
         if (!fx_isspace(*s++)) *wp++ = s[-1];
@@ -822,16 +801,16 @@ int av_expr_parse(AVExpr **expr, const char *s,
         goto end;
     if (*p.s) {
         fx_log("EVAL", FX_LOG_ERROR, "Invalid chars '%s' at the end of expression '%s'\n", p.s, s0);
-        ret = (EINVAL);
+        ret = AVERROR(EINVAL);
         goto end;
     }
     if (!verify_expr(e)) {
-        ret = (EINVAL);
+        ret = AVERROR(EINVAL);
         goto end;
     }
     e->var= fx_mallocz(sizeof(double) *VARS);
     if (!e->var) {
-        ret = (ENOMEM);
+        ret = AVERROR(ENOMEM);
         goto end;
     }
     *expr = e;
@@ -867,7 +846,7 @@ int av_expr_parse_and_eval(double *d, const char *s,
     }
     *d = av_expr_eval(e, const_values, opaque);
     fx_expr_free(e);
-    return isnan(*d) ? (EINVAL) : 0;
+    return isnan(*d) ? AVERROR(EINVAL) : 0;
 }
 
 //#ifdef TEST

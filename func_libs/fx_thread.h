@@ -1,475 +1,557 @@
-#ifndef _FX_THREAD_H
-#define _FX_THREAD_H
-#include "fx_funcproperties.h"
-#define HAVE_WIN32THREAD  1
-/* threads */
-#if HAVE_BEOSTHREAD
-#include <kernel/OS.h>
-#define fx_pthread_t               thread_id
-static inline int fx_pthread_create( fx_pthread_t *t, void *a, void *(*f)(void *), void *d )
-{
-     *t = spawn_thread( f, "", 10, d );
-     if( *t < B_NO_ERROR )
-         return -1;
-     resume_thread( *t );
-     return 0;
-}
-#define fx_pthread_join(t,s)       { long tmp; \
-                                       wait_for_thread(t,(s)?(long*)(s):&tmp); }
+/*
+ * This file is part of FFmpeg.
+ *
+ * FFmpeg is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * FFmpeg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 
-#elif HAVE_POSIXTHREAD
+// This header should only be used to simplify code where
+// threading is optional, not as a generic threading abstraction.
+
+#ifndef AVUTIL_THREAD_H
+#define AVUTIL_THREAD_H
+
+//#include "config.h"
+#ifdef WIN32
+#define HAVE_W32THREADS  1
+#endif
+
+#if HAVE_PTHREADS || HAVE_W32THREADS || HAVE_OS2THREADS
+
+#define USE_ATOMICS 0
+
+#if HAVE_PTHREADS
 #include <pthread.h>
-#define fx_pthread_t               pthread_t
-#define fx_pthread_create          pthread_create
-#define fx_pthread_join            pthread_join
-#define fx_pthread_mutex_t         pthread_mutex_t
-#define fx_pthread_mutex_init      pthread_mutex_init
-#define fx_pthread_mutex_destroy   pthread_mutex_destroy
-#define fx_pthread_mutex_lock      pthread_mutex_lock
-#define fx_pthread_mutex_unlock    pthread_mutex_unlock
-#define fx_pthread_cond_t          pthread_cond_t
-#define fx_pthread_cond_init       pthread_cond_init
-#define fx_pthread_cond_destroy    pthread_cond_destroy
-#define fx_pthread_cond_broadcast  pthread_cond_broadcast
-#define fx_pthread_cond_wait       pthread_cond_wait
-#define fx_pthread_attr_t          pthread_attr_t
-#define fx_pthread_attr_init       pthread_attr_init
-#define fx_pthread_attr_destroy    pthread_attr_destroy
-#define fx_pthread_num_processors_np pthread_num_processors_np
-#define fx_PTHREAD_MUTEX_INITIALIZER PTHREAD_MUTEX_INITIALIZER
 
-#elif HAVE_WIN32THREAD
-//#include "win32thread.h"
-#include <windows.h>
-/* the following macro is used within x264 */
-#undef ERROR
+#if defined(ASSERT_LEVEL) && ASSERT_LEVEL > 1
 
-typedef struct
+#include "log.h"
+
+#define ASSERT_PTHREAD_NORET(func, ...) do {                            \
+    int ret = func(__VA_ARGS__);                                        \
+    if (ret) {                                                          \
+        av_log(NULL, AV_LOG_FATAL, AV_STRINGIFY(func)                   \
+               " failed with error: %s\n", av_err2str(AVERROR(ret)));   \
+        abort();                                                        \
+    }                                                                   \
+} while (0)
+
+#define ASSERT_PTHREAD(func, ...) do {                                  \
+    ASSERT_PTHREAD_NORET(func, __VA_ARGS__);                            \
+    return 0;                                                           \
+} while (0)
+
+static inline int strict_pthread_join(pthread_t thread, void **value_ptr)
 {
-    void *handle;
-    void *(*func)( void* arg );
-    void *arg;
-    void **p_ret;
-    void *ret;
-} fx_pthread_t;
-#define fx_pthread_attr_t int
-
-/* the conditional variable api for windows 6.0+ uses critical sections and not mutexes */
-typedef CRITICAL_SECTION fx_pthread_mutex_t;
-#define fx_PTHREAD_MUTEX_INITIALIZER {0}
-#define fx_pthread_mutexattr_t int
-
-/* This is the CONDITIONAL_VARIABLE typedef for using Window's native conditional variables on kernels 6.0+.
- * MinGW does not currently have this typedef. */
-typedef struct
-{
-    void *ptr;
-} fx_pthread_cond_t;
-#define fx_pthread_condattr_t int
-
-int fx_pthread_create( fx_pthread_t *thread, const fx_pthread_attr_t *attr,
-                         void *(*start_routine)( void* ), void *arg );
-int fx_pthread_join( fx_pthread_t thread, void **value_ptr );
-
-int fx_pthread_mutex_init( fx_pthread_mutex_t *mutex, const fx_pthread_mutexattr_t *attr );
-int fx_pthread_mutex_destroy( fx_pthread_mutex_t *mutex );
-int fx_pthread_mutex_lock( fx_pthread_mutex_t *mutex );
-int fx_pthread_mutex_unlock( fx_pthread_mutex_t *mutex );
-
-int fx_pthread_cond_init( fx_pthread_cond_t *cond, const fx_pthread_condattr_t *attr );
-int fx_pthread_cond_destroy( fx_pthread_cond_t *cond );
-int fx_pthread_cond_broadcast( fx_pthread_cond_t *cond );
-int fx_pthread_cond_wait( fx_pthread_cond_t *cond, fx_pthread_mutex_t *mutex );
-int fx_pthread_cond_signal( fx_pthread_cond_t *cond );
-
-#define fx_pthread_attr_init(a) 0
-#define fx_pthread_attr_destroy(a) 0
-
-int  fx_win32_threading_init( void );
-void fx_win32_threading_destroy( void );
-
-int fx_pthread_num_processors_np( void );
-#else
-#define fx_pthread_t               int
-#define fx_pthread_create(t,u,f,d) 0
-#define fx_pthread_join(t,s)
-#endif //HAVE_*THREAD
-
-#if !HAVE_POSIXTHREAD && !HAVE_WIN32THREAD
-#define fx_pthread_mutex_t         int
-#define fx_pthread_mutex_init(m,f) 0
-#define fx_pthread_mutex_destroy(m)
-#define fx_pthread_mutex_lock(m)
-#define fx_pthread_mutex_unlock(m)
-#define fx_pthread_cond_t          int
-#define fx_pthread_cond_init(c,f)  0
-#define fx_pthread_cond_destroy(c)
-#define fx_pthread_cond_broadcast(c)
-#define fx_pthread_cond_wait(c,m)
-#define fx_pthread_attr_t          int
-#define fx_pthread_attr_init(a)    0
-#define fx_pthread_attr_destroy(a)
-#define fx_PTHREAD_MUTEX_INITIALIZER 0
-#endif
-
-#if HAVE_WIN32THREAD || PTW32_STATIC_LIB
-int fx_threading_init( void );
-#else
-#define fx_threading_init() 0
-#endif
-
-
-static ALWAYS_INLINE int fx_pthread_fetch_and_add( int *val, int add, fx_pthread_mutex_t *mutex )
-{
-#if HAVE_THREAD
-#if defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ > 0) && ARCH_X86
-    return __sync_fetch_and_add( val, add );
-#else
-    fx_pthread_mutex_lock( mutex );
-    int res = *val;
-    *val += add;
-    fx_pthread_mutex_unlock( mutex );
-    return res;
-#endif
-#else
-    int res = *val;
-    *val += add;
-    return res;
-#endif
+    ASSERT_PTHREAD(pthread_join, thread, value_ptr);
 }
 
-#if HAVE_POSIXTHREAD
-#if SYS_WINDOWS
-#define fx_lower_thread_priority(p)\
-{\
-    fx_pthread_t handle = pthread_self();\
-    struct sched_param sp;\
-    int policy = SCHED_OTHER;\
-    pthread_getschedparam( handle, &policy, &sp );\
-    sp.sched_priority -= p;\
-    pthread_setschedparam( handle, policy, &sp );\
-}
-#else
-#include <unistd.h>
-#define fx_lower_thread_priority(p) { UNUSED int nice_ret = nice(p); }
-#endif /* SYS_WINDOWS */
-#elif HAVE_WIN32THREAD
-#define fx_lower_thread_priority(p) SetThreadPriority( GetCurrentThread(), fx_MAX( -2, -p ) )
-#else
-#define fx_lower_thread_priority(p)
-#endif
-
-#if HAVE_WIN32THREAD
-#include <process.h>
-
-/* number of times to spin a thread about to block on a locked mutex before retrying and sleeping if still locked */
-#define FX_SPIN_COUNT 0
-
-/* GROUP_AFFINITY struct */
-typedef struct
+static inline int strict_pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
 {
-    ULONG_PTR mask; // KAFFINITY = ULONG_PTR
-    USHORT group;
-    USHORT reserved[3];
-} fx_group_affinity_t;
-
-typedef struct
-{
-    /* global mutex for replacing MUTEX_INITIALIZER instances */
-    fx_pthread_mutex_t static_mutex;
-
-    /* function pointers to conditional variable API on windows 6.0+ kernels */
-    void (WINAPI *cond_broadcast)( fx_pthread_cond_t *cond );
-    void (WINAPI *cond_init)( fx_pthread_cond_t *cond );
-    void (WINAPI *cond_signal)( fx_pthread_cond_t *cond );
-    BOOL (WINAPI *cond_wait)( fx_pthread_cond_t *cond, fx_pthread_mutex_t *mutex, DWORD milliseconds );
-} fx_win32thread_control_t;
-
-static fx_win32thread_control_t thread_control;
-
-/* _beginthreadex requires that the start routine is __stdcall */
-static unsigned __stdcall fx_win32thread_worker( void *arg )
-{
-    fx_pthread_t *h = arg;
-    *h->p_ret = h->func( h->arg );
+    if (attr) {
+        ASSERT_PTHREAD_NORET(pthread_mutex_init, mutex, attr);
+    } else {
+        pthread_mutexattr_t local_attr;
+        ASSERT_PTHREAD_NORET(pthread_mutexattr_init, &local_attr);
+        ASSERT_PTHREAD_NORET(pthread_mutexattr_settype, &local_attr, PTHREAD_MUTEX_ERRORCHECK);
+        ASSERT_PTHREAD_NORET(pthread_mutex_init, mutex, &local_attr);
+        ASSERT_PTHREAD_NORET(pthread_mutexattr_destroy, &local_attr);
+    }
     return 0;
 }
 
-static int fx_pthread_create( fx_pthread_t *thread, const fx_pthread_attr_t *attr,
-                         void *(*start_routine)( void* ), void *arg )
+static inline int strict_pthread_mutex_destroy(pthread_mutex_t *mutex)
+{
+    ASSERT_PTHREAD(pthread_mutex_destroy, mutex);
+}
+
+static inline int strict_pthread_mutex_lock(pthread_mutex_t *mutex)
+{
+    ASSERT_PTHREAD(pthread_mutex_lock, mutex);
+}
+
+static inline int strict_pthread_mutex_unlock(pthread_mutex_t *mutex)
+{
+    ASSERT_PTHREAD(pthread_mutex_unlock, mutex);
+}
+
+static inline int strict_pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr)
+{
+    ASSERT_PTHREAD(pthread_cond_init, cond, attr);
+}
+
+static inline int strict_pthread_cond_destroy(pthread_cond_t *cond)
+{
+    ASSERT_PTHREAD(pthread_cond_destroy, cond);
+}
+
+static inline int strict_pthread_cond_signal(pthread_cond_t *cond)
+{
+    ASSERT_PTHREAD(pthread_cond_signal, cond);
+}
+
+static inline int strict_pthread_cond_broadcast(pthread_cond_t *cond)
+{
+    ASSERT_PTHREAD(pthread_cond_broadcast, cond);
+}
+
+static inline int strict_pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)
+{
+    ASSERT_PTHREAD(pthread_cond_wait, cond, mutex);
+}
+
+static inline int strict_pthread_once(pthread_once_t *once_control, void (*init_routine)(void))
+{
+    ASSERT_PTHREAD(pthread_once, once_control, init_routine);
+}
+
+#define pthread_join           strict_pthread_join
+#define pthread_mutex_init     strict_pthread_mutex_init
+#define pthread_mutex_destroy  strict_pthread_mutex_destroy
+#define pthread_mutex_lock     strict_pthread_mutex_lock
+#define pthread_mutex_unlock   strict_pthread_mutex_unlock
+#define pthread_cond_init      strict_pthread_cond_init
+#define pthread_cond_destroy   strict_pthread_cond_destroy
+#define pthread_cond_signal    strict_pthread_cond_signal
+#define pthread_cond_broadcast strict_pthread_cond_broadcast
+#define pthread_cond_wait      strict_pthread_cond_wait
+#define pthread_once           strict_pthread_once
+#endif
+
+#elif HAVE_W32THREADS
+/* Build up a pthread-like API using underlying Windows API. Have only static
+ * methods so as to not conflict with a potentially linked in pthread-win32
+ * library.
+ * As most functions here are used without checking return values,
+ * only implement return values as necessary. */
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <process.h>
+
+#if _WIN32_WINNT < 0x0600 && defined(__MINGW32__)
+#undef MemoryBarrier
+#define MemoryBarrier __sync_synchronize
+#endif
+
+//#include "libavutil/attributes.h"
+//#include "libavutil/common.h"
+//#include "libavutil/internal.h"
+//#include "libavutil/mem.h"
+
+typedef struct pthread_t {
+    void *handle;
+    void *(*func)(void* arg);
+    void *arg;
+    void *ret;
+} pthread_t;
+
+/* the conditional variable api for windows 6.0+ uses critical sections and
+ * not mutexes */
+typedef CRITICAL_SECTION pthread_mutex_t;
+
+/* This is the CONDITION_VARIABLE typedef for using Windows' native
+ * conditional variables on kernels 6.0+. */
+#if HAVE_CONDITION_VARIABLE_PTR
+typedef CONDITION_VARIABLE pthread_cond_t;
+#else
+typedef struct pthread_cond_t {
+    void *Ptr;
+} pthread_cond_t;
+#endif
+
+#if _WIN32_WINNT >= 0x0600
+#define InitializeCriticalSection(x) InitializeCriticalSectionEx(x, 0, 0)
+#define WaitForSingleObject(a, b) WaitForSingleObjectEx(a, b, FALSE)
+#endif
+
+static  unsigned __stdcall  win32thread_worker(void *arg)
+{
+    pthread_t *h = arg;
+    h->ret = h->func(h->arg);
+    return 0;
+}
+
+static  int pthread_create(pthread_t *thread, const void *unused_attr,
+                                    void *(*start_routine)(void*), void *arg)
 {
     thread->func   = start_routine;
     thread->arg    = arg;
-    thread->p_ret  = &thread->ret;
-    thread->ret    = NULL;
-    thread->handle = (void*)_beginthreadex( NULL, 0, fx_win32thread_worker, thread, 0, NULL );
+#if HAVE_WINRT
+    thread->handle = (void*)CreateThread(NULL, 0, win32thread_worker, thread,
+                                           0, NULL);
+#else
+    thread->handle = (void*)_beginthreadex(NULL, 0, win32thread_worker, thread,
+                                           0, NULL);
+#endif
     return !thread->handle;
 }
 
-static int fx_pthread_join( fx_pthread_t thread, void **value_ptr )
+static  int pthread_join(pthread_t thread, void **value_ptr)
 {
-    DWORD ret = WaitForSingleObject( thread.handle, INFINITE );
-    if( ret != WAIT_OBJECT_0 )
-        return -1;
-    if( value_ptr )
-        *value_ptr = *thread.p_ret;
-    CloseHandle( thread.handle );
+    DWORD ret = WaitForSingleObject(thread.handle, INFINITE);
+    if (ret != WAIT_OBJECT_0) {
+        if (ret == WAIT_ABANDONED)
+            return EINVAL;
+        else
+            return EDEADLK;
+    }
+    if (value_ptr)
+        *value_ptr = thread.ret;
+    CloseHandle(thread.handle);
     return 0;
 }
 
-static int fx_pthread_mutex_init( fx_pthread_mutex_t *mutex, const fx_pthread_mutexattr_t *attr )
+static inline int pthread_mutex_init(pthread_mutex_t *m, void* attr)
 {
-    return !InitializeCriticalSectionAndSpinCount( mutex, FX_SPIN_COUNT );
+    InitializeCriticalSection(m);
+    return 0;
 }
-
-static int fx_pthread_mutex_destroy( fx_pthread_mutex_t *mutex )
+static inline int pthread_mutex_destroy(pthread_mutex_t *m)
 {
-    DeleteCriticalSection( mutex );
+    DeleteCriticalSection(m);
+    return 0;
+}
+static inline int pthread_mutex_lock(pthread_mutex_t *m)
+{
+    EnterCriticalSection(m);
+    return 0;
+}
+static inline int pthread_mutex_unlock(pthread_mutex_t *m)
+{
+    LeaveCriticalSection(m);
     return 0;
 }
 
-static int fx_pthread_mutex_lock( fx_pthread_mutex_t *mutex )
+#if _WIN32_WINNT >= 0x0600
+typedef INIT_ONCE pthread_once_t;
+#define PTHREAD_ONCE_INIT INIT_ONCE_STATIC_INIT
+
+static  int pthread_once(pthread_once_t *once_control, void (*init_routine)(void))
 {
-    static fx_pthread_mutex_t init = fx_PTHREAD_MUTEX_INITIALIZER;
-    if( !memcmp( mutex, &init, sizeof(fx_pthread_mutex_t) ) )
-        *mutex = thread_control.static_mutex;
-    EnterCriticalSection( mutex );
+    BOOL pending = FALSE;
+    InitOnceBeginInitialize(once_control, 0, &pending, NULL);
+    if (pending)
+        init_routine();
+    InitOnceComplete(once_control, 0, NULL);
     return 0;
 }
 
-static int fx_pthread_mutex_unlock( fx_pthread_mutex_t *mutex )
+static inline int pthread_cond_init(pthread_cond_t *cond, const void *unused_attr)
 {
-    LeaveCriticalSection( mutex );
+    InitializeConditionVariable(cond);
     return 0;
 }
 
-/* for pre-Windows 6.0 platforms we need to define and use our own condition variable and api */
-typedef struct
+/* native condition variables do not destroy */
+static inline int pthread_cond_destroy(pthread_cond_t *cond)
 {
-    fx_pthread_mutex_t mtx_broadcast;
-    fx_pthread_mutex_t mtx_waiter_count;
+    return 0;
+}
+
+static inline int pthread_cond_broadcast(pthread_cond_t *cond)
+{
+    WakeAllConditionVariable(cond);
+    return 0;
+}
+
+static inline int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)
+{
+    SleepConditionVariableCS(cond, mutex, INFINITE);
+    return 0;
+}
+
+static inline int pthread_cond_signal(pthread_cond_t *cond)
+{
+    WakeConditionVariable(cond);
+    return 0;
+}
+
+#else // _WIN32_WINNT < 0x0600
+
+/* atomic init state of dynamically loaded functions */
+static LONG w32thread_init_state = 0;
+static  void w32thread_init(void);
+
+/* for pre-Windows 6.0 platforms, define INIT_ONCE struct,
+ * compatible to the one used in the native API */
+
+typedef union pthread_once_t  {
+    void * Ptr;    ///< For the Windows 6.0+ native functions
+    LONG state;    ///< For the pre-Windows 6.0 compat code
+} pthread_once_t;
+
+#define PTHREAD_ONCE_INIT {0}
+
+/* function pointers to init once API on windows 6.0+ kernels */
+static BOOL (WINAPI *initonce_begin)(pthread_once_t *lpInitOnce, DWORD dwFlags, BOOL *fPending, void **lpContext);
+static BOOL (WINAPI *initonce_complete)(pthread_once_t *lpInitOnce, DWORD dwFlags, void *lpContext);
+
+/* pre-Windows 6.0 compat using a spin-lock */
+static inline void w32thread_once_fallback(LONG volatile *state, void (*init_routine)(void))
+{
+    switch (InterlockedCompareExchange(state, 1, 0)) {
+    /* Initial run */
+    case 0:
+        init_routine();
+        InterlockedExchange(state, 2);
+        break;
+    /* Another thread is running init */
+    case 1:
+        while (1) {
+            MemoryBarrier();
+            if (*state == 2)
+                break;
+            Sleep(0);
+        }
+        break;
+    /* Initialization complete */
+    case 2:
+        break;
+    }
+}
+
+static  int pthread_once(pthread_once_t *once_control, void (*init_routine)(void))
+{
+    w32thread_once_fallback(&w32thread_init_state, w32thread_init);
+
+    /* Use native functions on Windows 6.0+ */
+    if (initonce_begin && initonce_complete) {
+        BOOL pending = FALSE;
+        initonce_begin(once_control, 0, &pending, NULL);
+        if (pending)
+            init_routine();
+        initonce_complete(once_control, 0, NULL);
+        return 0;
+    }
+
+    w32thread_once_fallback(&once_control->state, init_routine);
+    return 0;
+}
+
+/* for pre-Windows 6.0 platforms we need to define and use our own condition
+ * variable and api */
+
+typedef struct  win32_cond_t {
+    pthread_mutex_t mtx_broadcast;
+    pthread_mutex_t mtx_waiter_count;
     volatile int waiter_count;
     HANDLE semaphore;
     HANDLE waiters_done;
     volatile int is_broadcast;
-} fx_win32_cond_t;
+} win32_cond_t;
 
-static int fx_pthread_cond_init( fx_pthread_cond_t *cond, const fx_pthread_condattr_t *attr )
+/* function pointers to conditional variable API on windows 6.0+ kernels */
+static void (WINAPI *cond_broadcast)(pthread_cond_t *cond);
+static void (WINAPI *cond_init)(pthread_cond_t *cond);
+static void (WINAPI *cond_signal)(pthread_cond_t *cond);
+static BOOL (WINAPI *cond_wait)(pthread_cond_t *cond, pthread_mutex_t *mutex,
+                                DWORD milliseconds);
+
+static  int pthread_cond_init(pthread_cond_t *cond, const void *unused_attr)
 {
-    if( thread_control.cond_init )
-    {
-        thread_control.cond_init( cond );
+    win32_cond_t *win32_cond = NULL;
+
+    w32thread_once_fallback(&w32thread_init_state, w32thread_init);
+
+    if (cond_init) {
+        cond_init(cond);
         return 0;
     }
 
     /* non native condition variables */
-    fx_win32_cond_t *win32_cond = calloc( 1, sizeof(fx_win32_cond_t) );
-    if( !win32_cond )
-        return -1;
-    cond->ptr = win32_cond;
-    win32_cond->semaphore = CreateSemaphore( NULL, 0, 0x7fffffff, NULL );
-    if( !win32_cond->semaphore )
-        return -1;
+    win32_cond = av_mallocz(sizeof(win32_cond_t));
+    if (!win32_cond)
+        return ENOMEM;
+    cond->Ptr = win32_cond;
+    win32_cond->semaphore = CreateSemaphore(NULL, 0, 0x7fffffff, NULL);
+    if (!win32_cond->semaphore)
+        return ENOMEM;
+    win32_cond->waiters_done = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (!win32_cond->waiters_done)
+        return ENOMEM;
 
-    if( fx_pthread_mutex_init( &win32_cond->mtx_waiter_count, NULL ) )
-        return -1;
-    if( fx_pthread_mutex_init( &win32_cond->mtx_broadcast, NULL ) )
-        return -1;
-
-    win32_cond->waiters_done = CreateEvent( NULL, FALSE, FALSE, NULL );
-    if( !win32_cond->waiters_done )
-        return -1;
-
+    pthread_mutex_init(&win32_cond->mtx_waiter_count, NULL);
+    pthread_mutex_init(&win32_cond->mtx_broadcast, NULL);
     return 0;
 }
 
-static int fx_pthread_cond_destroy( fx_pthread_cond_t *cond )
+static  int pthread_cond_destroy(pthread_cond_t *cond)
 {
+    win32_cond_t *win32_cond = cond->Ptr;
     /* native condition variables do not destroy */
-    if( thread_control.cond_init )
+    if (cond_init)
         return 0;
 
     /* non native condition variables */
-    fx_win32_cond_t *win32_cond = cond->ptr;
-    CloseHandle( win32_cond->semaphore );
-    CloseHandle( win32_cond->waiters_done );
-    fx_pthread_mutex_destroy( &win32_cond->mtx_broadcast );
-    fx_pthread_mutex_destroy( &win32_cond->mtx_waiter_count );
-    free( win32_cond );
-
+    CloseHandle(win32_cond->semaphore);
+    CloseHandle(win32_cond->waiters_done);
+    pthread_mutex_destroy(&win32_cond->mtx_waiter_count);
+    pthread_mutex_destroy(&win32_cond->mtx_broadcast);
+    av_freep(&win32_cond);
+    cond->Ptr = NULL;
     return 0;
 }
 
-static int fx_pthread_cond_broadcast( fx_pthread_cond_t *cond )
+static  int pthread_cond_broadcast(pthread_cond_t *cond)
 {
-    if( thread_control.cond_broadcast )
-    {
-        thread_control.cond_broadcast( cond );
+    win32_cond_t *win32_cond = cond->Ptr;
+    int have_waiter;
+
+    if (cond_broadcast) {
+        cond_broadcast(cond);
         return 0;
     }
 
     /* non native condition variables */
-    fx_win32_cond_t *win32_cond = cond->ptr;
-    fx_pthread_mutex_lock( &win32_cond->mtx_broadcast );
-    fx_pthread_mutex_lock( &win32_cond->mtx_waiter_count );
-    int have_waiter = 0;
+    pthread_mutex_lock(&win32_cond->mtx_broadcast);
+    pthread_mutex_lock(&win32_cond->mtx_waiter_count);
+    have_waiter = 0;
 
-    if( win32_cond->waiter_count )
-    {
+    if (win32_cond->waiter_count) {
         win32_cond->is_broadcast = 1;
         have_waiter = 1;
     }
 
-    if( have_waiter )
-    {
-        ReleaseSemaphore( win32_cond->semaphore, win32_cond->waiter_count, NULL );
-        fx_pthread_mutex_unlock( &win32_cond->mtx_waiter_count );
-        WaitForSingleObject( win32_cond->waiters_done, INFINITE );
+    if (have_waiter) {
+        ReleaseSemaphore(win32_cond->semaphore, win32_cond->waiter_count, NULL);
+        pthread_mutex_unlock(&win32_cond->mtx_waiter_count);
+        WaitForSingleObject(win32_cond->waiters_done, INFINITE);
+        ResetEvent(win32_cond->waiters_done);
         win32_cond->is_broadcast = 0;
-    }
-    else
-        fx_pthread_mutex_unlock( &win32_cond->mtx_waiter_count );
-    return fx_pthread_mutex_unlock( &win32_cond->mtx_broadcast );
+    } else
+        pthread_mutex_unlock(&win32_cond->mtx_waiter_count);
+    pthread_mutex_unlock(&win32_cond->mtx_broadcast);
+    return 0;
 }
 
-static int fx_pthread_cond_signal( fx_pthread_cond_t *cond )
+static  int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)
 {
-    if( thread_control.cond_signal )
-    {
-        thread_control.cond_signal( cond );
+    win32_cond_t *win32_cond = cond->Ptr;
+    int last_waiter;
+    if (cond_wait) {
+        cond_wait(cond, mutex, INFINITE);
         return 0;
     }
-
-    /* non-native condition variables */
-    fx_win32_cond_t *win32_cond = cond->ptr;
-
-    fx_pthread_mutex_lock( &win32_cond->mtx_broadcast );
-    fx_pthread_mutex_lock( &win32_cond->mtx_waiter_count );
-    int have_waiter = win32_cond->waiter_count;
-    fx_pthread_mutex_unlock( &win32_cond->mtx_waiter_count );
-
-    if( have_waiter )
-    {
-        ReleaseSemaphore( win32_cond->semaphore, 1, NULL );
-        WaitForSingleObject( win32_cond->waiters_done, INFINITE );
-    }
-
-    return fx_pthread_mutex_unlock( &win32_cond->mtx_broadcast );
-}
-
-static int fx_pthread_cond_wait( fx_pthread_cond_t *cond, fx_pthread_mutex_t *mutex )
-{
-    if( thread_control.cond_wait )
-        return !thread_control.cond_wait( cond, mutex, INFINITE );
 
     /* non native condition variables */
-    fx_win32_cond_t *win32_cond = cond->ptr;
-
-    fx_pthread_mutex_lock( &win32_cond->mtx_broadcast );
-    fx_pthread_mutex_lock( &win32_cond->mtx_waiter_count );
+    pthread_mutex_lock(&win32_cond->mtx_broadcast);
+    pthread_mutex_lock(&win32_cond->mtx_waiter_count);
     win32_cond->waiter_count++;
-    fx_pthread_mutex_unlock( &win32_cond->mtx_waiter_count );
-    fx_pthread_mutex_unlock( &win32_cond->mtx_broadcast );
+    pthread_mutex_unlock(&win32_cond->mtx_waiter_count);
+    pthread_mutex_unlock(&win32_cond->mtx_broadcast);
 
     // unlock the external mutex
-    fx_pthread_mutex_unlock( mutex );
-    WaitForSingleObject( win32_cond->semaphore, INFINITE );
+    pthread_mutex_unlock(mutex);
+    WaitForSingleObject(win32_cond->semaphore, INFINITE);
 
-    fx_pthread_mutex_lock( &win32_cond->mtx_waiter_count );
+    pthread_mutex_lock(&win32_cond->mtx_waiter_count);
     win32_cond->waiter_count--;
-    int last_waiter = !win32_cond->waiter_count || !win32_cond->is_broadcast;
-    fx_pthread_mutex_unlock( &win32_cond->mtx_waiter_count );
+    last_waiter = !win32_cond->waiter_count || !win32_cond->is_broadcast;
+    pthread_mutex_unlock(&win32_cond->mtx_waiter_count);
 
-    if( last_waiter )
-        SetEvent( win32_cond->waiters_done );
+    if (last_waiter)
+        SetEvent(win32_cond->waiters_done);
 
     // lock the external mutex
-    return fx_pthread_mutex_lock( mutex );
+    return pthread_mutex_lock(mutex);
 }
 
-static int fx_win32_threading_init( void )
+static  int pthread_cond_signal(pthread_cond_t *cond)
 {
-    /* find function pointers to API functions, if they exist */
-    HANDLE kernel_dll = GetModuleHandleW( L"kernel32.dll" );
-    thread_control.cond_init = (void*)GetProcAddress( kernel_dll, "InitializeConditionVariable" );
-    if( thread_control.cond_init )
-    {
-        /* we're on a windows 6.0+ kernel, acquire the rest of the functions */
-        thread_control.cond_broadcast = (void*)GetProcAddress( kernel_dll, "WakeAllConditionVariable" );
-        thread_control.cond_signal = (void*)GetProcAddress( kernel_dll, "WakeConditionVariable" );
-        thread_control.cond_wait = (void*)GetProcAddress( kernel_dll, "SleepConditionVariableCS" );
-    }
-    return fx_pthread_mutex_init( &thread_control.static_mutex, NULL );
-}
-
-static void fx_win32_threading_destroy( void )
-{
-    fx_pthread_mutex_destroy( &thread_control.static_mutex );
-    memset( &thread_control, 0, sizeof(fx_win32thread_control_t) );
-}
-
-static int fx_pthread_num_processors_np( void )
-{
-    DWORD_PTR system_cpus, process_cpus = 0;
-    int cpus = 0;
-
-    /* GetProcessAffinityMask returns affinities of 0 when the process has threads in multiple processor groups.
-     * On platforms that support processor grouping, use GetThreadGroupAffinity to get the current thread's affinity instead. */
-#if ARCH_X86_64
-    /* find function pointers to API functions specific to x86_64 platforms, if they exist */
-    HANDLE kernel_dll = GetModuleHandleW( L"kernel32.dll" );
-    BOOL (*get_thread_affinity)( HANDLE thread, fx_group_affinity_t *group_affinity ) = (void*)GetProcAddress( kernel_dll, "GetThreadGroupAffinity" );
-    if( get_thread_affinity )
-    {
-        /* running on a platform that supports >64 logical cpus */
-        fx_group_affinity_t thread_affinity;
-        if( get_thread_affinity( GetCurrentThread(), &thread_affinity ) )
-            process_cpus = thread_affinity.mask;
-    }
-#endif
-    if( !process_cpus )
-        GetProcessAffinityMask( GetCurrentProcess(), &process_cpus, &system_cpus );
-    for( DWORD_PTR bit = 1; bit; bit <<= 1 )
-        cpus += !!(process_cpus & bit);
-
-    return cpus ? cpus : 1;
-}
-#endif
-
-#if HAVE_WIN32THREAD || PTW32_STATIC_LIB
-/* state of the threading library being initialized */
-static volatile LONG fx_threading_is_init = 0;
-
-static void fx_threading_destroy( void )
-{
-#if PTW32_STATIC_LIB
-    pthread_win32_thread_detach_np();
-    pthread_win32_process_detach_np();
-#else
-    fx_win32_threading_destroy();
-#endif
-}
-
-static int fx_threading_init( void )
-{
-    /* if already init, then do nothing */
-    if( InterlockedCompareExchange( &fx_threading_is_init, 1, 0 ) )
+    win32_cond_t *win32_cond = cond->Ptr;
+    int have_waiter;
+    if (cond_signal) {
+        cond_signal(cond);
         return 0;
-#if PTW32_STATIC_LIB
-    /* if static pthread-win32 is already initialized, then do nothing */
-    if( ptw32_processInitialized )
-        return 0;
-    if( !pthread_win32_process_attach_np() )
-        return -1;
-#else
-    if( fx_win32_threading_init() )
-        return -1;
-#endif
-    /* register cleanup to run at process termination */
-    atexit( fx_threading_destroy );
+    }
 
+    pthread_mutex_lock(&win32_cond->mtx_broadcast);
+
+    /* non-native condition variables */
+    pthread_mutex_lock(&win32_cond->mtx_waiter_count);
+    have_waiter = win32_cond->waiter_count;
+    pthread_mutex_unlock(&win32_cond->mtx_waiter_count);
+
+    if (have_waiter) {
+        ReleaseSemaphore(win32_cond->semaphore, 1, NULL);
+        WaitForSingleObject(win32_cond->waiters_done, INFINITE);
+        ResetEvent(win32_cond->waiters_done);
+    }
+
+    pthread_mutex_unlock(&win32_cond->mtx_broadcast);
     return 0;
 }
 #endif
 
+static  void w32thread_init(void)
+{
+#if _WIN32_WINNT < 0x0600
+    HANDLE kernel_dll = GetModuleHandle(TEXT("kernel32.dll"));
+    /* if one is available, then they should all be available */
+    cond_init      =
+        (void*)GetProcAddress(kernel_dll, "InitializeConditionVariable");
+    cond_broadcast =
+        (void*)GetProcAddress(kernel_dll, "WakeAllConditionVariable");
+    cond_signal    =
+        (void*)GetProcAddress(kernel_dll, "WakeConditionVariable");
+    cond_wait      =
+        (void*)GetProcAddress(kernel_dll, "SleepConditionVariableCS");
+    initonce_begin =
+        (void*)GetProcAddress(kernel_dll, "InitOnceBeginInitialize");
+    initonce_complete =
+        (void*)GetProcAddress(kernel_dll, "InitOnceComplete");
 #endif
+
+}
+#endif
+
+#define AVMutex pthread_mutex_t
+
+#define ff_mutex_init    pthread_mutex_init
+#define ff_mutex_lock    pthread_mutex_lock
+#define ff_mutex_unlock  pthread_mutex_unlock
+#define ff_mutex_destroy pthread_mutex_destroy
+
+#define AVOnce pthread_once_t
+#define AV_ONCE_INIT PTHREAD_ONCE_INIT
+
+#define ff_thread_once(control, routine) pthread_once(control, routine)
+
+#else
+
+#define USE_ATOMICS 1
+
+#define AVMutex char
+
+#define ff_mutex_init(mutex, attr) (0)
+#define ff_mutex_lock(mutex) (0)
+#define ff_mutex_unlock(mutex) (0)
+#define ff_mutex_destroy(mutex) (0)
+
+#define AVOnce char
+#define AV_ONCE_INIT 0
+
+static inline int ff_thread_once(char *control, void (*routine)(void))
+{
+    if (!*control) {
+        routine();
+        *control = 1;
+    }
+    return 0;
+}
+
+#endif
+
+#endif /* AVUTIL_THREAD_H */

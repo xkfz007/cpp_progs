@@ -4,6 +4,7 @@
 #ifndef FX_MACROS_H
 #define FX_MACROS_H
 #include <limits.h>
+#include <stdio.h>
 #define MASK1(i) (1u<<i)
 #define MASK0(i) ~(1u<<i)
 
@@ -17,18 +18,7 @@
 #define ROTL(val,s,n) (((val)<<n)|((val)>>(sizeof(val)*s-n)))
 #define ROTR(val,s,n) (((val)>>n)|((val)<<(sizeof(val)*s-n)))
 
-//count '1' in number n
-static unsigned fx_count_one(unsigned n)
-{
-    unsigned sum=0;
-    while(n)
-    {
-        if(n&1u)
-            ++sum;
-        n>>=1;
-    }
-    return sum;
-}
+
 
 #ifndef ASSERT
 static void _assert(char*cond,char*filename,long lineno)
@@ -70,7 +60,9 @@ static void _assert(char*cond,char*filename,long lineno)
 //    printf("pc_=%d\n",OFFSET(Sta,pc));
 //    return 0;
 //}
-#endif
+
+#define _GLUE(a, b) a ## b
+#define GLUE(a, b) _GLUE(a, b)
 
 #endif
 
