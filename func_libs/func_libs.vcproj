@@ -599,6 +599,10 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Implement Files"
+			>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
