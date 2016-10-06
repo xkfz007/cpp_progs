@@ -41,6 +41,6 @@
 *.user
 *.sdf
 *.opensdf
-Debug/
+Debug*/
 Release/
 x64/
