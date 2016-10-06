@@ -5,7 +5,7 @@
 // writes
 //   1 3 4 5 6 7
 
-#if 0
+#if 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

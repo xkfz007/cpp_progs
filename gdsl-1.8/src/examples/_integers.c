@@ -22,7 +22,7 @@
  * $Date: 2006/03/04 16:32:05 $
  */
 
-#if 0
+#if 1
 
 #include <config.h>
 

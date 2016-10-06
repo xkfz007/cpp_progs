@@ -602,6 +602,17 @@
 		<Filter
 			Name="Implement Files"
 			>
+			<File
+				RelativePath=".\fx_error.c.h"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

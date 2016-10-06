@@ -1,3 +1,4 @@
+//gcc -o glob glob.c -D_GLOB -DHAVE_UNISTD_H=1 -DHAVE_DIRENT_H     
 //#define _GLOB
 #if defined (_GLOB)
 #include "fx_glob.h"

@@ -107,6 +107,7 @@
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus
 /* #undef inline */
+#define inline
 #endif
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
