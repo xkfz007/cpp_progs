@@ -17,7 +17,10 @@ static int show_frame_number=0;
 static int calc_average=0;
 static int depth=8;
 
-#define MEA ssim
+#ifndef MEA_NAME
+#define MEA_NAME psnr //default measure method
+#endif
+
 #define _MEA_STR(M) #M
 #define MEA_STR(M) _MEA_STR(M)
 #define _MEA_FUN(M) calc_##M
@@ -124,17 +127,17 @@ static int count_frames(FILE*fp,int width,int height){
 
 }
 
-static static void usage(){
-	printf("Program used to calculate "MEA_STR(MEA)" between two yuv files.Version 0.4\n"
+static void usage(){
+	printf("Program used to calculate "MEA_STR(MEA_NAME)" between two yuv files.Version 0.4\n"
 		   "Usage:\n"
-		   "   "MEA_STR(MEA)" <width> <height> <orig.yuv> <rec.yuv> from to\n"
+		   "   "MEA_STR(MEA_NAME)" <width> <height> <orig.yuv> <rec.yuv> from to\n"
 		   "or\n"
-           "   "MEA_STR(MEA)" -s <width>x<height> -i <orig.yuv>:<rec.yuv> -r from:to -n -c\n"
+           "   "MEA_STR(MEA_NAME)" -s <width>x<height> -i <orig.yuv>:<rec.yuv> -r from:to -n -c\n"
 		   "   -n: show frame number\n"
 		   "   -c: calculate averge psnr values\n"
 		   "Examples:\n"
-		   "   "MEA_STR(MEA)" 176 144 foreman_qcif.yuv foreman_qcif_rec.yuv 5 100\n"
-		   "   "MEA_STR(MEA)" -s 176x144 -i foreman_qcif.yuv:foreman_qcif_rec.yuv -r 5:100\n"
+		   "   "MEA_STR(MEA_NAME)" 176 144 foreman_qcif.yuv foreman_qcif_rec.yuv 5 100\n"
+		   "   "MEA_STR(MEA_NAME)" -s 176x144 -i foreman_qcif.yuv:foreman_qcif_rec.yuv -r 5:100\n"
 		   );
 }
 
@@ -233,7 +236,7 @@ int main(int argc,char*argv[])
 			to=MAX(0,MIN(c1,c2));
 	}
 
-    calc_all_measure(p_orig,p_rec,from,to,width,height,MEA_FUNC(MEA));
+    calc_all_measure(p_orig,p_rec,from,to,width,height,MEA_FUNC(MEA_NAME));
 
     fclose(p_orig);
     fclose(p_rec);

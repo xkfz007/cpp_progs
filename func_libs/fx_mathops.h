@@ -353,14 +353,14 @@ static uint64_t fx_double2int(double f)
     return v.i;
 }
 
-static int isnan(float x)
+static int fx_isnan(float x)
 {
     uint32_t v = fx_float2int(x);
     if ((v & 0x7f800000) != 0x7f800000)
         return 0;
     return v & 0x007fffff;
 }
-static int isinf(float x)
+static int fx_isinf(float x)
 {
     uint32_t v = fx_float2int(x);
     if ((v & 0x7f800000) != 0x7f800000)
