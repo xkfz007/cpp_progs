@@ -1,118 +1,121 @@
-#include <cstdio>
-#include <cstring>
-#include <cmath>
-#include <string>
-#include "stdint.h"
-using namespace std;
+//#define _TISI
+#ifdef _TISI
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+//#include "stdint.h"
+//using namespace std;
+#include "fx_types.h"
+#include "fx_fileops.h"
+#include "fx_getopt.h"
 
-#ifdef WIN32
-#define fseek _fseeki64
-#define ftell _ftelli64
-#else
-#define fseek fseeko
-#define ftell ftello
-#endif
+//#ifdef WIN32
+//#define fseek _fseeki64
+//#define ftell _ftelli64
+//#else
+//#define fseek fseeko
+//#define ftell ftello
+//#endif
 
 #define YUV420 0
 #define YUV422 1
 #define YUV444 2
 #define YUV400 3
 
-typedef unsigned char pixel;
+//typedef unsigned char pixel;
 
-char	*optarg;		// global argument pointer
-int		optind = 0; 	// global argv index
+//char	*optarg;		// global argument pointer
+//int		optind = 0; 	// global argv index
+//
+//int getopt(int argc, char *argv[], char *optstring)
+//{
+//    static char *next = NULL;
+//    if (optind == 0)
+//        next = NULL;
+//
+//    optarg = NULL;
+//
+//    if (next == NULL || *next == '\0')
+//    {
+//        if (optind == 0)
+//            optind++;
+//
+//        if (optind >= argc || argv[optind][0] != '-' || argv[optind][1] == '\0')
+//        {
+//            optarg = NULL;
+//            if (optind < argc)
+//                optarg = argv[optind];
+//            return EOF;
+//        }
+//
+//        if (strcmp(argv[optind], "--") == 0)
+//        {
+//            optind++;
+//            optarg = NULL;
+//            if (optind < argc)
+//                optarg = argv[optind];
+//            return EOF;
+//        }
+//
+//        next = argv[optind];
+//        next++;		// skip past -
+//        optind++;
+//    }
+//
+//    char c = *next++;
+//    char *cp = strchr(optstring, c);
+//
+//    if (cp == NULL || c == ':')
+//        return '?';
+//
+//    cp++;
+//    if (*cp == ':')
+//    {
+//        if (*next != '\0')
+//        {
+//            optarg = next;
+//            next = NULL;
+//        }
+//        else if (optind < argc)
+//        {
+//            optarg = argv[optind];
+//            optind++;
+//        }
+//        else
+//        {
+//            return '?';
+//        }
+//    }
+//
+//    return c;
+//}
 
-int getopt(int argc, char *argv[], char *optstring)
+//int64_t filesize( FILE *fp )
+//{
+//    int64_t save_pos;
+//    int64_t size_of_file;
+//
+//    /* Save the current position. */
+//    save_pos = ftell( fp );
+//
+//    /* Jump to the end of the file. */
+//    fseek( fp, 0, SEEK_END );
+//
+//    /* Get the end position. */
+//    size_of_file = ftell( fp );
+//
+//    /* Jump back to the original position. */
+//    fseek( fp, save_pos, SEEK_SET );
+//
+//    return( size_of_file );
+//}
+int TIandSI(const char* strPath,int width,int height,//int pixfmt,
+            int start,int frame_number,int b_ti,int b_si)
 {
-    static char *next = NULL;
-    if (optind == 0)
-        next = NULL;
-
-    optarg = NULL;
-
-    if (next == NULL || *next == '\0')
-    {
-        if (optind == 0)
-            optind++;
-
-        if (optind >= argc || argv[optind][0] != '-' || argv[optind][1] == '\0')
-        {
-            optarg = NULL;
-            if (optind < argc)
-                optarg = argv[optind];
-            return EOF;
-        }
-
-        if (strcmp(argv[optind], "--") == 0)
-        {
-            optind++;
-            optarg = NULL;
-            if (optind < argc)
-                optarg = argv[optind];
-            return EOF;
-        }
-
-        next = argv[optind];
-        next++;		// skip past -
-        optind++;
-    }
-
-    char c = *next++;
-    char *cp = strchr(optstring, c);
-
-    if (cp == NULL || c == ':')
-        return '?';
-
-    cp++;
-    if (*cp == ':')
-    {
-        if (*next != '\0')
-        {
-            optarg = next;
-            next = NULL;
-        }
-        else if (optind < argc)
-        {
-            optarg = argv[optind];
-            optind++;
-        }
-        else
-        {
-            return '?';
-        }
-    }
-
-    return c;
-}
-
-int64_t filesize( FILE *fp )
-{
-    int64_t save_pos;
-    int64_t size_of_file;
-
-    /* Save the current position. */
-    save_pos = ftell( fp );
-
-    /* Jump to the end of the file. */
-    fseek( fp, 0, SEEK_END );
-
-    /* Get the end position. */
-    size_of_file = ftell( fp );
-
-    /* Jump back to the original position. */
-    fseek( fp, save_pos, SEEK_SET );
-
-    return( size_of_file );
-}
-int TIandSI(const string& strPath,int width,int height,//int pixfmt,
-            int start,int frame_number,bool b_ti,bool b_si)
-{
+    FILE* fYUV;
+    char out_filename[255];
     if(!b_ti&&!b_si)
         return -1;
-
-    FILE* fYUV;
-    string out_filename;
 
     int nHeight, nWidth;
     int nFrameNum;
@@ -157,7 +160,7 @@ int TIandSI(const string& strPath,int width,int height,//int pixfmt,
         return -1;
     }
     if(frame_number==-1){
-        end= filesize(fYUV)/nFrameSize;
+        end= fx_get_filesize(fYUV)/nFrameSize;
     }
     else
         end=start+frame_number;
@@ -371,7 +374,7 @@ int main(int argc, char* argv[])
         tisi_usage();
         return -1;
     }
-    while ((opt =getopt(argc, argv,"i:w:h:s:f:H")) != -1)
+    while ((opt =fx_getopt(argc, argv,"i:w:h:s:f:H")) != -1)
     {
         switch (opt)
         {
@@ -417,3 +420,4 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+#endif

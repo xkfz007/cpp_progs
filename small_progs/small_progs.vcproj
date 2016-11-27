@@ -412,6 +412,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\tisi.c"
+				>
+			</File>
+			<File
 				RelativePath=".\viewer.c"
 				>
 			</File>

@@ -8,6 +8,12 @@
 	VCNestedProjectFileName="small_progs.vcproj">
 	<Configurations>
 		<Configuration
+			Name="Debug|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				C99Support="true"/>
+		</Configuration>
+		<Configuration
 			Name="Debug|x64">
 			<Tool
 				Name="CppCmplrTool"
