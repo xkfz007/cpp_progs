@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 }
 #endif
 
-#if 1
+#if 0
 #include <stdio.h>
 #include <time.h>
 int main(){
@@ -153,4 +153,16 @@ int main(){
 	return 0;
 
 }
+#endif
+
+#if 1
+#include <stdio.h>
+#include <stdlib.h>
+int main(){
+    char word[20];
+    fprintf(stdout,"please input a word:");
+    fscanf(stdin,"%s",word);
+    fprintf(stdout,"word:%s\n",word);
+}
+
 #endif

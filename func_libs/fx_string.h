@@ -14,6 +14,7 @@
 #define snprintf _snprintf
 #define strtok_r strtok_s
 #define S_ISREG(x) (((x) & S_IFMT) == S_IFREG)
+#define strtoll _strtoi64
 #endif
 
 #ifdef _WIN32

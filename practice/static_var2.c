@@ -1,3 +1,4 @@
+#if 0
 #include <stdio.h>
 
 extern int do_dd();
@@ -10,3 +11,4 @@ int main(){
     b=do_dd();
     printf("b=%d\n",b);
 }
+#endif

@@ -33,10 +33,10 @@ static double calc_psnr(byte* orig,byte* rec,int w,int h){
 	int Max;
 	mse=get_mse(orig,stride1,rec,stride2,w,h);
 	Max=(1<<depth)-1;
-	if(mse)
+	if(mse <= 0.0000000001 )
+        return 100;
+    else
 		return get_psnr(mse,Max);
-	else
-		return 0;
 }
 static double calc_ssim(byte* orig,byte* rec,int w,int h){
 	int stride1=w;

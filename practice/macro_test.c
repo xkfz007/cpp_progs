@@ -1,3 +1,4 @@
+#if 0
 #include <stdio.h>
 
 #define L(CS) CS+3
@@ -11,3 +12,5 @@ int main(){
     GLOB_LOOP(L_W);
 
 }
+
+#endif

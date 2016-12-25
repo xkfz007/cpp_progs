@@ -174,7 +174,7 @@ int main(){
     return 0;
 }
 #endif
-#if 1
+#if 0
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
