@@ -519,10 +519,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fx_inetaton.h"
-				>
-			</File>
-			<File
 				RelativePath=".\fx_integer.h"
 				>
 			</File>
@@ -560,6 +556,10 @@
 			</File>
 			<File
 				RelativePath=".\fx_opt.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_ossupport.h"
 				>
 			</File>
 			<File
