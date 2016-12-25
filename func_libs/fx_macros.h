@@ -68,5 +68,6 @@ static void _assert(char*cond,char*filename,long lineno)
 #define MKBETAG(a,b,c,d) ((d) | ((c) << 8) | ((b) << 16) | ((unsigned)(a) << 24))
 #define FFERRTAG(a, b, c, d) (-(int)MKTAG(a, b, c, d))
 
+#define FF_ARRAY_ELEMS(a) (sizeof(a) / sizeof((a)[0]))
 #endif
 
