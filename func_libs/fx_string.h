@@ -18,13 +18,11 @@
 #endif
 
 #ifdef _WIN32
-#ifndef strtok_r
-#define strtok_r(str,delim,save) strtok(str,delim)
-#endif
 #define HAVE_DOS_PATHS 1
 #endif
 
 
+#if 0
 /**
  * Locale-independent conversion of ASCII isdigit.
  */
@@ -78,31 +76,33 @@ static int fx_isxdigit(int c)
     c = fx_tolower(c);
     return fx_isdigit(c) || (c >= 'a' && c <= 'f');
 }
+#endif
 
 //convert string to lowercase
-static char* fx_strlwr(char*str)
+static char* strlwr(char*str)
 {
     char*p=str;
     while(*str)
     {
-        *str=fx_tolower(*str);
+        *str=tolower(*str);
         str++;
     }
     return p;
 }
-static char* fx_strupr(char*str)
+//convert string to uppercase
+static char* strupr(char*str)
 {
     char*p=str;
     while(*str)
     {
-        *str=fx_toupper(*str);
+        *str=toupper(*str);
         str++;
     }
     return p;
 }
 
 //reverse string
-static char* fx_strrev(char*str)
+static char* strrev(char*str)
 {
     char*org=str;
     char*forward=str;
@@ -122,7 +122,7 @@ static char* fx_strrev(char*str)
 
 
 //like strstr, but reverse
-static const char* fx_strrstr(const char*s1,const char *s2)
+static const char* strrstr(const char*s1,const char *s2)
 {
     const char* t=NULL;
     while(*s1!='\0')
@@ -159,13 +159,13 @@ static char* deblank( char *string )
 	** Examine each character from the source string.
 	*/
 	while( (ch = *src++) != '\0'){
-		if( fx_isspace( ch ) ){
+		if( isspace( ch ) ){
 			/*
 			** We found white space. If we are at the beginning of
 			** the string OR the previous char in the dest is not
 			** white space, store a blank.
 			*/
-			if( src == string || !fx_isspace( dest[-1] ) )
+			if( src == string || !isspace( dest[-1] ) )
 				*dest++ = ' ';
 		}
 		else {
@@ -189,7 +189,7 @@ static char* deblank( char *string )
  * @param ptr updated if the prefix is matched inside str
  * @return non-zero if the prefix matches, zero otherwise
  */
-int fx_strstart(const char *str, const char *pfx, const char **ptr)
+int strstart(const char *str, const char *pfx, const char **ptr)
 {
     while (*pfx && *pfx == *str) {
         pfx++;
@@ -200,9 +200,9 @@ int fx_strstart(const char *str, const char *pfx, const char **ptr)
     return !*pfx;
 }
 
-int fx_stristart(const char *str, const char *pfx, const char **ptr)
+int stristart(const char *str, const char *pfx, const char **ptr)
 {
-    while (*pfx && fx_toupper((unsigned)*pfx) == fx_toupper((unsigned)*str)) {
+    while (*pfx && toupper((unsigned)*pfx) == toupper((unsigned)*str)) {
         pfx++;
         str++;
     }
@@ -213,7 +213,7 @@ int fx_stristart(const char *str, const char *pfx, const char **ptr)
 
 
 /* strend: return 1 if string sfix occurs at the end of str */
-int fx_strend(const char *s, const char *t,const char **ptr)
+int strend(const char *s, const char *t,const char **ptr)
 {
     const char *bs=s; /* remember beginning of strs */
     const char *bt=t;
@@ -247,13 +247,13 @@ int fx_strend(const char *s, const char *t,const char **ptr)
  * @return         pointer to the located match within haystack
  *                 or a null pointer if no match
  */
-char *fx_stristr(const char *s1, const char *s2)
+char *stristr(const char *s1, const char *s2)
 {
     if (!*s2)
         return (char*)(intptr_t)s1;
 
     do
-        if (fx_stristart(s1, s2, NULL))
+        if (stristart(s1, s2, NULL))
             return (char*)(intptr_t)s1;
     while (*s1++);
 
@@ -274,7 +274,7 @@ char *fx_stristr(const char *s1, const char *s2)
  * @return           pointer to the located match within haystack
  *                   or a null pointer if no match
  */
-char *fx_strnstr(const char *haystack, const char *needle, size_t hay_length)
+char *strnstr(const char *haystack, const char *needle, size_t hay_length)
 {
     size_t needle_len = strlen(needle);
     if (!needle_len)
@@ -304,7 +304,7 @@ char *fx_strnstr(const char *haystack, const char *needle, size_t hay_length)
  * _must_ be a properly 0-terminated string, otherwise this will read beyond
  * the end of the buffer and possibly crash.
  */
-size_t fx_strlcpy(char *dst, const char *src, size_t size)
+size_t strlcpy(char *dst, const char *src, size_t size)
 {
     size_t len = 0;
     while (++len < size && *src)
@@ -331,12 +331,12 @@ size_t fx_strlcpy(char *dst, const char *src, size_t size)
  * absolutely _must_ be a properly 0-terminated strings, otherwise this
  * will read beyond the end of the buffer and possibly crash.
  */
-size_t fx_strlcat(char *dst, const char *src, size_t size)
+size_t strlcat(char *dst, const char *src, size_t size)
 {
     size_t len = strlen(dst);
     if (size <= len + 1)
         return len + strlen(src);
-    return len + fx_strlcpy(dst + len, src, size - len);
+    return len + strlcpy(dst + len, src, size - len);
 }
 
 
@@ -352,7 +352,7 @@ size_t fx_strlcat(char *dst, const char *src, size_t size)
  * @return the length of the string that would have been generated
  *  if enough space had been available
  */
-size_t fx_strlcatf(char *dst, size_t size, const char *fmt, ...)
+size_t strlcatf(char *dst, size_t size, const char *fmt, ...)
 {
     size_t len = strlen(dst);
     va_list vl;
@@ -371,7 +371,7 @@ size_t fx_strlcatf(char *dst, size_t size, const char *fmt, ...)
  * @param len maximum number of characters to check in the string, that
  *            is the maximum value which is returned by the function
  */
-static inline size_t fx_strnlen(const char *s, size_t len)
+static inline size_t strnlen(const char *s, size_t len)
 {
     size_t i;
     for (i = 0; i < len && s[i]; i++)
@@ -435,12 +435,12 @@ char *fx_strtok(char *s, const char *delim, char **saveptr)
  * Locale-independent case-insensitive compare.
  * @note This means only ASCII-range characters are case-insensitive
  */
-int fx_strcasecmp(const char *a, const char *b)
+int strcicmp(const char *a, const char *b)
 {
     uint8_t c1, c2;
     do {
-        c1 = fx_tolower(*a++);
-        c2 = fx_tolower(*b++);
+        c1 = tolower(*a++);
+        c2 = tolower(*b++);
     } while (c1 && c1 == c2);
     return c1 - c2;
 }
@@ -450,13 +450,13 @@ int fx_strcasecmp(const char *a, const char *b)
  * Locale-independent case-insensitive compare.
  * @note This means only ASCII-range characters are case-insensitive
  */
-int fx_strncasecmp(const char *a, const char *b, size_t n)
+int strnicmp(const char *a, const char *b, size_t n)
 {
     const char *end = a + n;
     uint8_t c1, c2;
     do {
-        c1 = fx_tolower(*a++);
-        c2 = fx_tolower(*b++);
+        c1 = tolower(*a++);
+        c2 = tolower(*b++);
     } while (a < end && c1 && c1 == c2);
     return c1 - c2;
 }

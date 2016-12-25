@@ -4,6 +4,7 @@
 #include   <stdio.h>
 #include   <string.h>
 #if _WIN32
+#include <winsock2.h>
 #else 
 #include   <sys/ioctl.h>
 #include   <sys/socket.h>
@@ -187,8 +188,20 @@ int check_physical_address(const char* s){
 }
 
 #if _WIN32
+int check_ipv4_addr2(const char *s) {
 
-int check_ipv4_addr(const char *s) {
+    unsigned int add1 = 0, add2 = 0, add3 = 0, add4 = 0;
+
+    if (sscanf(s, "%d.%d.%d.%d", &add1, &add2, &add3, &add4) != 4)
+        return 0;
+
+    if (!add1 || (add1 | add2 | add3 | add4) > 255)
+        return 0;
+
+    return 1;
+}
+
+int check_ipv4_addr2(const char *s) {
     char tmp[4][5];
     int i;
     int ret;
