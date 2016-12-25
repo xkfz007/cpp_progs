@@ -404,4 +404,64 @@ static int fx_parse_time(int64_t *timeval, const char *timestr, int duration)
     *timeval = negative ? -t : t;
     return 0;
 }
+
+//check if the year/month/day is validate
+static int validate_date(int year,int month,int day){
+    if(year < 1900 || 2099 < year)
+        return 0;
+    switch(month) {
+        case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+            if(day<1||day>31)
+                return 0;
+            break;
+        case 4: case 6: case 9: case 11:
+            if(day<1||day>30)
+                return 0;
+            break;
+        case 2:
+            {
+                int leap = (0 == year % 4 && 0 != year % 100) || (0 == year % 400);
+                if(day<1||leap&&day>29||!leap&&day>28)
+                    return 0;
+            }
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
+//valid formats: 2016-1-1,2016/1/1
+int parse_date(const char* date,int *year,int *month,int *day){
+    int ret;
+    ret=sscanf(date,"%4d%*[-/]%2d%*[-/]%2d",year,month,day);
+#if _DEBUG
+    {
+        fprintf(stdout,"year=%4d\n",*year);
+        fprintf(stdout,"month=%02d\n",*month);
+        fprintf(stdout,"day=%02d\n",*day);
+    }
+#endif
+    return ret==3;
+}
+
+int check_date(const char* date, int *year, int *month, int *day){
+    return parse_date(date,year,month,day)&&validate_date(*year,*month,*day);
+}
+
+//if ret<0, date1 is earlier than date2
+//if ret>0, date1 is later than date2
+int time_cmp(int y1,int m1,int d1,
+        int y2,int m2,int d2){
+    if(y1==y2){
+        if(m1==m2){
+            return d1-d2;
+        }
+        else
+            return m1-m2;
+    }
+    else
+        return y1-y2;
+}
+
 #endif

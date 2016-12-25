@@ -1,4 +1,4 @@
-#define  _TIME
+//#define  _TIME
 #ifdef _TIME
 #include "fx_time.h"
 static void test_av_small_strptime(void)
