@@ -321,19 +321,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\atomic.c"
-				>
-			</File>
-			<File
 				RelativePath=".\bin_search.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\bprint.c"
-				>
-			</File>
-			<File
-				RelativePath=".\buffer.c"
 				>
 			</File>
 			<File
@@ -345,23 +333,71 @@
 				>
 			</File>
 			<File
-				RelativePath=".\dict.c"
-				>
-			</File>
-			<File
 				RelativePath=".\dirwalk.c"
 				>
 			</File>
 			<File
-				RelativePath=".\eval.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fifo.c"
-				>
-			</File>
-			<File
 				RelativePath=".\fileops.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_atomic.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_bprint.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_buffer.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_dict.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_eval.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_fifo.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_integer.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_lfg.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_md5.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_opt.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_parseutils.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_rational.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_string.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_time.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_test_tree.c"
 				>
 			</File>
 			<File
@@ -381,35 +417,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\glob.c"
-				>
-			</File>
-			<File
-				RelativePath=".\integer.c"
-				>
-			</File>
-			<File
-				RelativePath=".\lfg.c"
-				>
-			</File>
-			<File
-				RelativePath=".\md5.c"
-				>
-			</File>
-			<File
-				RelativePath=".\opt.c"
-				>
-			</File>
-			<File
-				RelativePath=".\parseutils.c"
-				>
-			</File>
-			<File
-				RelativePath=".\rational.c"
-				>
-			</File>
-			<File
-				RelativePath=".\string.c"
+				RelativePath=".\glob_test.c"
 				>
 			</File>
 			<File
@@ -418,10 +426,6 @@
 			</File>
 			<File
 				RelativePath=".\string_cpp_ops.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\tree.c"
 				>
 			</File>
 		</Filter>

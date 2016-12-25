@@ -1,4 +1,4 @@
-#define _GET_CURRENT_APATH
+//#define _GET_CURRENT_APATH
 #ifdef _GET_CURRENT_APATH
 
 int main(){
