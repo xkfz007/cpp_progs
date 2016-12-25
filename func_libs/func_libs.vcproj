@@ -377,6 +377,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fx_test_network.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\fx_test_opt.c"
 				>
 			</File>
@@ -548,6 +552,10 @@
 			</File>
 			<File
 				RelativePath=".\fx_memops.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fx_network.h"
 				>
 			</File>
 			<File
