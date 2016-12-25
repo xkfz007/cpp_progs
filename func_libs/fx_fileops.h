@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <wchar.h>
 #include "fx_log.h"
+#include <string.h>
 
 //#define MAX_PATH  1024
 
@@ -48,7 +49,6 @@ int fx_is_pipe( const char *path );
 #define fx_vfprintf    vfprintf
 #define fx_is_pipe(x)  0
 #endif
-#include <string.h>
 
 /*
  * get file name extension
