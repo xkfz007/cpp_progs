@@ -333,6 +333,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\file_exist.c"
+				>
+			</File>
+			<File
 				RelativePath=".\getip.c"
 				>
 			</File>
