@@ -461,7 +461,56 @@ int strnicmp(const char *a, const char *b, size_t n)
     return c1 - c2;
 }
 
+//+: convert intergers to hex format
+//+: s is the total count of numbers in src
+char *ff_data_to_hex(char *buff, const uint8_t *src, int s, int lowercase)
+{
+    int i;
+    static const char hex_table_uc[16] = { '0', '1', '2', '3',
+                                           '4', '5', '6', '7',
+                                           '8', '9', 'A', 'B',
+                                           'C', 'D', 'E', 'F' };
+    static const char hex_table_lc[16] = { '0', '1', '2', '3',
+                                           '4', '5', '6', '7',
+                                           '8', '9', 'a', 'b',
+                                           'c', 'd', 'e', 'f' };
+    const char *hex_table = lowercase ? hex_table_lc : hex_table_uc;
 
+    for (i = 0; i < s; i++) {
+        buff[i * 2]     = hex_table[src[i] >> 4];//+: devide 16 to get high hex digit
+        buff[i * 2 + 1] = hex_table[src[i] & 0xF];//+: residual to get low hex digit
+    }
+
+    return buff;
+}
+#define SPACE_CHARS " \t\n"
+int ff_hex_to_data(uint8_t *data, const char *p)
+{
+    int c, len, v;
+
+    len = 0;
+    v   = 1;
+    for (;;) {
+        p += strspn(p, SPACE_CHARS);
+        if (*p == '\0')
+            break;
+        c = toupper((unsigned char) *p++);
+        if (c >= '0' && c <= '9')
+            c = c - '0';
+        else if (c >= 'A' && c <= 'F')
+            c = c - 'A' + 10;
+        else
+            break;
+        v = (v << 4) | c;
+        if (v & 0x100) {//+: if carry is found
+            if (data)
+                data[len] = v;
+            len++;
+            v = 1;
+        }
+    }
+    return len;
+}
 
 /**
  * Thread safe basename.
