@@ -32,8 +32,7 @@ void extract_pub_from_private(unsigned char *key, unsigned char *pubKey)
     BIO_free(pubKeyBio);
 }
 
-
-int main()
+int main1()
 {
 
     char publicKey[] = "-----BEGIN PUBLIC KEY-----\n"\
@@ -79,5 +78,39 @@ int main()
 
     printf("Defined Pulic key:\n%s", publicKey);
 
-
 }
+//extract public key from private key
+int extract_pubkey(FILE *privkey, FILE *fp)
+{
+    RSA *rsa = NULL;
+    int ret;
+
+    if(privkey!=NULL)
+        rsa = PEM_read_RSAPrivateKey(privkey, &rsa, NULL, NULL);
+    if (rsa == NULL) {
+        printf("Failed to create RSA\n");
+        ret = 0;
+        goto fail;
+    }
+
+    ret = PEM_write_RSA_PUBKEY(fp, rsa);
+
+fail:
+    RSA_free(rsa);
+
+    return ret;
+}
+int main(int argc, char** argv){
+    FILE *p_priv,*p_pub;
+    int ret;
+    p_priv=fopen(argv[1],"r");
+    p_pub=fopen(argv[2],"w");
+    ret=extract_pubkey(p_priv,p_pub);
+    if(!ret){
+        printf("Failed to write to %s\n",argv[2]);
+    }
+    else{
+        printf("Public key has been written to %s\n",argv[2]);
+    }
+}
+
